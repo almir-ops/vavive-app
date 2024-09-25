@@ -1,0 +1,90 @@
+ion-radio::part(mark) {
+  background: none;
+  transition: none;
+  transform: none;
+  border-radius: 0;
+}
+
+ion-radio.radio-checked::part(container) {
+  background: #FD4F04;
+  border-color: transparent;
+}
+
+ion-radio.radio-checked::part(mark) {
+  width: 6px;
+  height: 10px;
+
+  border-width: 0px 2px 2px 0px;
+  border-style: solid;
+  border-color: #fff;
+
+  transform: rotate(45deg);
+}
+
+.swiper {
+  height: auto;
+  swiper-container {
+      swiper-slide {
+          height: auto;
+          color: #FD4F04;
+        }
+        margin-left: -10px;
+      }
+}
+
+ion-modal#example-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --height: fit-content;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+ion-modal#example-modal h1 {
+  margin: 20px 20px 10px 20px;
+}
+
+ion-modal#example-modal ion-icon {
+  margin-right: 6px;
+  width: 48px;
+  height: 48px;
+  padding: 4px 0;
+  color: #aaaaaa;
+}
+
+ion-modal#example-modal .wrapper {
+  margin-bottom: 10px;
+}
+
+ion-picker-column-option {
+  background-image: linear-gradient(-225deg, #FD4F04 0%, #FD4F04 29%, #ff1361 67%, #fff800 100%);
+}
+
+ion-picker-column-option {
+  text-transform: uppercase;
+  background-size: auto auto;
+  background-clip: border-box;
+  background-size: 200% auto;
+  color: #FD4F04;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textclip 2s linear infinite;
+}
+
+ion-picker {
+  --highlight-background: #fd4f042b;
+  --highlight-border-radius: 50px;
+}
+
+ion-input.custom {
+  --color: #181717!important;
+  --border-width:2px;
+  --border-color:#FD4F04;
+}
+
+.custom-modal-confirmed {
+  --max-height: 350px;
+  --max-width: 80%;
+  --border-radius: 10px;
+}

@@ -1,0 +1,450 @@
+<div class="h-screen bg-radial-blue-radial overflow-auto pt-3 pb-20">
+  <div class="flex justify-center w-full p-3">
+    <div class="flex flex-col w-full">
+      <div class="bg-white p-3 rounded-md">
+
+        <div>
+          <span class="text-azulprincipal font-semibold">Escolha um serviço</span>
+
+          <div class="relative h-[150px] pt-3">
+            <swiper-container
+            #swiper
+            [modules]="swiperModules"
+            [slidesPerView]="3"
+            [spaceBetween]="0"
+            [pagination]="{clickable: true}"
+            style="--swiper-pagination-color: #FD4F04;">
+
+            <!-- Iterate over services and create each slide -->
+            <swiper-slide *ngFor="let service of services; let i = index">
+              <div [ngClass]="{
+                'bg-azulprincipal text-white shadow-md': isServiceSelected(service.ID),
+                'hover:bg-azulprincipal hover:text-white': !isServiceSelected(service.ID),
+                'w-full flex': !this.selectedServiceId,'w-0 hidden': this.selectedServiceId,
+                'border-r': i !== services.length - 1
+              }" class="border border-gray-400 h-[100px] flex-col p-4 text-center text-sm mb-10 shadow-md" (click)="selectService(service.ID, i)">
+                <div class="h-[50%]">
+                  <img class="h-[22px] mx-auto" src="{{service.icon}}">
+                </div>
+                <div class="h-[50%] flex items-center justify-center">
+                  {{ service.nome }}
+                </div>
+              </div>
+            </swiper-slide>
+            </swiper-container>
+            <div class="w-0 h-[100px] bg-azulprincipal mb-10 mt-4 shadow-md rounded-md duration-150 text-white absolute top-0"
+            [ngClass]="{'w-full': this.selectedServiceId,'w-0': !this.selectedServiceId}">
+            <div class="h-full relative" [ngClass]="{'flex': this.selectedServiceId,'hidden': !this.selectedServiceId}">
+              <div *ngIf="selectedServiceId" class=" flex items-center">
+                <div class=" text-center w-[20%] flex justify-center px-4">
+                  <img class="h-[90px] mx-auto" style="color: #FD4F04;" src="{{services[indexServiceSelected].iconwhite}}">
+
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-amarelopaleta">{{services[indexServiceSelected].nome}}</span>
+                  <span class="text-white text-[13px] pr-2">{{services[indexServiceSelected].descricao}}</span>
+                </div>
+              </div>
+              <div class=" absolute bg-amarelopaleta -right-2 -top-2 rounded-full flex items-center" (click)="selectedServiceId = null; preco = null">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-7 mx-auto">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+        <div [formGroup]="formAtendimento">
+          <span class="text-azulprincipal font-semibold">Endereço</span>
+          <!--
+            <div class="flex flex-col" [formGroupName]="'cliente'">
+              <ion-input
+                label="Email"
+                label-placement="floating"
+                fill="outline"
+                class="custom mt-6 !text-black"
+                autocomplete="true"
+                type="tel"
+                inputmode="numeric"
+                formControlName="email"
+
+              ></ion-input>
+            </div>
+          -->
+          <div class="flex flex-col" [formGroupName]="'endereco'">
+            <ion-input
+              label="CEP"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-6"
+              autocomplete="true"
+              type="tel"
+              inputmode="numeric"
+              formControlName="cep"
+            ></ion-input>
+            <ion-input
+              label="Bairro"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-6"
+              autocomplete="true"
+              type="tel"
+              inputmode="numeric"
+              formControlName="bairro"
+            ></ion-input>
+            <ion-input
+              label="Rua"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-6"
+              autocomplete="true"
+              type="tel"
+              inputmode="numeric"
+              formControlName="rua"
+          ></ion-input>
+          <div class="flex">
+            <ion-input
+            label="Nº"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-6 w-[30%] mr-2"
+            autocomplete="true"
+            type="tel"
+            inputmode="numeric"
+            formControlName="numero"
+            ></ion-input>
+            <ion-input
+            label="Complemento"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-6 w-[70%]"
+            autocomplete="true"
+            type="tel"
+            inputmode="numeric"
+            formControlName="complemento"
+            ></ion-input>
+          </div>
+          </div>
+        </div>
+        <div class="my-6">
+          <div class="flex flex-col">
+            <span class="text-azulprincipal font-semibold">Ajuste de horas</span>
+            <span class="text-sm">Escolha a duração conforme achar melhor.</span>
+          </div>
+          <div class="flex justify-between mt-4 relative">
+            <div (click)="downHour()" class="h-14 left-0 absolute w-14 bg-azulprincipal border border-white shadow-md rounded-full flex items-center">
+              <div class="flex justify-center w-full text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mx-auto">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+                </svg>
+              </div>
+            </div>
+            <div class="h-12 my-1 pt-2 w-[90%] bg-gray-200 border border-white shadow-md mx-auto text-black text-center"> {{hourSelected}} horas</div>
+            <div (click)="upHour()" class="h-14 right-0 absolute w-14 bg-azulprincipal border border-white shadow-md rounded-full flex items-center">
+              <div class="flex justify-center w-full text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+              </div>
+            </div>
+        </div>
+      </div>
+      <div class="mt-6">
+        <div class="flex flex-col">
+          <span class="text-azulprincipal font-semibold">Frequencia dos atendimentos</span>
+        </div>
+        <ion-radio-group [(ngModel)]="selectedPlano"  (ionChange)="this.calculatePreco();">
+          <swiper-container
+            #swiper
+            [modules]="swiperModules"
+            [slidesPerView]="3"
+            [spaceBetween]="0"
+            [pagination]="{ clickable: true }"
+            style="--swiper-pagination-color: #FD4F04;">
+
+            <!-- Iterate over services and create each slide -->
+            <swiper-slide *ngFor="let plano of planos">
+              <div class="border border-gray-400 h-[100px] flex flex-col p-4 w-full text-center text-sm my-10 shadow-md">
+                <div class="h-[50%]">
+                  <ion-radio
+                    [value]="plano"
+                    aria-label="Custom checkbox"
+                    alignment="start">
+                  </ion-radio>
+                </div>
+                <div class="h-[50%] flex items-center justify-center">
+                  {{ plano.name }}
+                </div>
+              </div>
+            </swiper-slide>
+
+          </swiper-container>
+        </ion-radio-group>
+
+      </div>
+      <div class="mt-6">
+        <div class="flex flex-col">
+          <span class="text-azulprincipal font-semibold">Dia do atendimento</span>
+          <span class="text-sm">Data do primeiro do atendimento</span>
+        </div>
+        <div class="flex mt-4">
+          <swiper-container
+            #swiper
+            [modules]="swiperModules"
+            [slidesPerView]="4"
+            [spaceBetween]="15"
+            [pagination]="{ clickable: true }"
+            style="--swiper-pagination-color: #FD4F04;"
+            class="duration-150 h-32"
+            [ngClass]="{'w-full': selectedDate==='','w-0': selectedDate!==''}"
+          >
+            <!-- Iterate over the next 5 days -->
+            <swiper-slide *ngFor="let day of nextFiveDays">
+              <div class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" (click)="onDaySelect(day)">
+                <div class="h-[50%] font-semibold">{{ day.dayOfWeek }}</div>
+                <div class="h-[50%] flex items-center justify-center text-lg">{{ day.dateNumber }}</div>
+              </div>
+            </swiper-slide>
+
+            <!-- Calendar option -->
+            <swiper-slide>
+              <div id="open-custom-dialog-datainicio" class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" >
+                <div class="h-[50%] flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                  </svg>
+                </div>
+                <span class="mt-1">Mais</span>
+              </div>
+            </swiper-slide>
+          </swiper-container>
+          <div class="w-0 h-[80px] bg-azulprincipal mb-1 shadow-md rounded-md duration-150 text-white"
+          [ngClass]="{'w-full': selectedDate!=='','w-0': selectedDate===''}">
+          <div class="h-full" [ngClass]="{'flex': selectedDate!=='','hidden': selectedDate===''}">
+            <div class="w-[80%] flex items-center px-8">
+              <div class="flex flex-col">
+                <span>{{formatDate(selectedDate)}}</span>
+                <span class="text-[11px]">Será a data de inicio do atendimento</span>
+              </div>
+            </div>
+            <div class="w-[20%] bg-azulprincipal/60 h-full border-l border-white flex items-center" (click)="selectedDate = ''">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-7 mx-auto">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-6" [ngClass]="{'hidden':selectedPlano.plano === 'avulso', 'block': selectedPlano.plano !== 'avulso'}">
+        <div class="flex flex-col">
+          <span class="text-azulprincipal font-semibold">Dia do encerramento</span>
+          <span class="text-sm">Data do encerramento dos atendimentos</span>
+        </div>
+        <div class="flex mt-4">
+          <swiper-container
+            #swiper
+            [modules]="swiperModules"
+            [slidesPerView]="4"
+            [spaceBetween]="15"
+            [pagination]="{ clickable: true }"
+            style="--swiper-pagination-color: #FD4F04;"
+            class="duration-150 h-32"
+            [ngClass]="{'w-full': selectedDateFim==='','w-0': selectedDateFim!==''}"
+          >
+            <!-- Iterate over the next 5 days -->
+            <swiper-slide *ngFor="let day of nextFiveDaysFinal">
+              <div class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" (click)="onDayFinalSelect(day)">
+                <div class="h-[50%] font-semibold">{{ day.dayOfWeek }}</div>
+                <div class="h-[50%] flex items-center justify-center text-lg">{{ day.dateNumber }}/{{ day.dateMonth }}</div>
+              </div>
+            </swiper-slide>
+
+            <!-- Calendar option -->
+            <swiper-slide>
+              <div id="open-custom-dialog-3" class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" >
+                <div class="h-[50%] flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                  </svg>
+                </div>
+                <span class="mt-1">Mais</span>
+              </div>
+            </swiper-slide>
+          </swiper-container>
+          <div class="w-0 h-[80px] bg-azulprincipal mb-1 shadow-md rounded-md duration-150 text-white"
+          [ngClass]="{'w-full': selectedDateFim!=='','w-0': selectedDateFim===''}">
+          <div class="h-full" [ngClass]="{'flex': selectedDateFim!=='','hidden': selectedDateFim===''}">
+            <div class="w-[80%] flex items-center px-8">
+              <div class="flex flex-col">
+                <span>{{formatDate(selectedDateFim)}}</span>
+                <span class="text-[11px]">Será a data de encerramento</span>
+              </div>
+            </div>
+            <div class="w-[20%] bg-azulprincipal/60 h-full border-l border-white flex items-center" (click)="selectedDateFim = ''">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-7 mx-auto">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="py-2 border border-azulprincipal text-azulprincipal rounded-md shadow-md my-6" id="open-custom-dialog-2">
+        <div class="flex flex-col text-center"  *ngIf="!hourInit">
+          <span class="text-sm font-semibold">Selecione a hora</span>
+          <span class="text-xs">(horario que será atendido)</span>
+        </div>
+        <div class="flex flex-col text-center"  *ngIf="hourInit">
+          <span class="text-sm font-semibold">{{hourInit}}</span>
+          <span class="text-xs">(horario que será atendido)</span>
+        </div>
+      </div>
+      <div class="flex flex-col mt-4">
+        <label class="text-azulprincipal font-semibold">Instruções para o profissional</label>
+        <textarea [(ngModel)]="msgProfissional" class="h-24 w-full border border-azulprincipal focus:outline-none rounded-md mt-4 p-4">
+
+        </textarea>
+      </div>
+
+      <div class="flex bg-azulsombreado border border-azulprincipal text-azulprincipal rounded-md p-2 mt-6" *ngIf="isPrecoValid()">
+        <!-- Conteúdo que será exibido quando houver um valor definido em 'preco' -->
+         <div class="flex items-center">
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+           </svg>
+         </div>
+        <div class="flex flex-col ml-3">
+          <span class="">
+            O valor do serviço é {{ preco.valor | currency:'BRL' }}
+          </span>
+          <span class="text-xs">
+            (referente a cada atendimento)
+          </span>
+        </div>
+      </div>
+
+      <div (click)="submitNext()" class="py-2 bg-azulprincipal text-white rounded-md shadow-md mt-6 mb-6" id="open-custom-dialog-2">
+        <div class="flex flex-col text-center" >
+          <span class="text-sm uppercase font-semibold">Agendar</span>
+        </div>
+      </div>
+
+      <div (click)="navegate('services')" class="py-2 border border-azulprincipal text-azulprincipal rounded-md shadow-md mt-6 mb-6" id="open-custom-dialog-2">
+        <div class="flex flex-col text-center" >
+          <span class="text-sm uppercase font-semibold">Voltar</span>
+        </div>
+      </div>
+
+      </div>
+      <div class="h-10 w-full bg-transparent text-transparent">
+        i
+      </div>
+  </div>
+  </div>
+</div>
+
+<ion-modal id="example-modal" #modalDateInit trigger="open-custom-dialog-datainicio">
+  <ng-template>
+    <div class="flex flex-col px-3 pt-3">
+      <label class="text-azulprincipal">Data inicio</label>
+      <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione o dia do primeiro atendimento</label>
+      <label class="text-sm" *ngIf="selectedPlano.plano === 'avulso'">Selecione o dia do atendimento</label>
+    </div>
+    <ion-datetime
+      id="datetime"
+      presentation="date"
+      [min]="minDate"
+      value="2023-11-02"
+      [formatOptions]="{
+        date: {
+          weekday: 'short',
+          month: 'long',
+          day: '2-digit'
+        }
+      }"
+      (ionChange)="onDateSelected($event)"
+    ></ion-datetime>
+  </ng-template>
+</ion-modal>
+
+<ion-modal id="example-modal" #modalDateFim trigger="open-custom-dialog-3">
+  <ng-template>
+    <div class="flex flex-col px-3 pt-3">
+      <label class="text-azulprincipal">Data fim</label>
+      <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione o dia do encerramento dos atendimentos</label>
+    </div>
+    <ion-datetime
+      id="datetime"
+      presentation="date"
+      [min]="minDateFim"
+      value="2023-11-02"
+      [formatOptions]="{
+        date: {
+          weekday: 'short',
+          month: 'long',
+          day: '2-digit'
+        }
+      }"
+      (ionChange)="onDateSelectedFinal($event)"
+    ></ion-datetime>
+  </ng-template>
+</ion-modal>
+
+<ion-modal id="example-modal" #modalHour trigger="open-custom-dialog-2" (willDismiss)="onWillDismiss()" >
+  <ng-template>
+    <div class="p-4">
+      <div class="flex flex-col">
+        <label class="text-azulprincipal">Selecione o horario</label>
+        <span class="text-xs">Sera o horario de chegada do nosso profissional</span>
+      </div>
+      <ion-picker>
+        <ion-picker-column [value]="selectedTime" (ionChange)="onIonChange($event)">
+          <ion-picker-column-option *ngFor="let time of timeOptions" [value]="time">{{ time }}</ion-picker-column-option>
+        </ion-picker-column>
+      </ion-picker>
+      <div class="flex justify-between mt-4">
+        <button class="text-gray-500" (click)="modalHour.dismiss()">Cancelar</button>
+        <button class="text-azulprincipal" (click)="modalHour.dismiss()">Confirmar</button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<ion-modal id="example-modal" #modalMissing trigger="open-custom-dialog-missing" (willDismiss)="onWillDismiss()">
+  <ng-template>
+    <div class="p-4">
+      <div class="flex flex-col">
+        <label class="text-azulprincipal">Atenção</label>
+        <span class="text-xs mb-5">Por favor preencha os seguintes campos:</span>
+        <div class="" *ngFor="let field of missingFields">
+          <div class="text-xs">- {{field}}</div>
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button class="text-azulprincipal" (click)="modalMissing.dismiss()">Confirmar</button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [keepContentsMounted]="true" #modalConfirm class="custom-modal-confirmed">
+  <ng-template>
+    <div class="px-6 pt-5 text-laranjaprincipal font-semibold text-center text-xl">
+      Atendimento agendado!
+    </div>
+    <div class="flex justify-center">
+      <ng-lottie *ngIf="animation" [options]="options" (animationCreated)="animationCreated($event)" width="200px" height="200px"></ng-lottie>
+    </div>
+    <div class="px-6 pb-5 -mt-6 text-sm text-center">
+      Faça acompanhamento e pagamento dos atendimentos na tela de listagem!
+    </div>
+    <div class="px-6 py-2.5 bg-laranjaprincipal text-white font-semibold text-center" (click)="this.modalConfirm.dismiss();">
+      Listagem
+    </div>
+  </ng-template>
+</ion-modal>
+
+<app-loading #loadingComponent></app-loading>

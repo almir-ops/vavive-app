@@ -1,0 +1,38 @@
+.swiper {
+  height: auto;
+  swiper-container {
+      swiper-slide {
+          height: auto;
+          padding-bottom: 50px;
+          color: #FD4F04;
+          min-width: 200px;
+        }
+        margin-left: -10px; /* Controla o padding na borda esquerda */
+      }
+}
+
+.swiper-2 {
+  height: auto;
+  swiper-container {
+      swiper-slide {
+          height: auto;
+          padding-bottom: 80px;
+        }
+        margin-left: -10px; /* Controla o padding na borda esquerda */
+      }
+}
+
+.ion-btn{
+  --background: #1931B6;
+  --width: 100%;
+}
+.btn-agenda{
+  background-color: #FD4F04;
+}
+.swiper-pagination-bullet-active {
+  background-color: #1931B6; /* Cor das bullets ativas */
+}
+.swiper-horizontal > .swiper-pagination-bullets.swiper-pagination-bullets-dynamic .swiper-pagination-bullet,
+.swiper-pagination-horizontal.swiper-pagination-bullets.swiper-pagination-bullets-dynamic .swiper-pagination-bullet {
+  background-color: #1931B6 !important;
+}

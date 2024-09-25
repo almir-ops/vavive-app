@@ -1,13 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Barber</string>
-
-    <!-- Replace "000000000000" with your Facebook App ID here. -->
-    <string name="facebook_app_id">499673981290732</string>
-
-    <!--
-      Replace "000000000000" with your Facebook App ID here.
-      **NOTE**: The scheme needs to start with `fb` and then your ID.
-    -->
-    <string name="fb_login_protocol_scheme">fb499673981290732</string>
+    <string name="app_name">Vavivê</string>
+    <string name="title_activity_main">Vavivê</string>
+    <string name="package_name">io.ionic.starter</string>
+    <string name="custom_url_scheme">io.ionic.starter</string>
 </resources>

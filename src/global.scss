@@ -1,0 +1,257 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Open Sans */
+@font-face {
+  font-family: 'OpenSansBold';
+  src: url('./assets/fonts/OpenSans-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OpenSansBoldItalic';
+  src: url('./assets/fonts/OpenSans-BoldItalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'OpenSansExtraBold';
+  src: url('./assets/fonts/OpenSans-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OpenSansExtraBoldItalic';
+  src: url('./assets/fonts/OpenSans-ExtraBoldItalic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'OpenSansItalic';
+  src: url('./assets/fonts/OpenSans-Italic.ttf') format('truetype');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'OpenSansLight';
+  src: url('./assets/fonts/OpenSans-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OpenSansLightItalic';
+  src: url('./assets/fonts/OpenSans-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'OpenSansRegular';
+  src: url('./assets/fonts/OpenSans-Regular.ttf') format('truetype');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OpenSansSemiBold';
+  src: url('./assets/fonts/OpenSans-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OpenSansSemiBoldItalic';
+  src: url('./assets/fonts/OpenSans-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* Passion One */
+@font-face {
+  font-family: 'PassionOneBlack';
+  src: url('./assets/fonts/PassionOne-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PassionOneBold';
+  src: url('./assets/fonts/PassionOne-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PassionOneRegular';
+  src: url('./assets/fonts/PassionOne-Regular.ttf') format('truetype');
+  font-style: normal;
+}
+
+
+:root {
+  --ion-color-scheme: light;
+}
+
+
+
+ion-input.custom {
+  --color: #909090;
+  --placeholder-color: #ddd;
+  --placeholder-opacity: 0.8;
+  --border-color:#909090;
+  --highlight-color-focused:#909090;
+  --highlight-color-valid:#FD4F04;
+  --padding-end: 10px;
+  --padding-start: 10px;
+  --background: white;
+  --border-width: 1px;
+}
+
+ion-loading.custom-spinner{
+  --spinner-color	:#FD4F04;
+}
+
+ion-alert.custom-alert {
+  --backdrop-opacity: 0.7;
+}
+
+.custom-alert .alert-button-group {
+  padding: 8px;
+}
+
+button.alert-button.alert-button-confirm {
+  color: #FD4F04
+}
+
+.md button.alert-button.alert-button-confirm {
+  border-radius: 4px;
+}
+
+.ios .custom-alert button.alert-button {
+  border: 0.55px solid rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.2);
+}
+
+.ios button.alert-button.alert-button-cancel {
+  border-right: 0;
+  border-bottom-left-radius: 13px;
+  border-top-left-radius: 13px;
+}
+
+.ios button.alert-button.alert-button-confirm {
+  border-bottom-right-radius: 13px;
+  border-top-right-radius: 13px;
+}
+.arima {
+  font-family: "Arima", system-ui;
+  font-optical-sizing: auto;
+}
+ion-input {
+  --placeholder-opacity: 1;
+  --highlight-color-focused:#FD4F04;
+  width: 100%;
+  justify-content: center;
+}
+
+ion-modal#example-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --height: fit-content;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+ion-modal#example-modal h1 {
+  margin: 20px 20px 10px 20px;
+}
+
+ion-modal#example-modal ion-icon {
+  margin-right: 6px;
+
+  width: 48px;
+  height: 48px;
+
+  padding: 4px 0;
+
+  color: #aaaaaa;
+}
+
+ion-modal#example-modal .wrapper {
+  margin-bottom: 10px;
+}
+
+
+/* Global SCSS */
+:root {
+  --ion-color-scheme: light;
+}
+
+/* Forçar estilo claro para os inputs */
+ion-input, ion-textarea, input, textarea {
+  --background: #ffffff;  /* Fundo branco */
+  --color: #000000;       /* Texto preto */
+  --placeholder-color: #888888; /* Cor do placeholder */
+  --border-color: #dddddd;      /* Cor da borda */
+  --ion-background-color: #ffffff; /* Cor de fundo do input no tema claro */
+}
+
+/* Forçar estilo claro para os textos */
+ion-label, ion-text, label, p, h1, h2, h3, h4, h5, h6 {
+  --color: #000000; /* Texto preto */
+}
+
+/* Adicionando estilo claro também aos botões, se necessário */
+ion-button {
+  --background: #ffffff;  /* Fundo branco */
+  --color: #000000;       /* Texto preto */
+  --border-color: #dddddd; /* Cor da borda */
+}
+
+/* Adicionar classes específicas para garantir que os componentes estejam claros */
+body {
+  color-scheme: light;
+  --ion-background-color: #ffffff;
+  --ion-text-color: #000000;
+}

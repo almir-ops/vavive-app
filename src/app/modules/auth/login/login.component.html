@@ -1,0 +1,67 @@
+<div class="h-screen bg-radial-blue-radial flex items-center">
+  <div class="w-full flex justify-center px-4">
+    <div class="bg-white px-4 py-8 rounded-sm w-full -mt-20 shadow-md">
+      <form [formGroup]="formLogin">
+        <div class="flex justify-between">
+          <div>Já possui conta</div>
+          <div class="text-azulprincipal" id="open-action-sheet" >Cadastrar</div>
+        </div>
+        <div class="flex flex-col">
+          <input
+          class="w-full h-10 border-b-2 mt-10 p-2 focus:outline-none"
+          placeholder="Email"
+          formControlName="username"
+          autocomplete="true"
+        />
+        <div *ngIf="formLoginControl['username'].value && formLoginControl['username'].errors">
+          <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+        </div>
+        </div>
+        <div class="relative">
+          <input
+            class="w-full h-10 border-b-2 mt-3 p-2 focus:outline-none"
+            placeholder="Senha"
+            formControlName="password"
+            ng-reflect-name="password"
+            (keyup)="enableBtnLogin()"
+            [type]="hiddenPassword ? 'text' : 'password'"
+            autocomplete="current-password"
+          />
+          <div (click)="viewPassword()" class="cursor-pointer">
+            <img
+              *ngIf="!hiddenPassword"
+              src="./assets/icons/eye.svg"
+              class="h-4 absolute right-3 -mt-[30px]"
+            />
+            <img
+              *ngIf="hiddenPassword"
+              src="./assets/icons/eye-slash.svg"
+              class="h-4 absolute right-3 -mt-[30px]"
+            />
+          </div>
+          <div *ngIf="formLoginControl['password'].value && formLoginControl['password'].errors">
+            <span class="text-red-500 text-[10px]">*Campo obrigatório</span>
+          </div>
+        </div>
+        <div class="text-azulprincipal mt-4" (click)="navigateToForgotPass()">
+          Esqueci a senha
+        </div>
+        <button
+          [ngClass]="{'bg-azulprincipal':formLoginControl['username'].value && formLoginControl['password'].value,'bg-gray-300':!formLoginControl['username'].value || !formLoginControl['password'].value}"
+          class="text-center text-white rounded py-2 w-full mt-8 duration-150" (click)="login()" [disabled]="!formLogin.valid">
+          <div
+            class="font-bold">
+            Entrar
+          </div>
+        </button>
+        <div class="flex justify-center mt-8 text-sm">
+          Politica de privacidade
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<ion-action-sheet trigger="open-action-sheet" header="Qual tipo de conta?"
+[buttons]="actionSheetButtons"></ion-action-sheet>
+<app-loading #loadingComponent></app-loading>
+

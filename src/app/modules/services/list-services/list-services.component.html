@@ -1,0 +1,228 @@
+<div class="h-screen flex flex-col overflow-auto relative bg-white">
+
+  <ion-segment [(ngModel)]="screnn" class="top-0 z-10" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="profile">
+      <ion-label>Agendados</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="payments">
+      <ion-label>Historico</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div *ngIf="screnn==='profile'" class="overflow-auto" >
+
+    <div class="w-full flex justify-center px-4">
+      <div class="px-2 pb-8 rounded-sm w-full text-[11px]">
+        <div *ngFor="let atendimento of listAgendados" (click)="openOptionsModal(atendimento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
+          <div class="flex h-full">
+            <div class="w-[78%] flex flex-col">
+              <div class="flex">
+                OS: {{atendimento.ID}}
+                <div class="ml-1 -mt-0.5">
+                  <span  *ngIf="atendimento.status_pagamento === 'Pagamento realizado'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_pagamento === 'Pagamento realizado'}">
+                    <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
+                    Realizado
+                  </span>
+
+                    <span *ngIf="atendimento.status_pagamento === 'Pagamento pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_pagamento  === 'Pagamento pendente'}">
+                      <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
+                      Agendado
+                    </span>
+
+                  <span  *ngIf="atendimento.status_pagamento === 'Cancelado'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': atendimento.status_pagamento === 'Cancelado'}">
+                    <span *ngIf="atendimento.status_pagamento === 'Cancelado'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
+                      Cancelado
+                  </span>
+                </div>
+              </div>
+              <div>
+                Serviço: {{atendimento.servicos[0].nome}}
+              </div>
+              <div>
+                Plano: {{capitalizeFirstLetter(atendimento.plano)}}
+              </div>
+              <div class="flex">
+                <div>
+                  Valor: {{atendimento.valor_total | currency:'BRL' }}
+                </div>
+                <div class="ml-2 flex">
+                  Pagamento:
+                  <div class="ml-1 -mt-0.5">
+                    <span  *ngIf="atendimento.status_pagamento === 'Pagamento realizado'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_pagamento === 'Pagamento realizado'}">
+                      <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
+                      Pago
+                    </span>
+
+                      <span *ngIf="atendimento.status_pagamento === 'Pagamento pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_pagamento  === 'Pagamento pendente'}">
+                        <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
+                        Pendente
+                      </span>
+
+                    <span  *ngIf="atendimento.status_pagamento === 'Cancelado'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': atendimento.status_pagamento === 'Cancelado'}">
+                      <span *ngIf="atendimento.status_pagamento === 'Cancelado'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
+                        Vencido
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-[22%] pl-2 h-full flex items-center justify-center border-l border-azulprincipal">
+              <div class="flex flex-col">
+                <div class="text-xl text-center text-azulprincipal">{{ getDia(atendimento.data_inicio) }}</div>
+                <div>{{ getMesComAno(atendimento.data_inicio) }}</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="screnn==='payments'" >
+    <div class="w-full flex justify-center px-4">
+      <div class="px-2 pb-8 rounded-sm w-full text-[11px]">
+        <div *ngFor="let atendimento of listHistorico" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
+          <div class="flex h-full">
+            <div class="w-[78%] flex flex-col">
+              <div class="flex">
+                OS: {{atendimento.ID}}
+                <div class="ml-1 -mt-0.5">
+                  <span  *ngIf="atendimento.status_atendimento === 'Realizado'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_atendimento === 'Realizado'}">
+                    <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
+                    Pago
+                  </span>
+
+                    <span *ngIf="atendimento.status_atendimento  !== 'Realizado' && atendimento.status_atendimento  !== 'Cancelado'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_atendimento  !== 'Realizado' && atendimento.status_atendimento  !== 'Cancelado'}">
+                      <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
+                      Pendente
+                    </span>
+
+                  <span  *ngIf="atendimento.status_atendimento === 'Cancelado'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': atendimento.status_atendimento === 'Cancelado'}">
+                    <span *ngIf="atendimento.status_atendimento === 'Cancelado'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
+                      Vencido
+                  </span>
+                </div>
+              </div>
+              <div>
+                Serviço: {{atendimento.servicos[0].nome}}
+              </div>
+              <div>
+                Plano: {{capitalizeFirstLetter(atendimento.plano)}}
+              </div>
+              <div class="flex">
+                <div>
+                  Valor: {{atendimento.valor_total | currency:'BRL' }}
+                </div>
+                <div class="ml-2 flex">
+                  Pagamento:
+                  <div class="ml-1 -mt-0.5">
+                    <span  *ngIf="atendimento.status_pagamento === 'Pagamento realizado'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_pagamento === 'Pagamento realizado'}">
+                      <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
+                      Pago
+                    </span>
+
+                      <span *ngIf="atendimento.status_pagamento === 'Pagamento pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_pagamento  === 'Pagamento pendente'}">
+                        <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
+                        Pendente
+                      </span>
+
+                    <span  *ngIf="atendimento.status_pagamento === 'Cancelado'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': atendimento.status_pagamento === 'Cancelado'}">
+                      <span *ngIf="atendimento.status_pagamento === 'Cancelado'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
+                        Vencido
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-[22%] pl-2 h-full flex items-center justify-center border-l border-azulprincipal">
+              <div class="flex flex-col">
+                <div class="text-xl text-center text-azulprincipal">{{ getDia(atendimento.data_inicio) }}</div>
+                <div>{{ getMesComAno(atendimento.data_inicio) }}</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div *ngIf="listHistorico.length === 0">
+          <div class="flex flex-col text-center mt-20">
+            <img class="h-8" src="./assets/icons/warning.svg">
+            <div class="mt-2 text-gray-700">Nenhum atendimento encontrado.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div (click)="navegate('services/new')" class="h-10 py-3 px-4 rounded-full uppercase text-xs font-[500] bg-azulprincipal text-white flex absolute bottom-32 right-5 shadow-md">
+    Novo agendamento
+  </div>
+</div>
+
+<ion-modal id="example-modal" #modalOptions trigger="open-custom-dialog-missing" (willDismiss)="onWillDismiss()">
+  <ng-template>
+    <div class="p-4">
+      <div class="flex flex-col">
+        <label class="text-azulprincipal">Atenção</label>
+        <span class="text-xs mb-5">Escolha uma da opções:</span>
+        <div (click)="criaPagamento()" *ngIf="currentAtendimento.status_pagamento === 'Pagamento pendente'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
+          <img class="h-4" src="./assets/icons/banknotes.svg">
+          <label class="ml-3 text-xs uppercase">Fazer pagamento</label>
+        </div>
+        <div *ngIf="currentAtendimento.profissional.length > 0" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+          <img class="h-4" src="./assets/icons/identification.svg">
+          <label class="ml-3 text-xs uppercase">Ver profissional</label>
+        </div>
+        <div class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+          <img class="h-4" src="./assets/icons/search.svg">
+          <label class="ml-3 text-xs uppercase">Ver detalhes</label>
+        </div>
+        <div class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+          <img class="h-4" src="./assets/icons/data.svg">
+          <label class="ml-3 text-xs uppercase">Alterar data</label>
+        </div>
+        <div (click)="OpenModalCancelAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+          <img class="h-4" src="./assets/icons/x-mark.svg">
+          <label class="ml-3 text-xs uppercase">Cancelar atendimento</label>
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button class="text-gray-700" (click)="modalOptions.dismiss()">Fechar</button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+
+<ion-modal id="example-modal" #modalCancel (willDismiss)="onWillDismiss()">
+  <ng-template>
+    <div class="p-4">
+      <div class="flex flex-col">
+        <label class="text-azulprincipal">Atenção</label>
+        <span class="text-xs mb-5">Deseja realmente cancelar o atendimento {{ formatDate(currentAtendimento.data_inicio) }} ?</span>
+
+        <!-- Textarea para motivo de cancelamento -->
+        <label class="text-gray-700 text-xs">Motivo do cancelamento:</label>
+        <textarea [(ngModel)]="cancelDescription" class="w-full border border-gray-300 p-2 mt-2" rows="3"></textarea>
+        <span *ngIf="cancelDescription.length < 5 && cancelDescription.length > 0" class="text-red-500 text-xs">
+          O motivo deve ter no mínimo 5 letras.
+        </span>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button class="text-gray-700" (click)="modalCancel.dismiss()">Fechar</button>
+
+        <!-- Desabilitar o botão se a descrição for menor que 5 letras -->
+        <button
+          [ngClass]="{'text-gray-400': cancelDescription.length < 5,'text-gray-700': cancelDescription.length > 5 }"
+          [disabled]="cancelDescription.length < 5"
+          (click)="confirmCancel()">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+
+<app-loading #loadingComponent></app-loading>

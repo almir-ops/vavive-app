@@ -1,0 +1,16 @@
+ion-input.custom {
+  --color: #181717!important;
+  --border-width:1px;
+  --border-color:#1931B6;
+}
+.block {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+ion-modal {
+  --height: auto;
+}

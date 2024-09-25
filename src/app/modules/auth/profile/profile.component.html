@@ -1,0 +1,138 @@
+<div class="h-screen flex flex-col overflow-auto relative bg-white">
+
+  <ion-segment [(ngModel)]="screnn" class="top-0 z-10" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="profile">
+      <ion-label>Conta</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="payments">
+      <ion-label>Endereço</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div *ngIf="screnn==='profile'" >
+
+    <div class="w-full flex justify-center px-4">
+      <div class="px-4 py-8 rounded-sm w-full">
+        <form [formGroup]="formRegister">
+          <div class="flex flex-col">
+            <ion-input
+              label="Nome completo"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-6"
+              autocomplete="true"
+              type="tel"
+              inputmode="numeric"
+              formControlName="nome"
+            ></ion-input>
+            <div *ngIf="formRegisterControl['nome'].value && formRegisterControl['nome'].errors">
+              <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+            </div>
+          </div>
+          <div class="flex flex-col">
+            <ion-input
+              label="Telefone"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-6"
+              autocomplete="true"
+              type="tel"
+              inputmode="numeric"
+              formControlName="celular"
+            ></ion-input>
+            <div *ngIf="formRegisterControl['celular'].value && formRegisterControl['celular'].errors">
+              <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+            </div>
+          </div>
+          <div class="flex flex-col">
+            <ion-input
+              label="CPF"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-6"
+              autocomplete="true"
+              type="tel"
+              inputmode="numeric"
+              formControlName="cpf"
+            ></ion-input>
+            <div *ngIf="formRegisterControl['celular'].value && formRegisterControl['celular'].errors">
+              <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+            </div>
+          </div>
+          <div class="flex flex-col">
+            <ion-input
+              label="Email"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-6"
+              autocomplete="true"
+              type="tel"
+              inputmode="numeric"
+              formControlName="email"
+            ></ion-input>
+            <div *ngIf="formRegisterControl['email'].value && formRegisterControl['email'].errors">
+              <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+            </div>
+          </div>
+          <div *ngIf="type === 'Cliente'"  class="flex flex-col">
+            <ion-input
+              label="CPF"
+              label-placement="floating"
+              fill="outline"
+              placeholder="999.999.999-99"
+              class="custom mt-6"
+              autocomplete="true"
+              type="tel"
+              formControlName="cpf"
+              inputmode="numeric"
+              (keyup)="verificationCPF($event)"
+            ></ion-input>
+            <div *ngIf="formRegisterControl['cpf'].value && formRegisterControl['cpf'].errors">
+              <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+            </div>
+            <div *ngIf="cpfInvalido" >
+              <div class="h-auto w-full text-red-600 my-1">
+              * Digite um cpf valido
+              </div>
+            </div>
+          </div>
+          <div *ngIf="type === 'Empresa'"  class="flex flex-col">
+            <ion-input
+              label="CNPJ"
+              label-placement="floating"
+              fill="outline"
+              placeholder="99.999.999/9999-99"
+              class="custom mt-6"
+              autocomplete="true"
+              type="tel"
+              formControlName="cpf"
+              inputmode="numeric"
+            ></ion-input>
+            <div *ngIf="formRegisterControl['cpf'].value && formRegisterControl['cpf'].errors">
+              <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+            </div>
+          </div>
+          <button
+            [ngClass]="{'bg-azulprincipal':formRegister.valid,'bg-gray-300':!formRegister.valid}"
+            class="text-center text-white rounded py-2 w-full mt-8 duration-150 " (click)="login()" >
+            <div
+              class="font-bold">
+              Salvar
+            </div>
+          </button>
+          <div class="w-full flex justify-center mt-6">
+            <span class="text-azulprincipal" (click)="logout()">Sair</span>
+          </div>
+          <div class="flex justify-center mt-8 text-sm">
+            Politica de privacidade
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="screnn==='payments'" >
+    Payments
+  </div>
+
+</div>

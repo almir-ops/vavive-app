@@ -1,0 +1,7 @@
+{
+  "name": "Vavivê",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

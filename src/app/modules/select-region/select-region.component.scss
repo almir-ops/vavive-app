@@ -1,0 +1,52 @@
+/* Cor do label no estado padrão (quando não está flutuando) */
+ion-select::part(container) label {
+  color: white; /* Cor do label quando o campo está no estado normal */
+}
+
+/* Cor do label quando está no modo flutuante */
+ion-select.label-floating ion-label {
+  color: white; /* Cor do label quando está flutuando */
+}
+
+/* Ajustes gerais de cor */
+ion-select {
+  --placeholder-color: white;
+  --placeholder-opacity: 1;
+  --color: white;
+  --highlight-color-focused: white;
+  --border-color: white;
+  --border-width: 2px;
+}
+
+ion-select::part(placeholder),
+ion-select::part(text) {
+  --color: white;
+}
+
+ion-select::part(icon) {
+  color: white;
+  opacity: 1;
+}
+
+.ion-customize{
+  color: white;
+}
+
+ion-input {
+  --placeholder-opacity: 1;
+  --highlight-color-focused:#293ca9;
+  width: 100%;
+  justify-content: center;
+}
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.bounce {
+  animation: bounce 0.5s ease;
+}

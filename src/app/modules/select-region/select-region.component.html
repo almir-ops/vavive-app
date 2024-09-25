@@ -1,0 +1,31 @@
+<div class="h-screen bg-radial-blue-radial flex items-center">
+  <div class="flex justify-center w-full px-6">
+    <div class="flex flex-col w-full -mt-10">
+      <div class="flex justify-center">
+        <img class="h-28" src="./assets/logos/logo1.png">
+      </div>
+      <div class="text-center text-white py-4 mt-4 text-[24px] font-passionOneRegular uppercase">Seja Bem vindo!</div>
+      <div class="text-center text-white pb-4 text-[14px] font-[600] font-passiononebold uppercase">Informe seu CEP para verificar disponibilidade de atendimento</div>
+
+      <!-- Input de CEP com Maskito -->
+      <ion-input
+        (keyup)="searchCep($event)"
+        label="Digite seu CEP"
+        label-placement="floating"
+        fill="outline"
+        class="ion-customize"
+        inputmode="numeric"
+        [maskito]="cepMask"
+        [maskitoElement]="predicate"
+        placeholder="00000-000">
+      </ion-input>
+
+      <div class="text-center text-white text-[12px] font-passiononebold mt-2">
+        Precisamos verificar o local de atendimento para confirmar a disponibilidade na sua região.
+      </div>
+      <div *ngIf="franquiaNotFound" class="bounce bg-amareloprincipal rounded-md shadow-md text-center text-gray-800 p-2 mt-10 ">
+        Não atendemos essa região no momento
+      </div>
+    </div>
+  </div>
+</div>

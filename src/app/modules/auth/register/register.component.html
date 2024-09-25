@@ -1,0 +1,210 @@
+<div class="h-screen bg-radial-blue-radial overflow-auto pt-6 pb-36">
+  <div class="w-full flex px-4 h-auto">
+    <div class="bg-white px-4 py-8 rounded-sm w-full h-auto shadow-md">
+      <form [formGroup]="formRegister" (ngSubmit)="register()">
+        <div class="flex justify-between">
+          <div>Já possui conta?</div>
+          <div class="text-azulprincipal" (click)="navegate('account/sign')">Entrar</div>
+        </div>
+        <div class="flex flex-col">
+          <ion-input
+            label="Nome completo"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-6"
+            autocomplete="true"
+            type="text"
+            inputmode="text"
+            formControlName="nome"
+          ></ion-input>
+          <div *ngIf="formRegisterControl['nome'].value && formRegisterControl['nome'].errors">
+            <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <ion-input
+            label="Telefone"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-6"
+            autocomplete="true"
+            type="tel"
+            inputmode="numeric"
+            formControlName="celular"
+            [maskito]="phoneMaskOptions"
+            [maskitoElement]="predicate"
+
+          ></ion-input>
+          <div *ngIf="formRegisterControl['celular'].value && formRegisterControl['celular'].errors">
+            <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <ion-input
+            label="Email"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-6"
+            type="email"
+            formControlName="email"
+          ></ion-input>
+          <div *ngIf="formRegisterControl['email'].value.length > 0 && formRegisterControl['email'].errors">
+            <span class="text-red-500 text-[10px]">* Digite um email valido</span>
+          </div>
+        </div>
+        <div *ngIf="type === 'Cliente'"  class="flex flex-col">
+          <ion-input
+            label="CPF"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-6"
+            autocomplete="true"
+            type="tel"
+            formControlName="cpf"
+            inputmode="numeric"
+            (keyup)="verificationCPF($event)"
+            [maskito]="cpfMaskOptions"
+            [maskitoElement]="predicate"
+          ></ion-input>
+          <div *ngIf="formRegisterControl['cpf'].value.length === 0 && formRegisterControl['cpf'].errors">
+            <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+          </div>
+          <div *ngIf="cpfInvalido" >
+            <div class="h-auto w-full text-red-600 my-1 text-[10px]">
+            * Digite um CPF valido
+            </div>
+          </div>
+
+        </div>
+        <div *ngIf="type === 'Empresa'"  class="flex flex-col">
+          <ion-input
+            label="CNPJ"
+            label-placement="floating"
+            fill="outline"
+            placeholder="99.999.999/9999-99"
+            class="custom mt-6"
+            autocomplete="true"
+            type="tel"
+            formControlName="cpf"
+            inputmode="numeric"
+          ></ion-input>
+          <div *ngIf="formRegisterControl['cpf'].value.length === 0 && formRegisterControl['cpf'].errors">
+            <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+          </div>
+          <div *ngIf="cnpjInvalido" >
+            <div class="h-auto w-full text-red-600 my-1 text-[10px]">
+            * Digite um cnpj valido
+            </div>
+          </div>
+        </div>
+        <div class="relative">
+          <ion-input
+            class="w-full custom mt-6 h-10"
+            label="Senha"
+            label-placement="floating"
+            formControlName="password"
+            ng-reflect-name="password"
+            (keyup)="enableBtnLogin()"
+            [type]="hiddenPassword ? 'text' : 'password'"
+            autocomplete="current-password"
+            fill="outline"
+          >
+
+          </ion-input>
+          <div (click)="viewPassword()" class="cursor-pointer">
+            <div
+              *ngIf="!hiddenPassword"
+              src="./assets/icons/eye.svg"
+              class="h-4 absolute right-4 -mt-[38px] z-10"
+            >
+            <svg class="h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="rgb(105,105,105)" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+
+            </div>
+
+            <div
+              *ngIf="hiddenPassword"
+              src="./assets/icons/eye-slash.svg"
+              class="h-4 absolute right-4 -mt-[38px] z-10"
+            >
+            <svg class="h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="rgb(105,105,105)" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+            </svg>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <span [class.text-green-500]="passwordErrors.minLength" [class.text-red-500]="!passwordErrors.minLength" class="text-[10px] flex">
+            <span class="mx-1 pt-1" *ngIf="passwordErrors.minLength">
+              <img class="h-2" src="./assets/icons/selected.svg">
+            </span>
+            <svg *ngIf="!passwordErrors.minLength" class="cursor-pointer hover:scale-105 duration-100 mt-1 mx-1" width="10" height="10" viewBox="0 0 24 24" fill="blue" stroke="#EF4444" xmlns="http://www.w3.org/2000/svg">
+              <path [ngStyle]="{'fill': '#EF4444'}" d="M23.0633 20.679C23.2201 20.8353 23.3445 21.021 23.4294 21.2255C23.5143 21.4299 23.558 21.6491 23.558 21.8705C23.558 22.0919 23.5143 22.3111 23.4294 22.5156C23.3445 22.7201 23.2201 22.9058 23.0633 23.062C22.7458 23.3754 22.3178 23.551 21.8717 23.551C21.4257 23.551 20.9977 23.3754 20.6802 23.062L11.779 14.1608L2.87776 23.062C2.56033 23.3754 2.13227 23.551 1.68625 23.551C1.24024 23.551 0.812179 23.3754 0.49475 23.062C0.337931 22.9058 0.213504 22.7201 0.128604 22.5156C0.0437036 22.3111 0 22.0919 0 21.8705C0 21.6491 0.0437036 21.4299 0.128604 21.2255C0.213504 21.021 0.337931 20.8353 0.49475 20.679L9.39599 11.7778L0.49475 2.87655C0.178743 2.56054 0.00121224 2.13194 0.00121224 1.68504C0.00121224 1.46376 0.0447973 1.24464 0.129479 1.0402C0.21416 0.835766 0.338279 0.650008 0.49475 0.493538C0.651221 0.337067 0.836978 0.212948 1.04142 0.128266C1.24586 0.0435851 1.46497 0 1.68625 0C2.13316 0 2.56175 0.177531 2.87776 0.493538L11.779 9.39478L20.6802 0.493538C20.9963 0.177531 21.4248 0 21.8717 0C22.3186 0 22.7472 0.177531 23.0633 0.493538C23.3793 0.809544 23.5568 1.23814 23.5568 1.68504C23.5568 2.13194 23.3793 2.56054 23.0633 2.87655L14.162 11.7778L23.0633 20.679Z" fill="gray"/>
+            </svg>
+            Senha deve ter no mínimo 6 caracteres</span>
+          <span [class.text-green-500]="passwordErrors.specialChar" [class.text-red-500]="!passwordErrors.specialChar" class="text-[10px] flex">
+            <span class="mx-1 pt-1" *ngIf="passwordErrors.specialChar">
+              <img class="h-2" src="./assets/icons/selected.svg">
+            </span>
+            <svg *ngIf="!passwordErrors.specialChar" class="cursor-pointer hover:scale-105 duration-100 mt-1 mx-1" width="10" height="10" viewBox="0 0 24 24" fill="blue" stroke="#EF4444" xmlns="http://www.w3.org/2000/svg">
+              <path [ngStyle]="{'fill': '#EF4444'}" d="M23.0633 20.679C23.2201 20.8353 23.3445 21.021 23.4294 21.2255C23.5143 21.4299 23.558 21.6491 23.558 21.8705C23.558 22.0919 23.5143 22.3111 23.4294 22.5156C23.3445 22.7201 23.2201 22.9058 23.0633 23.062C22.7458 23.3754 22.3178 23.551 21.8717 23.551C21.4257 23.551 20.9977 23.3754 20.6802 23.062L11.779 14.1608L2.87776 23.062C2.56033 23.3754 2.13227 23.551 1.68625 23.551C1.24024 23.551 0.812179 23.3754 0.49475 23.062C0.337931 22.9058 0.213504 22.7201 0.128604 22.5156C0.0437036 22.3111 0 22.0919 0 21.8705C0 21.6491 0.0437036 21.4299 0.128604 21.2255C0.213504 21.021 0.337931 20.8353 0.49475 20.679L9.39599 11.7778L0.49475 2.87655C0.178743 2.56054 0.00121224 2.13194 0.00121224 1.68504C0.00121224 1.46376 0.0447973 1.24464 0.129479 1.0402C0.21416 0.835766 0.338279 0.650008 0.49475 0.493538C0.651221 0.337067 0.836978 0.212948 1.04142 0.128266C1.24586 0.0435851 1.46497 0 1.68625 0C2.13316 0 2.56175 0.177531 2.87776 0.493538L11.779 9.39478L20.6802 0.493538C20.9963 0.177531 21.4248 0 21.8717 0C22.3186 0 22.7472 0.177531 23.0633 0.493538C23.3793 0.809544 23.5568 1.23814 23.5568 1.68504C23.5568 2.13194 23.3793 2.56054 23.0633 2.87655L14.162 11.7778L23.0633 20.679Z" fill="gray"/>
+            </svg>
+            Senha deve conter um caractere especial</span>
+          <span [class.text-green-500]="passwordErrors.number" [class.text-red-500]="!passwordErrors.number" class="text-[10px] flex">
+            <span class="mx-1 pt-1" *ngIf="passwordErrors.number">
+              <img class="h-2" src="./assets/icons/selected.svg">
+            </span>
+            <svg *ngIf="!passwordErrors.number" class="cursor-pointer hover:scale-105 duration-100 mt-1 mx-1" width="10" height="10" viewBox="0 0 24 24" fill="blue" stroke="#EF4444" xmlns="http://www.w3.org/2000/svg">
+              <path [ngStyle]="{'fill': '#EF4444'}" d="M23.0633 20.679C23.2201 20.8353 23.3445 21.021 23.4294 21.2255C23.5143 21.4299 23.558 21.6491 23.558 21.8705C23.558 22.0919 23.5143 22.3111 23.4294 22.5156C23.3445 22.7201 23.2201 22.9058 23.0633 23.062C22.7458 23.3754 22.3178 23.551 21.8717 23.551C21.4257 23.551 20.9977 23.3754 20.6802 23.062L11.779 14.1608L2.87776 23.062C2.56033 23.3754 2.13227 23.551 1.68625 23.551C1.24024 23.551 0.812179 23.3754 0.49475 23.062C0.337931 22.9058 0.213504 22.7201 0.128604 22.5156C0.0437036 22.3111 0 22.0919 0 21.8705C0 21.6491 0.0437036 21.4299 0.128604 21.2255C0.213504 21.021 0.337931 20.8353 0.49475 20.679L9.39599 11.7778L0.49475 2.87655C0.178743 2.56054 0.00121224 2.13194 0.00121224 1.68504C0.00121224 1.46376 0.0447973 1.24464 0.129479 1.0402C0.21416 0.835766 0.338279 0.650008 0.49475 0.493538C0.651221 0.337067 0.836978 0.212948 1.04142 0.128266C1.24586 0.0435851 1.46497 0 1.68625 0C2.13316 0 2.56175 0.177531 2.87776 0.493538L11.779 9.39478L20.6802 0.493538C20.9963 0.177531 21.4248 0 21.8717 0C22.3186 0 22.7472 0.177531 23.0633 0.493538C23.3793 0.809544 23.5568 1.23814 23.5568 1.68504C23.5568 2.13194 23.3793 2.56054 23.0633 2.87655L14.162 11.7778L23.0633 20.679Z" fill="gray"/>
+            </svg>
+            Senha deve conter um número</span>
+          <span [class.text-green-500]="passwordErrors.upperLower" [class.text-red-500]="!passwordErrors.upperLower" class="text-[10px] flex">
+            <span class="mx-1 pt-1" *ngIf="passwordErrors.upperLower">
+              <img class="h-2" src="./assets/icons/selected.svg">
+            </span>
+            <svg *ngIf="!passwordErrors.upperLower" class="cursor-pointer hover:scale-105 duration-100 mt-1 mx-1" width="10" height="10" viewBox="0 0 24 24" fill="blue" stroke="#EF4444" xmlns="http://www.w3.org/2000/svg">
+              <path [ngStyle]="{'fill': '#EF4444'}" d="M23.0633 20.679C23.2201 20.8353 23.3445 21.021 23.4294 21.2255C23.5143 21.4299 23.558 21.6491 23.558 21.8705C23.558 22.0919 23.5143 22.3111 23.4294 22.5156C23.3445 22.7201 23.2201 22.9058 23.0633 23.062C22.7458 23.3754 22.3178 23.551 21.8717 23.551C21.4257 23.551 20.9977 23.3754 20.6802 23.062L11.779 14.1608L2.87776 23.062C2.56033 23.3754 2.13227 23.551 1.68625 23.551C1.24024 23.551 0.812179 23.3754 0.49475 23.062C0.337931 22.9058 0.213504 22.7201 0.128604 22.5156C0.0437036 22.3111 0 22.0919 0 21.8705C0 21.6491 0.0437036 21.4299 0.128604 21.2255C0.213504 21.021 0.337931 20.8353 0.49475 20.679L9.39599 11.7778L0.49475 2.87655C0.178743 2.56054 0.00121224 2.13194 0.00121224 1.68504C0.00121224 1.46376 0.0447973 1.24464 0.129479 1.0402C0.21416 0.835766 0.338279 0.650008 0.49475 0.493538C0.651221 0.337067 0.836978 0.212948 1.04142 0.128266C1.24586 0.0435851 1.46497 0 1.68625 0C2.13316 0 2.56175 0.177531 2.87776 0.493538L11.779 9.39478L20.6802 0.493538C20.9963 0.177531 21.4248 0 21.8717 0C22.3186 0 22.7472 0.177531 23.0633 0.493538C23.3793 0.809544 23.5568 1.23814 23.5568 1.68504C23.5568 2.13194 23.3793 2.56054 23.0633 2.87655L14.162 11.7778L23.0633 20.679Z" fill="gray"/>
+            </svg>
+            Senha deve conter letras maiúsculas e minúsculas</span>
+        </div>
+        <!--
+        <div class="flex flex-col">
+          <ion-input
+            label="CEP"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-6"
+            autocomplete="true"
+            type="tel"
+            inputmode="numeric"
+            formControlName="cep"
+            [maskito]="cepMask"
+            [maskitoElement]="predicate"
+          ></ion-input>
+          <div *ngIf="formRegisterControl['email'].value && formRegisterControl['email'].errors">
+            <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+          </div>
+        </div>
+          <div class="flex flex-col mt-6">
+            <ion-select label="Selecione uma região" label-placement="floating" fill="outline" formControlName="source">
+              <ion-select-option value="SP">São Paulo</ion-select-option>
+              <ion-select-option value="RJ">Rio de Janeiro</ion-select-option>
+              <ion-select-option value="RJ">Cabo-frio</ion-select-option>
+            </ion-select>
+          </div>
+        -->
+        <button
+          [ngClass]="{'bg-azulprincipal':formRegister.valid,'bg-gray-300':!formRegister.valid}"
+          class="text-center text-white rounded py-2 w-full mt-8 duration-150 "  type="submit">
+          <div
+            class="font-bold">
+            Registrar
+          </div>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<app-loading #loadingComponent></app-loading>

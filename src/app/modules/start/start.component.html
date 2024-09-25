@@ -1,0 +1,134 @@
+<div class="z-50">
+  <app-toolbar></app-toolbar>
+</div>
+<div class="overflow-auto bg-radial-blue-radial z-20">
+  <div *ngIf="!userLoggedOut"  class="px-8 text-[18px] py-3 ">
+    <h2>
+      <span *ngIf="user" class="text-white">
+        Olá, {{getFirstWord(user.nome)}}
+      </span>
+    </h2>
+  </div>
+  <div *ngIf="userLoggedOut"  class="px-8 text-[14px] py-3 bg-amarelosecundario border-b-[0.3px] border-white">
+    <h2>
+      <span class="text-white font-semibold flex justify-between">
+        Já possui conta? <span class="text-azulprincipal" (click)="navegate('account/sign')">Entre aqui</span>
+      </span>
+    </h2>
+  </div>
+  <div class=" py-3">
+    <div class="px-8 text-[16px] pt-5 pb-8 text-white ">
+      <h2>
+        <span class="text-amareloprincipal font-semibold">
+          Facilite sua vida:
+        </span>
+         escolha e agende serviços domésticos.
+      </h2>
+    </div>
+    <div class="swiper" *ngIf="slides.length > 0">
+      <swiper-container
+        #swiper
+        [slidesPerView]="1.7"
+        [centeredSlides]="true"
+        [autoplay]="true"
+        [spaceBetween]="10"
+        [pagination]="{clickable: true, dynamicBullets: true}" style="--swiper-pagination-color: #FD4F04;">
+        <swiper-slide *ngFor="let slide of slides">
+          <div class="shadow-lg pb-2.5 rounded-[5px] h-[280px] w-[180px] flex flex-col justify-between bg-gray-100">
+            <img alt="Silhouette of mountains" class="h-[150px] w-full object-cover rounded-t-[5px]" [src]="slide.bannerApp" />
+            <div class="flex flex-col p-2.5 flex-grow">
+              <span class="font-semibold">
+                {{slide.name}}
+              </span>
+              <span class="text-gray-600 text-sm">
+                {{slide.slogan}}
+              </span>
+            </div>
+            <div class="px-2.5 flex">
+              <div class="btn-agenda rounded-sm py-1 text-center text-white uppercase text-[14px] font-semibold w-full">
+                Agendar serviço
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
+
+      </swiper-container>
+    </div>
+
+  </div>
+
+  <div class="mt-10 mb-8 mx-6 border border-white rounded-md px-6 py-4 text-[16px] bg-amarelosecundario text-gray-800 shadow-md">
+    <h2>
+      Você pode contar com a gente para todo tipo de tarefa doméstica!
+    </h2>
+  </div>
+  <div class="pb-8">
+    <!--
+      <div class="px-11 text-[16px] pt-8 pb-8  flex flex-col">
+        <h2>
+          <span class="text-amareloprincipal font-bold uppercase">
+            Sobre nós:
+          </span>
+        </h2>
+      </div>
+    -->
+    <div class="swiper-2" *ngIf="slides.length > 0">
+      <swiper-container
+        #swiper
+        [modules]="swiperModules"
+        [slidesPerView]="1.2"
+        [initialSlide]="3"
+        [centeredSlides]="true"
+        [autoplay]="{ delay: 1000, disableOnInteraction: false }"
+
+        [spaceBetween]="50"
+        [pagination]="{clickable: true, dynamicBullets: true}" style="--swiper-pagination-color: #FD4F04;">
+        <swiper-slide *ngFor="let slide of slidesUtils2">
+          <div class=" pb-2.5 pt-8 rounded-[5px] h-[100px] flex flex-col justify-between bg-transparent">
+            <div class="flex flex-col p-2.5 flex-grow">
+              <span class="font-semibold text-[16px] text-amareloprincipal">
+                {{slide.name}}
+              </span>
+              <span class="text-white text-[16px]">
+                {{slide.slogan}}
+              </span>
+            </div>
+          </div>
+        </swiper-slide>
+
+      </swiper-container>
+    </div>
+    <div class="px-8 text-[18px] pt-8 pb-8 text-white mt-4">
+      <h2>
+           Mais recursos, mais vantagens
+      </h2>
+    </div>
+
+    <div class="swiper" *ngIf="slides.length > 0">
+      <swiper-container
+        #swiper
+        [modules]="swiperModules"
+        [slidesPerView]="1.5"
+        [initialSlide]="1.5"
+        [centeredSlides]="true"
+        [autoplay]="true"
+        [spaceBetween]="10"
+        [pagination]="{clickable: true, dynamicBullets: true}" style="--swiper-pagination-color: #FD4F04;">
+        <swiper-slide *ngFor="let slide of slidesUtils">
+          <div class="shadow-lg pb-2.5 rounded-[5px] h-[200px] w-[200px] flex flex-col justify-between bg-gray-100">
+            <img alt="Silhouette of mountains" class="h-[100px] w-full object-cover rounded-t-[5px]" [src]="slide.bannerApp" />
+            <div class="flex flex-col p-2.5 flex-grow">
+              <span class="font-semibold">
+                {{slide.name}}
+              </span>
+              <span class="text-gray-600 text-sm">
+                {{slide.slogan}}
+              </span>
+            </div>
+          </div>
+        </swiper-slide>
+
+      </swiper-container>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+ion-tab-bar, ion-tab-button{
+  --color-selected: #FD4F04;
+  --color-focused: #FD4F04;
+ }
+ ion-tab-bar {
+  box-shadow: 0px -4px 8px rgba(0, 0, 0, 0.2); /* A sombra no topo */
+}
