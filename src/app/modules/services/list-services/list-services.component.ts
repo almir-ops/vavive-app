@@ -24,7 +24,12 @@ export class ListServicesComponent  implements OnInit {
   @ViewChild('loadingComponent') loadingComponent!: LoadingComponent;
   @ViewChild('modalOptions', { static: false }) modalOptions!: IonModal;
   @ViewChild('modalCancel', { static: false }) modalCancel!: IonModal;
+  @ViewChild('modalDate', { static: false }) modalDate!: IonModal;
+  @ViewChild('modalDetails', { static: false }) modalDetails!: IonModal;
+
   cancelDescription: string = '';
+  minDate!: string;
+
   constructor(
     private atendimentoService: AtendimentosService,
     private router: Router,
@@ -33,9 +38,12 @@ export class ListServicesComponent  implements OnInit {
 
   ngOnInit() {
     this.loadUserData();
-
+    this.setMinDate()
   }
 
+  setMinDate() {
+    this.minDate = moment().add(1, 'days').format('YYYY-MM-DD');
+  }
   segmentChanged(event: any) {
     this.screnn = event.detail.value;
   }
@@ -72,22 +80,22 @@ export class ListServicesComponent  implements OnInit {
     this.showLoading();
     this.atendimentoService.filterAtendimentos('cliente_cpf', this.currentClient.cpf).subscribe({
       next: (res: any) => {
-        const hoje = moment(); // Obtém a data atual
-        this.listAgendados = []; // Inicializa a lista de agendados
-        this.listHistorico = []; // Inicializa a lista de histórico
+        const hoje = moment();
+        this.listAgendados = [];
+        this.listHistorico = [];
 
-        // Percorre os atendimentos e separa em duas listas
         res.items.forEach((atendimento: any) => {
           const dataInicio = moment(atendimento.data_inicio, 'YYYY-MM-DD'); // Converte a data_inicio para um objeto moment
 
           if (dataInicio.isSameOrAfter(hoje, 'day') && atendimento.status_atendimento !== 'Cancelado') {
-            // Se a data do atendimento for hoje ou no futuro e não for cancelado, adiciona à lista de agendados
             this.listAgendados.push(atendimento);
           } else {
-            // Se a data do atendimento já passou ou estiver cancelado, adiciona à lista de histórico
             this.listHistorico.push(atendimento);
           }
         });
+
+        this.listAgendados.sort((a: any, b: any) => moment(a.data_inicio).diff(moment(b.data_inicio)));
+        this.listHistorico.sort((a: any, b: any) => moment(a.data_inicio).diff(moment(b.data_inicio)));
 
         console.log('Atendimentos Agendados:', this.listAgendados);
         console.log('Histórico de Atendimentos:', this.listHistorico);
@@ -99,6 +107,7 @@ export class ListServicesComponent  implements OnInit {
       }
     });
   }
+
 
   navegate(rota:any){
     this.router.navigate([rota]);
@@ -156,9 +165,25 @@ export class ListServicesComponent  implements OnInit {
     })
   }
 
-  OpenModalCancelAtendimento(){
+  openModalCancelAtendimento(){
     this.modalOptions.dismiss();
     this.modalCancel.present();
+  }
+
+  openModalDateAtendimento(){
+    this.modalOptions.dismiss();
+    this.modalDate.present();
+  }
+
+  openModalDetails(){
+    this.modalOptions.dismiss();
+    this.modalDetails.present();
+  }
+
+  confirmedAtendimento(){
+    this.currentAtendimento.status_atendimento = 'Realizado'
+    this.currentAtendimento.status_profissional = 'Concluido'
+    this.updateAtendimento(this.currentAtendimento)
   }
 
   confirmCancel() {
@@ -188,6 +213,47 @@ export class ListServicesComponent  implements OnInit {
         console.log(err);
       }
     })
+  }
+
+  updateDatasSelecionadas(dataAntiga: string, novaData: string) {
+    // Verifica se datas_selecionadas é uma string e a converte em um array
+    let datasSelecionadasArray: string[];
+
+    if (typeof this.currentAtendimento.datas_selecionadas === 'string') {
+      // Se for uma string, converte-a para um array
+      datasSelecionadasArray = JSON.parse(this.currentAtendimento.datas_selecionadas);
+    } else {
+      // Se já for um array, apenas atribui
+      datasSelecionadasArray = this.currentAtendimento.datas_selecionadas;
+    }
+
+    const diaDaSemana = moment(novaData).isoWeekday(); // Obtém o número do dia da semana (1=segunda, 2=terça, etc.)
+
+    // Mapeia o array e substitui a data correspondente
+    const updatedDatasSelecionadasArray = datasSelecionadasArray.map((data: string) => {
+      // Verifica se a data atual (sem o dia da semana) é igual à data antiga
+      const dataSemDia = data.split(' (')[0]; // Remove a parte do dia da semana
+
+      if (dataSemDia === dataAntiga) {
+        // Substitui a data antiga pela nova
+        return novaData + ` (${diaDaSemana})`; // Adiciona o novo dia da semana
+      }
+
+      return data; // Retorna a data sem alteração
+    });
+
+    // Converte o array de volta para string no formato desejado
+    this.currentAtendimento.datas_selecionadas = JSON.stringify(updatedDatasSelecionadasArray);
+  }
+
+
+
+  onDateSelected(event: any) {
+    this.updateDatasSelecionadas(this.currentAtendimento.data_inicio,event.detail.value);
+    this.currentAtendimento.data_inicio = event.detail.value;
+    console.log(this.currentAtendimento);
+    this.updateAtendimento(this.currentAtendimento);
+    this.modalDate.dismiss();
   }
 
   formatDate(date:string){
