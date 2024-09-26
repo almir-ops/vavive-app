@@ -15,3 +15,37 @@ ion-segment-button.ios {
   --color-checked: #fff;
   --border-radius: 20px;
 }
+ion-modal#endereco-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --max-width:90%;
+  --height: fit-content;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+ion-modal#endereco-modal h1 {
+  margin: 20px 20px 10px 20px;
+}
+
+ion-modal#endereco-modal ion-icon {
+  margin-right: 6px;
+  width: 48px;
+  height: 48px;
+  padding: 4px 0;
+  color: #aaaaaa;
+}
+
+ion-modal#endereco-modal .wrapper {
+  margin-bottom: 10px;
+}
+ion-button#btn-save {
+  --background: #1931B6;
+  --background-hover: #1931B6;
+  --background-activated: #1931B6;
+  --background-focused: #1931B6;
+  --border-radius: 100px;
+  --color:white;
+  --box-shadow: 0 2px 6px 0 rgb(0, 0, 0, 0.25);
+
+}

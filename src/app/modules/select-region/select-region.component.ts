@@ -37,21 +37,6 @@ export class SelectRegionComponent {
     });
   }
 
-  async saveRegion(event: any) {
-    const cep = event.target.value;
-
-    // Busca a região correspondente ao CEP
-    const region = this.regions.find((r: any) => r.ceps.some((c: any) => cep >= c && cep <= c));
-
-    if (region) {
-      await this.storage.set('UR', region.UR);
-      await this.storage.set('front_url', region.front_web);
-      await this.storage.set('api_url', region.url);
-      this.router.navigate(['/start']);
-    } else {
-      console.log('Região não encontrada para o CEP informado.');
-    }
-  }
 
   async searchCep(event: any) {
     let cep = event.target.value;
@@ -84,8 +69,9 @@ export class SelectRegionComponent {
 
             if (region) {
               console.log('Franquia encontrada para a localidade:', region);
-              await this.storage.set('UR', region.UR);
-              await this.storage.set('front_url', region.front_web);
+              await this.storage.set('endereco', endereco);
+              //await this.storage.set('front_url', region.front_web);
+              await this.storage.set('front_url', 'matriz.vavive.com.br');
               await this.storage.set('api_url', region.url);
               console.log(cep);
 

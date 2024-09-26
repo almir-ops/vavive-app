@@ -49,7 +49,7 @@ export class RegisterComponent  implements OnInit {
   cpfInvalido = false;
   cnpjInvalido = false;
   frontUrl: any;
-  UR:any;
+  endereco:any;
   public readonly predicate: MaskitoElementPredicate = (element) =>
     (element as HTMLIonInputElement).getInputElement();
 
@@ -134,11 +134,11 @@ export class RegisterComponent  implements OnInit {
 
   async getFrontUrlFromStorage() {
     this.frontUrl = await this.storage.get('front_url');
-    this.UR = await this.storage.get('UR');
-    console.log(this.UR);
-
-    if (this.frontUrl) {
-      this.enderecos.at(0).get('estado')?.patchValue(this.UR);
+    this.endereco = await this.storage.get('endereco');
+    console.log(this.endereco);
+    console.log(this.frontUrl);
+    if (this.frontUrl && this.endereco) {
+      this.enderecos.at(0).get('estado')?.patchValue(this.endereco.uf);
       this.formRegister.patchValue({
         source: this.frontUrl
       });
@@ -176,14 +176,42 @@ export class RegisterComponent  implements OnInit {
     this.hiddenPassword = !this.hiddenPassword;
   }
 
-  register(){
+  register() {
     const source = this.formRegister.controls['source'].value;
-    const body = this.formRegister.getRawValue();
-    if(this.formRegister.valid){
+    let celular = this.formRegister.controls['celular'].value;
 
+    // Remove todos os caracteres que não são números do campo celular
+    celular = celular.replace(/\D/g, '');
+
+    // Se o tipo for 'Empresa', atribui o CNPJ ao campo de CPF
+    if (this.type === 'Empresa') {
+      this.formRegister.controls['cpf'].setValue(this.formRegister.controls['cnpj'].value);
+    }
+
+    // Cria um objeto com base nos valores do formulário, mas que pode ser editado separadamente
+    const request = {
+      username: this.formRegister.controls['username'].value,
+      password: this.formRegister.controls['password'].value,
+      nome: this.formRegister.controls['nome'].value,
+      celular: celular, // Já com o valor formatado
+      cpf: this.formRegister.controls['cpf'].value, // Pode ser o CPF ou CNPJ, dependendo do tipo
+      cnpj: this.formRegister.controls['cnpj'].value,
+      email: this.formRegister.controls['email'].value,
+      enderecos: this.enderecos.value, // Caso você tenha múltiplos endereços no formulário
+      cep: this.formRegister.controls['cep'].value,
+      source: source, // Valor da source capturado diretamente
+      origem_cliente:'APP'
+    };
+
+    console.log("Request object:", request); // Exibe o objeto para verificação
+
+    // Verificação de validação
+    if (this.formRegister.valid) {
       this.showLoading();
-      this.authService.registerNewUser(body, 'clientes').subscribe({
-        next:(value:any) => {
+
+      // Chama o serviço de registro utilizando o objeto `request` criado acima
+      this.authService.registerNewUser(request, 'clientes').subscribe({
+        next: (value: any) => {
           console.log(value);
           this.hideLoading();
           this.alertService.presentAlert(
@@ -193,15 +221,28 @@ export class RegisterComponent  implements OnInit {
               this.navegate('/account/sign');
             }
           );
-        },error:(err:any)=>{
+        },
+        error: (err: any) => {
           console.log(err);
           this.hideLoading();
-          //this.alertService.presentAlert('Erro '+ err.status, `${err.error.detail}`);
           this.alertService.presentAlert('Atenção', `${err.error.detail}`);
         }
       });
+    } else {
+      // Exibe no console quais campos estão inválidos
+      Object.keys(this.formRegister.controls).forEach(field => {
+        const control = this.formRegister.get(field);
+        if (control && control.invalid) {
+          console.log(`Campo inválido: ${field}, Erros:`, control.errors);
+        }
+      });
+
+      // Mensagem de alerta para o usuário
+      this.alertService.presentAlert('Erro', 'Preencha todos os campos corretamente.');
     }
   }
+
+
 
   navegate(rota:string){
     this.router.navigate([rota]);

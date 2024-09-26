@@ -14,4 +14,8 @@ export class EnderecosService {
   putEndereco(endereco:any){
     return this.httpClient.put(this.baseUrl + 'endereco/'+ endereco.ID, endereco);
   }
+
+  deleteEndereco(endereco:any){
+    return this.httpClient.delete(this.baseUrl + 'endereco/'+ endereco.ID);
+  }
 }

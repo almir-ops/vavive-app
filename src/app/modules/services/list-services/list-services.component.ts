@@ -80,20 +80,26 @@ export class ListServicesComponent  implements OnInit {
     this.showLoading();
     this.atendimentoService.filterAtendimentos('cliente_cpf', this.currentClient.cpf).subscribe({
       next: (res: any) => {
-        const hoje = moment();
+        const hoje = moment(); // Data atual
         this.listAgendados = [];
         this.listHistorico = [];
 
         res.items.forEach((atendimento: any) => {
           const dataInicio = moment(atendimento.data_inicio, 'YYYY-MM-DD'); // Converte a data_inicio para um objeto moment
 
-          if (dataInicio.isSameOrAfter(hoje, 'day') && atendimento.status_atendimento !== 'Cancelado') {
-            this.listAgendados.push(atendimento);
-          } else {
+          if (atendimento.status_atendimento === 'Cancelado'|| atendimento.status_atendimento === 'Realizado') {
+            // Atendimentos cancelados vão para o histórico, independente da data
             this.listHistorico.push(atendimento);
+          } else if (dataInicio.isBefore(hoje, 'day') ) {
+            // Atendimentos concluídos ou com data no passado também vão para o histórico
+            this.listHistorico.push(atendimento);
+          } else {
+            // Atendimentos futuros e não cancelados/concluídos vão para a lista de agendados
+            this.listAgendados.push(atendimento);
           }
         });
 
+        // Ordena os agendados e históricos pela data
         this.listAgendados.sort((a: any, b: any) => moment(a.data_inicio).diff(moment(b.data_inicio)));
         this.listHistorico.sort((a: any, b: any) => moment(a.data_inicio).diff(moment(b.data_inicio)));
 
@@ -108,6 +114,52 @@ export class ListServicesComponent  implements OnInit {
     });
   }
 
+  isConfirmarAtendimentoDisponivel(): boolean {
+    if (!this.currentAtendimento) {
+      return false;
+    }
+
+    const dataAtual = moment();
+    const dataInicioAtendimento = moment(this.currentAtendimento.data_inicio, 'YYYY-MM-DD');
+    const horaDeEntradaAtendimento = moment(this.currentAtendimento.hora_de_entrada, 'HH:mm');
+
+    const dataValida = dataInicioAtendimento.isSameOrBefore(dataAtual, 'day');
+    const horaValida = horaDeEntradaAtendimento.isSameOrBefore(dataAtual, 'minute');
+
+    return this.currentAtendimento.status_atendimento !== 'Realizado' && dataValida && horaValida;
+  }
+
+  canChangeDate(): boolean {
+    if (!this.currentAtendimento) {
+      return false;
+    }
+
+    const dataAtual = moment();
+    const dataInicioAtendimento = moment(this.currentAtendimento.data_inicio, 'YYYY-MM-DD');
+
+    const diferencaDias = dataInicioAtendimento.diff(dataAtual, 'days');
+
+    return this.currentAtendimento.status_atendimento !== 'Cancelado' &&
+           this.currentAtendimento.status_atendimento !== 'Realizado' &&
+           diferencaDias >= 1;
+  }
+
+  canCancelAtendimento(): boolean {
+    if (!this.currentAtendimento) {
+      return false;
+    }
+
+    const dataAtual = moment(); // Data e hora atual
+    const dataInicioAtendimento = moment(this.currentAtendimento.data_inicio, 'YYYY-MM-DD');
+
+    // Verifica se a data do atendimento está pelo menos 1 dia antes da data atual
+    const diferencaDias = dataInicioAtendimento.diff(dataAtual, 'days');
+
+    // Permite cancelar se o status não for "Cancelado" ou "Realizado" e a diferença de dias for maior ou igual a 1
+    return this.currentAtendimento.status_atendimento !== 'Cancelado' &&
+           this.currentAtendimento.status_atendimento !== 'Realizado' &&
+           diferencaDias >= 1;
+  }
 
   navegate(rota:any){
     this.router.navigate([rota]);

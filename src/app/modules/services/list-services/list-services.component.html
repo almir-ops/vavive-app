@@ -176,15 +176,15 @@
           <img class="h-4" src="./assets/icons/search.svg">
           <label class="ml-3 text-xs uppercase">Ver detalhes</label>
         </div>
-        <div *ngIf="currentAtendimento.status_atendimento !== 'Cancelado' && currentAtendimento.status_atendimento !== 'Realizado'" (click)="openModalDateAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+        <div *ngIf="canChangeDate()" (click)="openModalDateAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
           <img class="h-4" src="./assets/icons/data.svg">
           <label class="ml-3 text-xs uppercase">Alterar data</label>
         </div>
-        <div *ngIf="currentAtendimento.status_atendimento !== 'Realizado'" (click)="confirmedAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+        <div *ngIf="isConfirmarAtendimentoDisponivel()" (click)="confirmedAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
           <img class="h-4" src="./assets/icons/check.svg">
           <label class="ml-3 text-xs uppercase">Confirmar atendimento</label>
         </div>
-        <div *ngIf="currentAtendimento.status_atendimento !== 'Cancelado' && currentAtendimento.status_atendimento !== 'Realizado'" (click)="openModalCancelAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+        <div *ngIf="canCancelAtendimento()" (click)="openModalCancelAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
           <img class="h-4" src="./assets/icons/x-mark.svg">
           <label class="ml-3 text-xs uppercase">Cancelar atendimento</label>
         </div>

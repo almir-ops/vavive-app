@@ -13,7 +13,6 @@ const routes: Routes = [
   {
     path: '',
     component: HomeComponent,
-    //canActivate:[AuthenticatedGuard],
     children: [
       {
         path: '',
@@ -22,18 +21,16 @@ const routes: Routes = [
       },
       {
         path: 'start',
-        //loadChildren: () => import('./home/home-page.module').then((m) => m.HomePageModule),
         component: StartComponent
-        //component: ConfirmServicesComponent
+       },
+      {
+        path: 'services',
+        loadChildren: () => import('./modules/services/services-routing.module').then(m => m.ServicesRoutingModule),
+        canActivate: [AuthenticatedGuard]
       },
       {
         path: 'account',
-        loadChildren: () => import('./modules/auth/auth-routing.module').then((m) => m.AuthRoutingModule)
-      },
-      {
-        path: 'services',
-        canActivate:[AuthenticatedGuard],
-        loadChildren: () => import('./modules/services/services-routing.module').then((m) => m.ServicesRoutingModule)
+        loadChildren: () => import('./modules/auth/auth-routing.module').then(m => m.AuthRoutingModule)
       }
     ],
   },

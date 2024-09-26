@@ -31,12 +31,13 @@ export class LoginComponent  implements OnInit{
         this.navegate('account/register', 'Empresa');
       }
     },
+    /*
     {
       text: 'Profissional',
       handler: () => {
         this.navegate('account/register', 'Profissional');
       }
-    }
+    }*/
   ];
   @ViewChild('alertComponent') alertComponent!: AlertComponent;
   @ViewChild('loadingComponent') loadingComponent!: LoadingComponent;

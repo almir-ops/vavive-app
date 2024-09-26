@@ -1,4 +1,4 @@
-<div class="h-screen flex flex-col overflow-auto relative bg-white">
+<div class="h-screen flex flex-col overflow-hidden relative bg-white">
 
   <ion-segment [(ngModel)]="screnn" class="top-0 z-10" (ionChange)="segmentChanged($event)">
     <ion-segment-button value="profile">
@@ -114,7 +114,7 @@
           </div>
           <button
             [ngClass]="{'bg-azulprincipal':formRegister.valid,'bg-gray-300':!formRegister.valid}"
-            class="text-center text-white rounded py-2 w-full mt-8 duration-150 " (click)="login()" >
+            class="text-center text-white rounded py-2 w-full mt-8 duration-150 " (click)="updateClient()" >
             <div
               class="font-bold">
               Salvar
@@ -132,7 +132,330 @@
   </div>
 
   <div *ngIf="screnn==='payments'" >
-    Payments
+    <div class="p-4">
+      <div (click)="openModalEndereco()" class="py-2 bg-azulprincipal text-white rounded-md shadow-md mt-6 mb-2" >
+        <div class="flex justify-center" >
+          <img class="h-[18px] mr-2" src="./assets/icons/plus.svg">
+          <span class="text-sm uppercase font-semibold">Novo endereço</span>
+        </div>
+      </div>
+      <div class="overflow-y-auto max-h-[calc(100vh-200px)]">
+        <div *ngFor="let endereco of user.enderecos; let i = index" class="text-xs rounded-md shadow-md mt-4">
+          <div class="bg-azulsombreado  p-3 ">
+            <div class="text-laranjaprincipal flex justify-between">
+              Endereço {{i+1}}
+            </div>
+            <div class="flex ">
+              Rua: {{endereco.rua}} <span *ngIf="endereco.numero && endereco !== ''">, nº {{endereco.numero}}</span>
+            </div>
+            <div class="flex flex-col">
+              Bairro: {{endereco.bairro}}
+            </div>
+            <div class="flex flex-col">
+              Cidade: {{endereco.cidade}}
+            </div>
+            <div class="flex flex-col">
+              Estado: {{endereco.estado}}
+            </div>
+            <div class="flex flex-col">
+              Cep: {{endereco.cep}}
+            </div>
+            <div class="flex flex-col">
+              Complemento: {{endereco.complemento}}
+            </div>
+          </div>
+          <div class="flex w-full">
+            <div (click)="openModalEditEndereco(endereco)" class="bg-laranjasombreado flex items-center py-1 justify-center w-[50%]">
+              Editar
+              <img class="h-4 ml-2" src="./assets/icons/pencil.svg">
+            </div>
+            <div (click)="openModalDeleteEndereco(endereco)"class="bg-gray-200 flex items-center py-1 justify-center w-[50%]">
+              Excluir
+              <img class="h-4 ml-2" src="./assets/icons/lixeira.svg">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
+
+<!-- Ion Modal para adicionar novo endereço -->
+<ion-modal id="endereco-modal" #modalNovoEndereco (willDismiss)="onWillDismiss()">
+  <ng-template>
+    <div class="p-4">
+      <div class="text-azulprincipal">Adicionar Novo Endereço</div>
+      <span class="text-xs mb-5">Digite o cep e o numero do endereço:</span>
+
+      <div>
+        <ion-input
+          label="CEP"
+          label-placement="floating"
+          fill="outline"
+          class="custom mt-6"
+          autocomplete="true"
+          type="tel"
+          inputmode="numeric"
+          [(ngModel)]="cep"
+          (keyup)="buscarCep()"
+          maxlength="9"
+          placeholder="00000-000"
+          [maskito]="cepMask"
+          [maskitoElement]="predicate"
+        ></ion-input>
+
+        <!-- Exibir o restante do formulário apenas se o CEP for encontrado -->
+        <div>
+          <div class="w-full flex ">
+            <ion-input
+              label="Rua"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.rua"
+              disabled
+            ></ion-input>
+
+            <ion-input
+              label="N°"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.numero"
+            ></ion-input>
+          </div>
+
+          <ion-input
+            label="Bairro"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-4"
+            [(ngModel)]="endereco.bairro"
+            disabled
+          ></ion-input>
+          <div class="w-full flex ">
+            <ion-input
+              label="Cidade"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.cidade"
+              disabled
+            ></ion-input>
+
+            <ion-input
+              label="UF"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.estado"
+              disabled
+            ></ion-input>
+          </div>
+
+          <ion-input
+            label="Complemento"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-4"
+            [(ngModel)]="endereco.complemento"
+          ></ion-input>
+        </div>
+
+        <div class="flex justify-between">
+          <button class="mt-4 bg-gray-300 rounded-md py-1.5 px-4 shadow-md" (click)="modalNovoEndereco.dismiss()">Fechar</button>
+          <button class="mt-4 rounded-md py-1.5 px-4 text-white shadow-md duration-150" (click)="salvarEndereco()" [ngClass]="{'bg-azulprincipal': isFormValid(),'bg-gray-200': !isFormValid()}" [disabled]="!isFormValid()">Salvar</button>
+        </div>
+
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<!-- Ion Modal para adicionar novo endereço -->
+<ion-modal id="endereco-modal" #modalEditEndereco (willDismiss)="onWillDismiss()">
+  <ng-template>
+    <div class="p-4">
+      <div class="text-azulprincipal">Editando Endereço</div>
+      <span class="text-xs mb-5">Digite o cep e o numero do endereço:</span>
+
+      <div>
+        <ion-input
+          label="CEP"
+          label-placement="floating"
+          fill="outline"
+          class="custom mt-6"
+          autocomplete="true"
+          type="tel"
+          inputmode="numeric"
+          [(ngModel)]="cep"
+          (keyup)="buscarCep()"
+          maxlength="9"
+          placeholder="00000-000"
+          [maskito]="cepMask"
+          [maskitoElement]="predicate"
+        ></ion-input>
+
+        <!-- Exibir o restante do formulário apenas se o CEP for encontrado -->
+        <div>
+          <div class="w-full flex ">
+            <ion-input
+              label="Rua"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.rua"
+              disabled
+            ></ion-input>
+
+            <ion-input
+              label="N°"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.numero"
+            ></ion-input>
+          </div>
+
+          <ion-input
+            label="Bairro"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-4"
+            [(ngModel)]="endereco.bairro"
+            disabled
+          ></ion-input>
+          <div class="w-full flex ">
+            <ion-input
+              label="Cidade"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.cidade"
+              disabled
+            ></ion-input>
+
+            <ion-input
+              label="UF"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.estado"
+              disabled
+            ></ion-input>
+          </div>
+
+          <ion-input
+            label="Complemento"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-4"
+            [(ngModel)]="endereco.complemento"
+          ></ion-input>
+        </div>
+
+        <div class="flex justify-between">
+          <button class="mt-4 bg-gray-300 rounded-md py-1.5 px-4 shadow-md" (click)="modalEditEndereco.dismiss()">Fechar</button>
+          <button class="mt-4 rounded-md py-1.5 px-4 text-white shadow-md duration-150" (click)="updateEndereco()" [ngClass]="{'bg-azulprincipal': isFormValid(),'bg-gray-200': !isFormValid()}" [disabled]="!isFormValid()">Salvar</button>
+        </div>
+
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<!-- Ion Modal para adicionar novo endereço -->
+<ion-modal id="endereco-modal" #modalDeleteEndereco (willDismiss)="onWillDismiss()">
+  <ng-template>
+    <div class="p-4">
+      <div class="text-azulprincipal">Deletar Endereço</div>
+      <span class="text-xs mb-5">Deseja realmente deletar esse endereço?</span>
+
+      <div>
+        <ion-input
+          label="CEP"
+          label-placement="floating"
+          fill="outline"
+          class="custom mt-6"
+          autocomplete="true"
+          type="tel"
+          inputmode="numeric"
+          [(ngModel)]="cep"
+          (keyup)="buscarCep()"
+          maxlength="9"
+          placeholder="00000-000"
+          [maskito]="cepMask"
+          [maskitoElement]="predicate"
+          disabled
+        ></ion-input>
+
+        <!-- Exibir o restante do formulário apenas se o CEP for encontrado -->
+        <div>
+          <div class="w-full flex ">
+            <ion-input
+              label="Rua"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.rua"
+              disabled
+            ></ion-input>
+
+            <ion-input
+              label="N°"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.numero"
+              disabled
+            ></ion-input>
+          </div>
+
+          <ion-input
+            label="Bairro"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-4"
+            [(ngModel)]="endereco.bairro"
+            disabled
+          ></ion-input>
+          <div class="w-full flex ">
+            <ion-input
+              label="Cidade"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.cidade"
+              disabled
+            ></ion-input>
+
+            <ion-input
+              label="UF"
+              label-placement="floating"
+              fill="outline"
+              class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.estado"
+              disabled
+            ></ion-input>
+          </div>
+
+          <ion-input
+            label="Complemento"
+            label-placement="floating"
+            fill="outline"
+            class="custom mt-4"
+            [(ngModel)]="endereco.complemento"
+            disabled
+          ></ion-input>
+        </div>
+
+        <div class="flex justify-between">
+          <button class="mt-4 bg-gray-300 rounded-md py-1.5 px-4 shadow-md" (click)="modalDeleteEndereco.dismiss()">Fechar</button>
+          <button class="mt-4 rounded-md py-1.5 px-4 text-white shadow-md duration-150" (click)="deleteEndereco()" [ngClass]="{'bg-azulprincipal': isFormValid(),'bg-gray-200': !isFormValid()}" [disabled]="!isFormValid()">Deletar</button>
+        </div>
+
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

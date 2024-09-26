@@ -31,9 +31,11 @@ export class AppComponent {
     await this.platform.ready();
     await this.storage.create();
     const apiUrl = await this.storage.get('api_url');
+    const frontUrl = await this.storage.get('front_url');
+    const endereco = await this.storage.get('endereco');
     console.log(apiUrl);
 
-    if (!apiUrl) {
+    if (!apiUrl || !endereco) {
       this.router.navigate(['/select-region']);
     } else {
       this.router.navigate(['/']);
