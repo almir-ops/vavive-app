@@ -82,7 +82,7 @@
   <div *ngIf="screnn==='payments'" >
     <div class="w-full flex justify-center px-4">
       <div class="px-2 pb-8 rounded-sm w-full text-[11px]">
-        <div *ngFor="let atendimento of listHistorico" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
+        <div *ngFor="let atendimento of listHistorico" (click)="openOptionsModal(atendimento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
           <div class="flex h-full">
             <div class="w-[78%] flex flex-col">
               <div class="flex">
@@ -164,7 +164,7 @@
       <div class="flex flex-col">
         <label class="text-azulprincipal">Atenção</label>
         <span class="text-xs mb-5">Escolha uma da opções:</span>
-        <div (click)="criaPagamento()" *ngIf="currentAtendimento.status_pagamento === 'Pagamento pendente'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
+        <div (click)="criaPagamento()"   *ngIf="currentAtendimento.status_pagamento === 'Pagamento pendente' && currentAtendimento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
           <img class="h-4" src="./assets/icons/banknotes.svg">
           <label class="ml-3 text-xs uppercase">Fazer pagamento</label>
         </div>

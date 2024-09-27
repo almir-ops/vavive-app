@@ -469,3 +469,33 @@
     </div>
   </ng-template>
 </ion-modal>
+
+<ion-modal id="endereco-modal" #modalFranquiaChange>
+  <ng-template>
+    <div class="p-4">
+      <div class="text-azulprincipal text-center text-lg font-bold mb-3">Atenção</div>
+      <span class="text-xs mb-5 block text-center">
+        Identificamos que o endereço selecionado pertence à franquia <strong>{{ franquiaEncontrada.nome }}</strong>.
+        Para prosseguir com o atendimento nessa região, será necessário criar uma nova conta.
+      </span>
+
+      <div class="text-xs mb-4 block text-center">
+        Você pode criar a conta com os dados da sua conta atual.
+      </div>
+
+      <div class="flex flex-col space-y-3 mt-5">
+        <!--
+          <ion-button expand="block" fill="solid" color="primary" (click)="usarDadosAtuais()">
+            Usar Dados da Conta Atual
+          </ion-button>
+        -->
+        <ion-button expand="block" fill="outline" color="secondary" (click)="preencherManual()">
+          Criar conta
+        </ion-button>
+        <ion-button expand="block" fill="clear" color="danger" (click)="modalFranquiaChange.dismiss()">
+          Cancelar
+        </ion-button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

@@ -1,5 +1,6 @@
-<div class="h-screen bg-radial-blue-radial flex items-center">
-  <div class="w-full flex justify-center px-4">
+<div class="h-screen bg-radial-blue-radial flex items-center relative">
+  <div *ngIf="currentFranquia" class="absolute top-2 right-4 text-gray-200/75 text-sm">{{currentFranquia}}</div>
+  <div class="w-full flex  justify-center px-4">
     <div class="bg-white px-4 py-8 rounded-sm w-full -mt-20 shadow-md">
       <form [formGroup]="formLogin">
         <div class="flex justify-between">
@@ -42,8 +43,13 @@
             <span class="text-red-500 text-[10px]">*Campo obrigatório</span>
           </div>
         </div>
-        <div class="text-azulprincipal mt-4" (click)="navigateToForgotPass()">
-          Esqueci a senha
+        <div class="flex justify-between">
+          <div class="text-azulprincipal mt-4" (click)="navigateToForgotPass()">
+            Esqueci a senha
+          </div>
+          <div class="text-azulprincipal mt-4" (click)="navegate('select-region')">
+            Mudar região
+          </div>
         </div>
         <button
           [ngClass]="{'bg-azulprincipal':formLoginControl['username'].value && formLoginControl['password'].value,'bg-gray-300':!formLoginControl['username'].value || !formLoginControl['password'].value}"

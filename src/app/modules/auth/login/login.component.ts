@@ -22,13 +22,13 @@ export class LoginComponent  implements OnInit{
     {
       text: 'Cliente',
       handler: () => {
-        this.navegate('account/register', 'Cliente');
+        this.navegateByParam('account/register', 'Cliente');
       }
     },
     {
       text: 'Empresa',
       handler: () => {
-        this.navegate('account/register', 'Empresa');
+        this.navegateByParam('account/register', 'Empresa');
       }
     },
     /*
@@ -42,6 +42,9 @@ export class LoginComponent  implements OnInit{
   @ViewChild('alertComponent') alertComponent!: AlertComponent;
   @ViewChild('loadingComponent') loadingComponent!: LoadingComponent;
   paramUser = 'clientes'
+
+  currentFranquia: any;
+
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
@@ -52,6 +55,7 @@ export class LoginComponent  implements OnInit{
 
   ngOnInit() {
     this.createForm();
+    this.getFranquiaInfo();
   }
 
   createForm(){
@@ -65,6 +69,12 @@ export class LoginComponent  implements OnInit{
     return this.formLogin.controls;
   }
 
+  async getFranquiaInfo(){
+    const franquia = await this.storage.get('franquia');
+    this.currentFranquia = franquia
+    console.log(franquia);
+
+  }
 
   showAlertUser() {
     const { username } = this.formLogin.getRawValue();
@@ -89,10 +99,11 @@ export class LoginComponent  implements OnInit{
         this.hideLoading();
       },error: (err) =>{
         console.log(err)
-        console.log(typeof err);
-        console.log(err === "500");
-        console.log(err === 500);
-        this.alertService.presentAlert('Erro '+ err.status, `${err.error.detail}`);
+        if(err.status === 404){
+          this.alertService.presentAlert('Erro ', `Conta não encontrada`);
+        }else{
+          this.alertService.presentAlert('Erro ', `${err.error.detail}`);
+        }
 
         if(err === '500'){
 
@@ -110,8 +121,12 @@ export class LoginComponent  implements OnInit{
     this.loadingComponent.dismissLoading();
   }
 
-  navegate(rota: string, tipo: string) {
+  navegateByParam(rota: string, tipo: string) {
     this.router.navigate([rota], { queryParams: { tipo: tipo } });
+  }
+
+  navegate(rota: string) {
+    this.router.navigate([rota]);
   }
 
 

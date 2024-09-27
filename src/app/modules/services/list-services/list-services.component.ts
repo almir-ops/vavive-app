@@ -7,6 +7,7 @@ import { LoadingComponent } from 'src/app/shared/components/loading/loading.comp
 import { IonModal } from '@ionic/angular';
 import { PagamentosService } from 'src/app/shared/services/pagamentos/pagamentos.service';
 import { Browser } from '@capacitor/browser';
+import { AlertService } from 'src/app/shared/services/alert.service';
 
 @Component({
   selector: 'app-list-services',
@@ -33,7 +34,9 @@ export class ListServicesComponent  implements OnInit {
   constructor(
     private atendimentoService: AtendimentosService,
     private router: Router,
-    private pagamentoService: PagamentosService
+    private pagamentoService: PagamentosService,
+    private alertService: AlertService
+
   ) { }
 
   ngOnInit() {
@@ -213,6 +216,8 @@ export class ListServicesComponent  implements OnInit {
       },
       error: (err: any) => {
         console.log(err);
+        this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
+
       }
     })
   }

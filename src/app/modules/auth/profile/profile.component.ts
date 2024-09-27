@@ -11,6 +11,8 @@ import { MaskitoElementPredicate, MaskitoOptions } from '@maskito/core';
 import { ClientesService } from 'src/app/shared/services/clientes/clientes.service';
 import { EnderecosService } from 'src/app/shared/services/enderecos/enderecos.service';
 import { AlertComponent } from 'src/app/shared/components/alert/alert.component';
+import { FranquiasService } from 'src/app/shared/services/franquias/franquias.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -32,6 +34,7 @@ export class ProfileComponent  implements OnInit {
   @ViewChild('modalEditEndereco') modalEditEndereco!: IonModal;
   @ViewChild('modalDeleteEndereco') modalDeleteEndereco!: IonModal;
   @ViewChild('modalErroEndereco') modalErroEndereco!: IonModal;
+  @ViewChild('modalFranquiaChange') modalFranquiaChange!: IonModal;
 
   isModalOpen = false;
   cep: string = '';
@@ -54,6 +57,9 @@ export class ProfileComponent  implements OnInit {
   public readonly predicate: MaskitoElementPredicate = (element) =>
   (element as HTMLIonInputElement).getInputElement();
   @ViewChild('alertComponent') alertComponent!: AlertComponent;
+  regions: any[] = [];
+  currentFranquia:any;
+  franquiaEncontrada:any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -64,12 +70,19 @@ export class ProfileComponent  implements OnInit {
     private storage: Storage,
     private viacepService: ViacepService,
     private clienteService: ClientesService,
-    private enderecoService: EnderecosService
+    private enderecoService: EnderecosService,
+    private franquiasService: FranquiasService
+
   ) { }
 
   ngOnInit() {
     this.createForm();
     this.getInfoUser();
+    this.franquiasService.getFranquias().subscribe(data => {
+      this.regions = data;
+      console.log(this.regions);
+    });
+    console.log(this.getFranquia());
 
   }
 
@@ -202,6 +215,27 @@ export class ProfileComponent  implements OnInit {
             this.endereco.estado = endereco.uf;
             this.endereco.cep = endereco.cep;
             this.enderecoEncontrado = true;
+            // Comparar a localidade do endereço com os bairros da lista de franquias
+            let franquia = this.regions.find((r: any) =>
+              r.bairros.some((bairroObj: any) =>
+                // Verifica se o item é um objeto com a propriedade 'nome' ou uma string e compara com endereco.localidade
+                (typeof bairroObj === 'string' ? bairroObj.toLowerCase() : bairroObj.nome.toLowerCase()) === endereco.localidade.toLowerCase()
+              )
+            );
+
+            // Se não encontrou uma franquia e o estado é SP ou RJ, usa a franquia "Matriz"
+            if (!franquia && (endereco.uf === 'SP' || endereco.uf === 'RJ')) {
+              franquia = this.regions.find((r: any) => r.nome.toLowerCase() === 'matriz');
+            }
+
+            console.log(this.currentFranquia, franquia.nome);
+            this.franquiaEncontrada = franquia
+            if(this.currentFranquia !== franquia.nome){
+              this.openMoralChangeFranquia()
+              return
+            }
+
+
           } else {
             // Caso não encontre o CEP
             console.error('CEP não encontrado.');
@@ -214,6 +248,11 @@ export class ProfileComponent  implements OnInit {
     }else{
       this.enderecoEncontrado = false;
     }
+  }
+
+  async getFranquia(){
+    const franquia = await this.storage.get('franquia');
+    this.currentFranquia = franquia
   }
 
   isFormValid() {
@@ -306,4 +345,24 @@ export class ProfileComponent  implements OnInit {
       complemento: ''
     };
   }
+
+  openMoralChangeFranquia(){
+    this.modalFranquiaChange.present();
+  }
+
+  async preencherManual(){
+    await this.storage.set('endereco', this.endereco);
+    await this.storage.set('front_url', this.franquiaEncontrada.url_front);
+    await this.storage.set('api_url', this.franquiaEncontrada.url);
+    await this.storage.set('franquia', this.franquiaEncontrada.nome);
+    await this.storage.set('current_cep', this.endereco.cep);
+    console.log(this.franquiaEncontrada.url);
+    console.log(environment.baseUrl);
+
+
+    this.logout();
+    this.navegate('account/sign')
+  }
+
+
 }

@@ -1,7 +1,8 @@
-// api.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular';
+import { from, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -9,15 +10,33 @@ import { Storage } from '@ionic/storage-angular';
 export class ApiService {
   apiUrl!: string;
 
-  constructor(private http: HttpClient, private storage: Storage) {
-    this.loadApiUrl();
+  constructor(private http: HttpClient, private storage: Storage) {}
+
+  // Método para garantir que a URL está carregada antes de qualquer requisição
+  loadApiUrl(): Observable<string> {
+    return from(this.storage.get('api_url')).pipe(
+      switchMap((url: string) => {
+        this.apiUrl = url;
+        return from([url]);
+      })
+    );
   }
 
-  async loadApiUrl() {
-    this.apiUrl = await this.storage.get('api_url');
+  // Método para GET
+  getData(endpoint: string): Observable<any> {
+    return this.loadApiUrl().pipe(
+      switchMap((url: string) => {
+        return this.http.get(`${url}/${endpoint}`);
+      })
+    );
   }
 
-  getData(endpoint: string) {
-    return this.http.get(`${this.apiUrl}/${endpoint}`);
+  // Método para POST
+  postData(endpoint: string, body: any): Observable<any> {
+    return this.loadApiUrl().pipe(
+      switchMap((url: string) => {
+        return this.http.post(`${url}/${endpoint}`, body);
+      })
+    );
   }
 }

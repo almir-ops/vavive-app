@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
-import { Observable, tap, take } from 'rxjs';
+import { Observable, tap, take, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment.prod';
 import { LoginToken } from './login-token';
 import { Token } from './token';
 import { IUser } from 'src/app/shared/interfaces/uUser';
+import { ApiService } from 'src/app/shared/services/api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,8 @@ export class AuthService {
   constructor(
     private httpClient: HttpClient,
     private router: Router,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private apiService: ApiService
 
     ) {
 
@@ -35,14 +37,19 @@ export class AuthService {
 
    }
 
-  login(user: IUser, paramUser:any): Observable<Token>{
+   login(user: IUser, paramUser: any): Observable<Token> {
+    return this.apiService.loadApiUrl().pipe(
+      switchMap((apiUrl: string) => {
+        console.log(apiUrl);
 
-    return this.httpClient.post<Token>( `${this.endpoint}${paramUser}/sign`, user).pipe(
-      tap((token:any) => this.registerCredentials(token)),
-      take(1)
+        return this.httpClient.post<Token>(`https://${apiUrl}/api/v1/${paramUser}/sign`, user).pipe(
+          tap((token: Token) => this.registerCredentials(token)),
+          take(1)
+        );
+      })
     );
-
   }
+
 
 
   logout(){
