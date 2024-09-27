@@ -7,7 +7,7 @@ import { Storage } from '@ionic/storage-angular';
 import { ServicosService } from 'src/app/shared/services/servicos/servicos.service';
 import { uPlano } from 'src/app/shared/interfaces/uPlano';
 import { ViacepService } from 'src/app/shared/services/viacep/viacep.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ClientesService } from 'src/app/shared/services/clientes/clientes.service';
 import { EnderecosService } from 'src/app/shared/services/enderecos/enderecos.service';
 import { AtendimentosService } from 'src/app/shared/services/atendimentos/atendimentos.service';
@@ -86,6 +86,8 @@ export class NewServicesComponent  implements OnInit {
     animationItem.addEventListener('complete', () => {
     });
   }
+  type!:string;
+
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -94,6 +96,7 @@ export class NewServicesComponent  implements OnInit {
     private viaCep: ViacepService,
     private router: Router,
     private clienteService: ClientesService,
+    private route: ActivatedRoute,
     private enderecoService: EnderecosService,
     private atendimentoService: AtendimentosService
   ) { }
@@ -119,6 +122,16 @@ export class NewServicesComponent  implements OnInit {
       error: (err) => {
         console.error('Erro ao buscar dados de serviços:', err);
       }
+    });
+    this.route.queryParams.subscribe(params => {
+      this.type = params['tipo'];
+      const i = params['i']
+      console.log(this.type); // 'Cliente', 'Empresa' ou 'Profissional'
+      if(this.type){
+        this.selectedServiceId = parseInt(this.type);
+        this.indexServiceSelected = i
+      }
+
     });
   }
 

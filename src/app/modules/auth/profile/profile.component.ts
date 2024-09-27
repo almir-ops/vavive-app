@@ -10,6 +10,7 @@ import { ViacepService } from 'src/app/shared/services/viacep/viacep.service';
 import { MaskitoElementPredicate, MaskitoOptions } from '@maskito/core';
 import { ClientesService } from 'src/app/shared/services/clientes/clientes.service';
 import { EnderecosService } from 'src/app/shared/services/enderecos/enderecos.service';
+import { AlertComponent } from 'src/app/shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-profile',
@@ -30,6 +31,7 @@ export class ProfileComponent  implements OnInit {
   @ViewChild('modalNovoEndereco') modalNovoEndereco!: IonModal;
   @ViewChild('modalEditEndereco') modalEditEndereco!: IonModal;
   @ViewChild('modalDeleteEndereco') modalDeleteEndereco!: IonModal;
+  @ViewChild('modalErroEndereco') modalErroEndereco!: IonModal;
 
   isModalOpen = false;
   cep: string = '';
@@ -51,6 +53,7 @@ export class ProfileComponent  implements OnInit {
   };
   public readonly predicate: MaskitoElementPredicate = (element) =>
   (element as HTMLIonInputElement).getInputElement();
+  @ViewChild('alertComponent') alertComponent!: AlertComponent;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -66,7 +69,8 @@ export class ProfileComponent  implements OnInit {
 
   ngOnInit() {
     this.createForm();
-    this.getInfoUser()
+    this.getInfoUser();
+
   }
 
   getInfoUser(){
@@ -284,6 +288,7 @@ export class ProfileComponent  implements OnInit {
       },
       error: (err) => {
         console.error('Erro ao atualizar o cliente:', err);
+        this.modalErroEndereco.present()
       }
     })
   }

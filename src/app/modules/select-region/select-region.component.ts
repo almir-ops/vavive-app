@@ -70,8 +70,7 @@ export class SelectRegionComponent {
             if (region) {
               console.log('Franquia encontrada para a localidade:', region);
               await this.storage.set('endereco', endereco);
-              //await this.storage.set('front_url', region.front_web);
-              await this.storage.set('front_url', 'matriz.vavive.com.br');
+              await this.storage.set('front_url', region.url_front);
               await this.storage.set('api_url', region.url);
               console.log(cep);
 

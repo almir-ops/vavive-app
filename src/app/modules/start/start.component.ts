@@ -41,47 +41,56 @@ export class StartComponent  implements OnInit {
 
     this.slides =  [
       {
-        name: "Limpeza residencial",
-        slogan: "Deixe sua casa brilhando.",
-        bannerApp: "./assets/images/banner-padrao.png"
+        "ID": 1,
+        "name": "Limpeza residencial",
+        "slogan": "Deixe sua casa brilhando.",
+        "bannerApp": "./assets/images/banner-padrao.png"
       },
       {
-        name: "Limpeza empresarial",
-        slogan: "Seu escritório sempre impecável.",
-        bannerApp: "./assets/images/banner-padrao.png"
+        "ID": 2,
+        "name": "Limpeza empresarial",
+        "slogan": "Seu escritório sempre impecável.",
+        "bannerApp": "./assets/images/banner-padrao.png"
       },
       {
-        name: "Limpeza pós obra",
-        slogan: "Tire a poeira da reforma.",
-        bannerApp: "./assets/images/banner-padrao.png"
+        "ID": 3,
+        "name": "Limpeza pós obra",
+        "slogan": "Tire a poeira da reforma.",
+        "bannerApp": "./assets/images/banner-padrao.png"
       },
       {
-        name: "Passar roupas",
-        slogan: "Roupas passadas com carinho.",
-        bannerApp: "./assets/images/banner-padrao.png"
+        "ID": 4,
+        "name": "Passar roupas",
+        "slogan": "Roupas passadas com carinho.",
+        "bannerApp": "./assets/images/banner-padrao.png"
       },
       {
-        name: "Cozinhar",
-        slogan: "Delícias preparadas especialmente para você.",
-        bannerApp: "./assets/images/banner-padrao.png"
+        "ID": 5,
+        "name": "Cozinhar",
+        "slogan": "Delícias preparadas especialmente para você.",
+        "bannerApp": "./assets/images/banner-padrao.png"
       },
       {
-        name: "Babá",
-        slogan: "Cuidado e carinho para os pequenos.",
-        bannerApp: "./assets/images/banner-padrao.png"
+        "ID": 6,
+        "name": "Babá",
+        "slogan": "Cuidado e carinho para os pequenos.",
+        "bannerApp": "./assets/images/banner-padrao.png"
       },
       {
-        name: "Limpeza pesada",
-        slogan: "Para sujeiras difíceis, soluções eficazes.",
-        bannerApp: "./assets/images/banner-padrao.png"
+        "ID": 7,
+        "name": "Limpeza pesada",
+        "slogan": "Para sujeiras difíceis, soluções eficazes.",
+        "bannerApp": "./assets/images/banner-padrao.png"
       },
       {
-        name: "Limpeza de evento",
-        slogan: "Seu evento limpo e organizado.",
-        bannerApp: "./assets/images/banner-padrao.png"
+        "ID": 8,
+        "name": "Limpeza de evento",
+        "slogan": "Seu evento limpo e organizado.",
+        "bannerApp": "./assets/images/banner-padrao.png"
       }
     ];
     this.slidesUtils = [
+      /*
       {
         name: "Indique e Ganhe",
         slogan: "Deixe sua casa brilhando.",
@@ -101,7 +110,35 @@ export class StartComponent  implements OnInit {
         name: "Indique e Ganhe",
         slogan: "Deixe sua casa brilhando.",
         bannerApp: "./assets/images/banner-padrao.png"
-      },
+      },*/
+      [
+        {
+          "name": "Contrate Agora",
+          "slogan": "Encontre profissionais de confiança com apenas um clique.",
+          "bannerApp": "./assets/images/banner-contrate.png"
+        },
+        {
+          "name": "Ofertas Especiais",
+          "slogan": "Descontos imperdíveis nos serviços que você precisa.",
+          "bannerApp": "./assets/images/banner-ofertas.png"
+        },
+        {
+          "name": "Avaliações de Clientes",
+          "slogan": "Veja o que nossos clientes dizem sobre nossos serviços.",
+          "bannerApp": "./assets/images/banner-avaliacoes.png"
+        },
+        {
+          "name": "Agendar Serviço",
+          "slogan": "Escolha a data e hora perfeita para o seu atendimento.",
+          "bannerApp": "./assets/images/banner-agendar.png"
+        },
+        {
+          "name": "Nossa Garantia",
+          "slogan": "Serviço garantido ou seu dinheiro de volta.",
+          "bannerApp": "./assets/images/banner-garantia.png"
+        }
+      ]
+
     ]
     this.slidesUtils2= [
       {
@@ -213,5 +250,9 @@ export class StartComponent  implements OnInit {
       console.error('Error retrieving user data securely:', error);
       return null;
     }
+  }
+
+  navegateByparam(rota: string, tipo: string,index:any) {
+    this.router.navigate([rota], { queryParams: { tipo: tipo, i: index  } });
   }
 }

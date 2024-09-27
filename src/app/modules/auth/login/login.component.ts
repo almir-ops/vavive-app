@@ -68,12 +68,8 @@ export class LoginComponent  implements OnInit{
 
   showAlertUser() {
     const { username } = this.formLogin.getRawValue();
-
   }
 
-  enableBtnLogin(){
-
-  }
 
   viewPassword() {
     this.hiddenPassword = !this.hiddenPassword;
@@ -102,11 +98,6 @@ export class LoginComponent  implements OnInit{
 
         }
         this.hideLoading();
-        //this.invalidUser = true;
-        //this.isLoading = false;
-      },
-      complete: () =>{
-        //this.isLoading = false;
       }
   })
   }
