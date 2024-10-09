@@ -75,6 +75,10 @@
           </div>
 
         </div>
+        <div *ngIf="listAgendados.length === 0"  class="h-full flex flex-col mt-32">
+          <img class="h-8" src="./assets/icons/warning.svg"/>
+          <span class="text-[11px] text-gray-800 text-center">Nenhum atendimento encontrado</span>
+        </div>
       </div>
     </div>
   </div>

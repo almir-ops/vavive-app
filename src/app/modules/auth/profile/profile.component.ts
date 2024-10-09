@@ -215,13 +215,20 @@ export class ProfileComponent  implements OnInit {
             this.endereco.estado = endereco.uf;
             this.endereco.cep = endereco.cep;
             this.enderecoEncontrado = true;
-            // Comparar a localidade do endereço com os bairros da lista de franquias
-            let franquia = this.regions.find((r: any) =>
-              r.bairros.some((bairroObj: any) =>
-                // Verifica se o item é um objeto com a propriedade 'nome' ou uma string e compara com endereco.localidade
-                (typeof bairroObj === 'string' ? bairroObj.toLowerCase() : bairroObj.nome.toLowerCase()) === endereco.localidade.toLowerCase()
-              )
-            );
+            let franquia:any
+
+             // Se o estado for DF, buscar pela franquia correspondente ao estado
+             if (endereco.uf === 'DF') {
+              // Busca pela franquia correspondente ao estado DF
+              franquia = this.regions.find((r: any) => r.estado.toLowerCase() === 'df');
+            } else {
+              // Comparar a localidade do endereço com os bairros da lista de franquias
+              franquia = this.regions.find((r: any) =>
+                r.bairros.some((bairroObj: any) =>
+                  (typeof bairroObj === 'string' ? bairroObj.toLowerCase() : bairroObj.nome.toLowerCase()) === endereco.localidade.toLowerCase()
+                )
+              );
+            }
 
             // Se não encontrou uma franquia e o estado é SP ou RJ, usa a franquia "Matriz"
             if (!franquia && (endereco.uf === 'SP' || endereco.uf === 'RJ')) {

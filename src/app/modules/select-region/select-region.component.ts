@@ -54,13 +54,20 @@ export class SelectRegionComponent {
             console.log('Endereço encontrado:', endereco);
             console.log(this.regions);
 
-            // Comparar a localidade do endereço com os bairros da lista de franquias
-            let region = this.regions.find((r: any) =>
-              r.bairros.some((bairroObj: any) =>
-                // Verifica se o item é um objeto com a propriedade 'nome' ou uma string e compara com endereco.localidade
-                (typeof bairroObj === 'string' ? bairroObj.toLowerCase() : bairroObj.nome.toLowerCase()) === endereco.localidade.toLowerCase()
-              )
-            );
+            let region: any;
+
+            // Se o estado for DF, buscar pela franquia correspondente ao estado
+            if (endereco.uf === 'DF') {
+              // Busca pela franquia correspondente ao estado DF
+              region = this.regions.find((r: any) => r.estado.toLowerCase() === 'df');
+            } else {
+              // Comparar a localidade do endereço com os bairros da lista de franquias
+              region = this.regions.find((r: any) =>
+                r.bairros.some((bairroObj: any) =>
+                  (typeof bairroObj === 'string' ? bairroObj.toLowerCase() : bairroObj.nome.toLowerCase()) === endereco.localidade.toLowerCase()
+                )
+              );
+            }
 
             // Se não encontrou uma franquia e o estado é SP ou RJ, usa a franquia "Matriz"
             if (!region && (endereco.uf === 'SP' || endereco.uf === 'RJ')) {
@@ -94,5 +101,6 @@ export class SelectRegionComponent {
       console.log('CEP incompleto ou inválido.');
     }
   }
+
 
 }

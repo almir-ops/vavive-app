@@ -44,37 +44,37 @@ export class StartComponent  implements OnInit {
         "ID": 1,
         "name": "Limpeza residencial",
         "slogan": "Deixe sua casa brilhando.",
-        "bannerApp": "./assets/images/banner-padrao.png"
+        "bannerApp": "./assets/images/residencial.png"
       },
       {
         "ID": 2,
         "name": "Limpeza empresarial",
         "slogan": "Seu escritório sempre impecável.",
-        "bannerApp": "./assets/images/banner-padrao.png"
+        "bannerApp": "./assets/images/empresarial.png"
       },
       {
         "ID": 3,
         "name": "Limpeza pós obra",
         "slogan": "Tire a poeira da reforma.",
-        "bannerApp": "./assets/images/banner-padrao.png"
+        "bannerApp": "./assets/images/pos-obra.png"
       },
       {
         "ID": 4,
         "name": "Passar roupas",
         "slogan": "Roupas passadas com carinho.",
-        "bannerApp": "./assets/images/banner-padrao.png"
+        "bannerApp": "./assets/images/passar-roupa.png"
       },
       {
         "ID": 5,
         "name": "Cozinhar",
         "slogan": "Delícias preparadas especialmente para você.",
-        "bannerApp": "./assets/images/banner-padrao.png"
+        "bannerApp": "./assets/images/COZINHAR.png"
       },
       {
         "ID": 6,
         "name": "Babá",
         "slogan": "Cuidado e carinho para os pequenos.",
-        "bannerApp": "./assets/images/banner-padrao.png"
+        "bannerApp": "./assets/images/BABA.png"
       },
       {
         "ID": 7,
@@ -111,33 +111,21 @@ export class StartComponent  implements OnInit {
         slogan: "Deixe sua casa brilhando.",
         bannerApp: "./assets/images/banner-padrao.png"
       },*/
-      [
+
         {
-          "name": "Contrate Agora",
-          "slogan": "Encontre profissionais de confiança com apenas um clique.",
-          "bannerApp": "./assets/images/banner-contrate.png"
+          "ID": 1,
+          "name": "Trabalhe conosco",
+          "slogan": "Faça parte de nossa equipe de funcionarios",
+          "bannerApp": "./assets/images/RH.png"
         },
         {
-          "name": "Ofertas Especiais",
-          "slogan": "Descontos imperdíveis nos serviços que você precisa.",
-          "bannerApp": "./assets/images/banner-ofertas.png"
-        },
-        {
+          "ID": 2,
           "name": "Avaliações de Clientes",
           "slogan": "Veja o que nossos clientes dizem sobre nossos serviços.",
-          "bannerApp": "./assets/images/banner-avaliacoes.png"
-        },
-        {
-          "name": "Agendar Serviço",
-          "slogan": "Escolha a data e hora perfeita para o seu atendimento.",
-          "bannerApp": "./assets/images/banner-agendar.png"
-        },
-        {
-          "name": "Nossa Garantia",
-          "slogan": "Serviço garantido ou seu dinheiro de volta.",
-          "bannerApp": "./assets/images/banner-garantia.png"
+          "bannerApp": "./assets/images/RH.png"
         }
-      ]
+
+
 
     ]
     this.slidesUtils2= [

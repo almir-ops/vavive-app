@@ -98,9 +98,9 @@
 
       </swiper-container>
     </div>
-    <div class="px-8 text-[18px] pt-8 pb-8 text-white mt-4">
+    <div class="px-8 text-[16px] pt-8 pb-8 text-white mt-4">
       <h2>
-           Mais recursos, mais vantagens
+           Mais recursos, mais vantagens!
       </h2>
     </div>
 
@@ -116,7 +116,7 @@
         [pagination]="{clickable: true, dynamicBullets: true}" style="--swiper-pagination-color: #FD4F04;">
         <swiper-slide *ngFor="let slide of slidesUtils">
           <div class="shadow-lg pb-2.5 rounded-[5px] h-[200px] w-[200px] flex flex-col justify-between bg-gray-100">
-            <img alt="Silhouette of mountains" class="h-[100px] w-full object-cover rounded-t-[5px]" [src]="slide.bannerApp" />
+            <img alt="Silhouette of mountains" class="h-[150px] w-full object-cover rounded-t-[5px]" src="{{slide.bannerApp}}" />
             <div class="flex flex-col p-2.5 flex-grow">
               <span class="font-semibold">
                 {{slide.name}}
