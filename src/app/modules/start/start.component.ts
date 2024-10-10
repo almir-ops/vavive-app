@@ -80,13 +80,13 @@ export class StartComponent  implements OnInit {
         "ID": 7,
         "name": "Limpeza pesada",
         "slogan": "Para sujeiras difíceis, soluções eficazes.",
-        "bannerApp": "./assets/images/banner-padrao.png"
+        "bannerApp": "./assets/images/LIMPEZA_PESADA.png"
       },
       {
         "ID": 8,
         "name": "Limpeza de evento",
         "slogan": "Seu evento limpo e organizado.",
-        "bannerApp": "./assets/images/banner-padrao.png"
+        "bannerApp": "./assets/images/LIMPEZA_DE_EVENTO.png"
       }
     ];
     this.slidesUtils = [

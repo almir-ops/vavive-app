@@ -54,7 +54,7 @@
             </div>
           </div>
         </div>
-        <div [formGroup]="formAtendimento">
+        <div *ngIf="!multipleAddresses" [formGroup]="formAtendimento">
           <span class="text-azulprincipal font-semibold">Endereço</span>
           <!--
             <div class="flex flex-col" [formGroupName]="'cliente'">
@@ -120,6 +120,9 @@
             ></ion-input>
           </div>
           </div>
+        </div>
+        <div *ngIf="multipleAddresses">
+          Mais de um endereco
         </div>
         <div class="my-6">
           <div class="flex flex-col">

@@ -87,7 +87,8 @@ export class NewServicesComponent  implements OnInit {
     });
   }
   type!:string;
-
+  addressesFound:any[] = [];
+  multipleAddresses = false;
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -192,12 +193,18 @@ export class NewServicesComponent  implements OnInit {
 
       if (user) {
         this.currentClient = user;
-        this.currentEndereco = user.enderecos[0];
-        console.log(this.currentClient);
+        const cep = await this.storage.get('current_cep');
+
+        this.addressesFound = this.currentClient.enderecos.filter((endereco:any) => endereco.cep.replace("-", "") === cep);
 
         this.updateClientData();
-        if(!this.currentEndereco.cep){
+        if(this.addressesFound.length === 0){
           this.getCurrentCep();
+        }else if (this.addressesFound.length > 1){
+          this.multipleAddresses = true
+        }else{
+          this.currentEndereco = this.addressesFound[0];
+
         }
       } else {
         console.log('Nenhum usuário encontrado.');
@@ -219,7 +226,7 @@ export class NewServicesComponent  implements OnInit {
             this.currentEndereco.bairro = val.bairro;
             this.currentEndereco.cidade = val.localidade;
             this.currentEndereco.estado = val.uf;
-            this.currentEndereco.complemento = val.complemento;
+            //this.currentEndereco.complemento = val.complemento;
             this.currentEndereco.zona = val.regiao;
             this.currentEndereco.pais = 'Brasil';
             this.updateClientData();
