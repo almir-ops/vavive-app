@@ -34,6 +34,7 @@ export class AppComponent {
     const frontUrl = await this.storage.get('front_url');
     const endereco = await this.storage.get('endereco');
     console.log(apiUrl);
+    console.log(endereco);
 
     if (!apiUrl || !endereco) {
       this.router.navigate(['/select-region']);

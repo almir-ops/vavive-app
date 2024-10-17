@@ -75,12 +75,15 @@ export class SelectRegionComponent {
             }
 
             if (region) {
-              console.log('Franquia encontrada para a localidade:', region.nome);
+              console.log('Franquia encontrada para a localidade:', region);
               await this.storage.set('endereco', endereco);
               await this.storage.set('front_url', region.url_front);
               await this.storage.set('api_url', region.url);
               await this.storage.set('franquia', region.nome);
               await this.storage.set('current_cep', cep);
+              const apiUrl = await this.storage.get('api_url');
+              console.log(apiUrl);
+              console.log(endereco);
 
               this.router.navigate(['/start']);
             } else {
