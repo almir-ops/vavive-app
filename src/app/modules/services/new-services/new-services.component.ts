@@ -41,12 +41,18 @@ export class NewServicesComponent  implements OnInit {
   @ViewChild('modalDateFim', { static: false }) modalDateFim!: IonModal;
   @ViewChild('modalMissing', { static: false }) modalMissing!: IonModal;
   @ViewChild('modalConfirm', { static: false }) modalConfirm!: IonModal;
+  @ViewChild('modalEnderecos', { static: false }) modalEnderecos!: IonModal;
+  @ViewChild('modalCupom', { static: false }) modalCupom!: IonModal;
 
   services = [
     { ID: 1, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza residencial', descricao: 'Limpeza completa de sua casa, cuidando de todos os ambientes.' },
-    { ID: 2, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Passar roupa', descricao: 'Roupas passadas com cuidado, prontas para qualquer ocasião.' },
-    { ID: 3, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Cozinhar', descricao: 'Preparo de refeições caseiras, sem preocupações na cozinha.' },
-    { ID: 4, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Baba', descricao: 'Cuidado infantil responsável, com segurança e entretenimento.' }
+    { ID: 2, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza empresarial', descricao: 'Seu escritório sempre impecável.' },
+    { ID: 3, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza pós obra', descricao: 'Tire a poeira da reforma.' },
+    { ID: 4, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Passar roupas', descricao: 'Roupas passadas com carinho.' },
+    { ID: 5, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Cozinhar', descricao: 'Delícias preparadas especialmente para você.' },
+    { ID: 6, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Babá', descricao: 'Cuidado e carinho para os pequenos.' },
+    { ID: 7, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza pesada', descricao: 'Para sujeiras difíceis, soluções eficazes.' },
+    { ID: 8, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza de evento', descricao: 'Seu evento limpo e organizado.' }
   ];
 
   planos:uPlano [] = [
@@ -89,6 +95,8 @@ export class NewServicesComponent  implements OnInit {
   type!:string;
   addressesFound:any[] = [];
   multipleAddresses = false;
+  expandInfoValue = false;
+
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -196,6 +204,7 @@ export class NewServicesComponent  implements OnInit {
         const cep = await this.storage.get('current_cep');
 
         this.addressesFound = this.currentClient.enderecos.filter((endereco:any) => endereco.cep.replace("-", "") === cep);
+        console.log(this.addressesFound);
 
         this.updateClientData();
         if(this.addressesFound.length === 0){
@@ -678,5 +687,10 @@ export class NewServicesComponent  implements OnInit {
     this.loadingComponent.dismissLoading();
   }
 
-
+  selectAdress(endereco:any){
+    this.currentEndereco = endereco;
+    this.updateClientData();
+    this.multipleAddresses = false;
+    this.modalEnderecos.dismiss();
+  }
 }
