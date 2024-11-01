@@ -1,4 +1,4 @@
-<div class="h-screen flex flex-col overflow-auto relative bg-white">
+<div class="h-screen flex flex-col overflow-auto relative bg-white pb-24">
 
   <ion-segment [(ngModel)]="screnn" class="top-0 z-10" (ionChange)="segmentChanged($event)">
     <ion-segment-button value="profile">
@@ -9,7 +9,7 @@
     </ion-segment-button>
   </ion-segment>
 
-  <div *ngIf="screnn==='profile'" class="overflow-auto" >
+  <div *ngIf="screnn==='profile'" class="overflow-auto pb-20" >
 
     <div class="w-full flex justify-center px-4">
       <div class="px-2 pb-8 rounded-sm w-full text-[11px]">
@@ -48,12 +48,12 @@
                 <div class="ml-2 flex">
                   Pagamento:
                   <div class="ml-1 -mt-0.5">
-                    <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pagamento realizado'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_pagamento === 'Pagamento realizado'}">
+                    <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pago'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_pagamento === 'Pago'}">
                       <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
                       Pago
                     </span>
 
-                      <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pagamento pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_pagamento  === 'Pagamento pendente'}">
+                      <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_pagamento  === 'Pendente'}">
                         <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
                         Pendente
                       </span>
@@ -83,7 +83,7 @@
     </div>
   </div>
 
-  <div *ngIf="screnn==='payments'" >
+  <div *ngIf="screnn==='payments'" class="overflow-auto pb-20"  >
     <div class="w-full flex justify-center px-4">
       <div class="px-2 pb-8 rounded-sm w-full text-[11px]">
         <div *ngFor="let atendimento of listHistorico" (click)="openOptionsModal(atendimento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
@@ -121,12 +121,12 @@
                 <div class="ml-2 flex">
                   Pagamento:
                   <div class="ml-1 -mt-0.5">
-                    <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pagamento realizado'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_pagamento === 'Pagamento realizado'}">
+                    <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pago'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_pagamento === 'Pago'}">
                       <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
                       Pago
                     </span>
 
-                      <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pagamento pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_pagamento  === 'Pagamento pendente'}">
+                      <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_pagamento  === 'Pendente'}">
                         <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
                         Pendente
                       </span>
@@ -149,7 +149,7 @@
 
         </div>
         <div *ngIf="listHistorico.length === 0">
-          <div class="flex flex-col text-center mt-2.50">
+          <div class="flex flex-col text-center mt-32">
             <img class="h-8" src="./assets/icons/warning.svg">
             <div class="mt-2.5 text-gray-700">Nenhum atendimento encontrado.</div>
           </div>
@@ -168,7 +168,7 @@
       <div class="flex flex-col">
         <label class="text-azulprincipal">Atenção</label>
         <span class="text-xs mb-5">Escolha uma da opções:</span>
-        <div (click)="criaPagamento()"   *ngIf="currentAtendimento.status_pagamento === 'Pagamento pendente' && currentAtendimento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
+        <div (click)="criaPagamento()"   *ngIf="currentAtendimento.status_pagamento === 'Pendente' && currentAtendimento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
           <img class="h-4" src="./assets/icons/banknotes.svg">
           <label class="ml-3 text-xs uppercase">Fazer pagamento</label>
         </div>

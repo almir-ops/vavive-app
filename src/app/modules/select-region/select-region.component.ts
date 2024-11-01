@@ -56,15 +56,21 @@ export class SelectRegionComponent {
 
             let region: any;
 
-            // Se o estado for DF, buscar pela franquia correspondente ao estado
-            if (endereco.uf === 'DF') {
-              // Busca pela franquia correspondente ao estado DF
+            // Primeiro, busca pela cidade na lista de franquias
+            region = this.regions.find((r: any) =>
+              r.cidade.toLowerCase() === endereco.localidade.toLowerCase()
+            );
+
+            // Se não encontrou a cidade e o estado é DF, buscar pela franquia correspondente ao estado
+            if (!region && endereco.uf === 'DF') {
               region = this.regions.find((r: any) => r.estado.toLowerCase() === 'df');
-            } else {
-              // Comparar a localidade do endereço com os bairros da lista de franquias
+            }
+
+            // Se ainda não encontrou, comparar a localidade do endereço com os bairros da lista de franquias
+            if (!region) {
               region = this.regions.find((r: any) =>
                 r.bairros.some((bairroObj: any) =>
-                  (typeof bairroObj === 'string' ? bairroObj.toLowerCase() : bairroObj.nome.toLowerCase()) === endereco.localidade.toLowerCase()
+                  (typeof bairroObj === 'string' ? bairroObj.toLowerCase() : bairroObj.nome.toLowerCase()) === endereco.bairro.toLowerCase()
                 )
               );
             }
@@ -100,6 +106,7 @@ export class SelectRegionComponent {
           console.error('Erro ao buscar o CEP:', error);
         }
       );
+
     } else {
       console.log('CEP incompleto ou inválido.');
     }

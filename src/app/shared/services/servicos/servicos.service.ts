@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment.prod';
+import { ApiService } from '../api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +11,11 @@ export class ServicosService {
 
   private apiUrl = `${environment.baseUrl}servicos`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private apiService: ApiService) { }
 
-  // Método para fazer o GET e obter os dados das franquias
   getServicos(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
+    return this.apiService.loadApiUrl().pipe(
+      switchMap(url => this.http.get<any>(`https://${url}/api/v1/servicos`))
+    );
   }
 }

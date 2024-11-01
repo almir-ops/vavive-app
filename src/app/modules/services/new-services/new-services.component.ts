@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertController, IonicSlides, IonModal, PickerController } from '@ionic/angular';
 import * as moment from 'moment';
@@ -14,13 +14,15 @@ import { AtendimentosService } from 'src/app/shared/services/atendimentos/atendi
 import { LoadingComponent } from 'src/app/shared/components/loading/loading.component';
 import { AnimationOptions } from 'ngx-lottie';
 import { AnimationItem } from 'lottie-web';
+import { CuponsService } from 'src/app/shared/services/cupons/cupons.service';
+import { Moment } from 'moment';
 
 @Component({
   selector: 'app-new-services',
   templateUrl: './new-services.component.html',
   styleUrls: ['./new-services.component.scss'],
 })
-export class NewServicesComponent  implements OnInit {
+export class NewServicesComponent  implements OnInit,AfterViewInit {
 
 
   formAtendimento!: FormGroup;
@@ -37,6 +39,8 @@ export class NewServicesComponent  implements OnInit {
   selectedTime!: string;
   hourInit!: string;
 
+
+  @ViewChild('modalDateInitPlan', { static: false }) modalDateInitPlan!: IonModal;
   @ViewChild('modalDateInit', { static: false }) modalDateInit!: IonModal;
   @ViewChild('modalDateFim', { static: false }) modalDateFim!: IonModal;
   @ViewChild('modalMissing', { static: false }) modalMissing!: IonModal;
@@ -96,6 +100,13 @@ export class NewServicesComponent  implements OnInit {
   addressesFound:any[] = [];
   multipleAddresses = false;
   expandInfoValue = false;
+  currentCupom:any;
+  currentCupomName:any;
+  cupomInvalid = false;
+  currentCupomProv:any;
+  startDate!: Moment;
+  highlightedDates: Array<{ date: string; textColor: string; backgroundColor: string }> = [];
+  addressList:any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -104,7 +115,7 @@ export class NewServicesComponent  implements OnInit {
     private servicos: ServicosService,
     private viaCep: ViacepService,
     private router: Router,
-    private clienteService: ClientesService,
+    private cupomService: CuponsService,
     private route: ActivatedRoute,
     private enderecoService: EnderecosService,
     private atendimentoService: AtendimentosService
@@ -118,29 +129,31 @@ export class NewServicesComponent  implements OnInit {
     this.setMinDate();
     this.generateTimeOptions();
     this.loadUserData();
-    this.servicos.getServicos().subscribe({
-      next: (data) => {
 
-        this.services = this.services.map(service => {
-          const updatedService = data.items.find((apiService: any) => apiService.ID === service.ID);
-          return updatedService ? { ...service, Precos: updatedService.Precos } : service;
-        });
-
-        console.log('Lista de serviços atualizada:', this.services);
-      },
-      error: (err) => {
-        console.error('Erro ao buscar dados de serviços:', err);
-      }
-    });
     this.route.queryParams.subscribe(params => {
       this.type = params['tipo'];
       const i = params['i']
-      console.log(this.type); // 'Cliente', 'Empresa' ou 'Profissional'
       if(this.type){
         this.selectedServiceId = parseInt(this.type);
         this.indexServiceSelected = i
       }
 
+    });
+  }
+
+  ngAfterViewInit() {
+    this.showLoading();
+    this.servicos.getServicos().subscribe({
+      next: (data) => {
+        this.hideLoading();
+        this.services = this.services.map(service => {
+          const updatedService = data.items.find((apiService: any) => apiService.ID === service.ID);
+          return updatedService ? { ...service, Precos: updatedService.Precos } : service;
+        });
+      },
+      error: (err) => {
+        this.hideLoading();
+      }
     });
   }
 
@@ -177,7 +190,7 @@ export class NewServicesComponent  implements OnInit {
       nome_vendedor: ['Cliente'],
       servicos: this.formBuilder.array([]),
       status_atendimento: ['Pendente'],
-      status_pagamento: ['Pagamento pendente'],
+      status_pagamento: ['Pendente'],
       forma_pagamento: ['', Validators.required],
       desconto: [],
       acrestimo: [],
@@ -190,7 +203,8 @@ export class NewServicesComponent  implements OnInit {
       observacaovalor: [],
       plano: ['avulso', Validators.required],
       plano_id: [plano_id],
-      datas_selecionadas: []
+      datas_selecionadas: [],
+      cupom:[]
     });
   }
 
@@ -204,13 +218,17 @@ export class NewServicesComponent  implements OnInit {
         const cep = await this.storage.get('current_cep');
 
         this.addressesFound = this.currentClient.enderecos.filter((endereco:any) => endereco.cep.replace("-", "") === cep);
+        this.addressList = this.currentClient.enderecos;
         console.log(this.addressesFound);
 
         this.updateClientData();
-        if(this.addressesFound.length === 0){
+        if(this.addressList.length === 1){
           this.getCurrentCep();
+          this.currentEndereco = this.addressList[0]
         }else if (this.addressesFound.length > 1){
           this.multipleAddresses = true
+        }else if (this.addressList.length === 0){
+          this.getCurrentCep();
         }else{
           this.currentEndereco = this.addressesFound[0];
 
@@ -226,6 +244,8 @@ export class NewServicesComponent  implements OnInit {
   async getCurrentCep() {
     try {
       const cep = await this.storage.get('current_cep');
+      console.log(cep);
+
       if (cep) {
         this.currentEndereco.cep = cep;
         this.viaCep.buscarEndereco(cep).subscribe({
@@ -270,7 +290,7 @@ export class NewServicesComponent  implements OnInit {
   }
 
   loadNextFiveDays() {
-    this.nextFiveDays = Array.from({ length: 5 }, (_, i) => {
+    this.nextFiveDays = Array.from({ length: 3 }, (_, i) => {
       const date = moment().add(i + 1, 'days');
       return {
         dayOfWeek: this.getAbbreviation(date.format('dddd')),
@@ -282,7 +302,7 @@ export class NewServicesComponent  implements OnInit {
   }
 
   loadNextFiveDaysFinal() {
-    this.nextFiveDaysFinal = Array.from({ length: 5 }, (_, i) => {
+    this.nextFiveDaysFinal = Array.from({ length: 3 }, (_, i) => {
       const date = moment().add(1, 'month').add(i, 'days');
       return {
         dayOfWeek: this.getAbbreviation(date.format('dddd')),
@@ -370,6 +390,12 @@ export class NewServicesComponent  implements OnInit {
     this.modalDateFim.dismiss();
   }
 
+  selectHour(hora:string) {
+    this.selectedTime = hora;
+    this.hourInit = this.selectedTime;
+  }
+
+
   onWillDismiss() {
     if (this.selectedTime) {
       this.hourInit = this.selectedTime;
@@ -393,6 +419,8 @@ export class NewServicesComponent  implements OnInit {
 
   submitNext() {
     console.log(this.isPrecoValid());
+    const dataInicio = moment(this.selectedDate, 'YYYY-MM-DD'); // A data de início do primeiro atendimento
+    const dataFim = moment(this.selectedDateFim, 'YYYY-MM-DD'); // A data de fim do atendimento
 
     if (!this.validateFields()) {
       return; // Se houver campos faltantes, o alerta será mostrado e o processo será interrompido
@@ -407,8 +435,6 @@ export class NewServicesComponent  implements OnInit {
     this.currentClient.enderecos[0].complemento = this.formAtendimento.get('endereco.complemento')?.value;
 
     const plano = this.selectedPlano; // O plano escolhido (semanal, quinzenal, etc.)
-    const dataInicio = moment(this.selectedDate, 'YYYY-MM-DD'); // A data de início do primeiro atendimento
-    const dataFim = moment(this.selectedDateFim, 'YYYY-MM-DD'); // A data de fim do atendimento
 
     if (this.selectedServiceId) {
       this.preco = this.getPrice(this.selectedServiceId, this.hourSelected, plano.plano);
@@ -579,7 +605,7 @@ export class NewServicesComponent  implements OnInit {
           modal.onDidDismiss().then(() => {
             this.navegate('services')
         });
-
+          this.updateCupom();
         },
         error: (err: any) => {
           console.log(err);
@@ -625,16 +651,17 @@ export class NewServicesComponent  implements OnInit {
   }
 
   validateFields() {
-    this.missingFields = []
+    this.missingFields = [];
     // Verificando campos do formulário que são obrigatórios
     const formValues = this.formAtendimento.getRawValue();
+
     if (!formValues.nome) this.missingFields.push('Nome');
     if (!formValues.CPF) this.missingFields.push('CPF');
     if (!formValues.endereco.cep) this.missingFields.push('CEP');
     if (!formValues.endereco.rua) this.missingFields.push('Rua');
     if (!formValues.endereco.bairro) this.missingFields.push('Bairro');
-    if (!formValues.endereco.numero) this.missingFields.push('Digite o numero do endereço');
-    if (!this.selectedTime) this.missingFields.push('Escolha o horario do atendimento');
+    if (!formValues.endereco.numero) this.missingFields.push('Digite o número do endereço');
+    if (!this.selectedTime) this.missingFields.push('Escolha o horário do atendimento');
     if (!this.hourSelected) this.missingFields.push('Escolha a duração do atendimento');
 
     // Verificar os campos que não fazem parte do formulário
@@ -642,10 +669,25 @@ export class NewServicesComponent  implements OnInit {
     if (!this.currentEndereco) this.missingFields.push('Endereço');
     if (!this.selectedServiceId) this.missingFields.push('Selecione um serviço');
 
+    // Verificar data_inicio com formato 'YYYY-MM-DD'
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!this.selectedDate || !dateRegex.test(this.selectedDate)) {
+      this.missingFields.push('Data de início inválida ou ausente (use o formato YYYY-MM-DD)');
+    }
+
     // Se o plano não for avulso, verificar se a data de fim está preenchida
     if (this.selectedPlano.plano !== 'avulso' && !this.selectedDateFim) {
       this.missingFields.push('Selecione a data de encerramento');
     }
+    console.log(this.preco);
+
+    if (formValues.valor_servicos <= 0 && (this.preco && this.preco.valor <= 0)) {
+      this.missingFields.push('O valor dos serviços deve ser maior que 0');
+    }
+    if (formValues.valor_total <= 0 && (this.preco && this.preco.valor <= 0)) {
+      this.missingFields.push('O valor total deve ser maior que 0');
+    }
+
 
     // Retorna true se não houver campos faltantes, ou false com a lista de campos faltantes
     if (this.missingFields.length > 0) {
@@ -654,6 +696,7 @@ export class NewServicesComponent  implements OnInit {
     }
     return true;
   }
+
 
   async showMissingFieldsAlert(missingFields: string[]) {
     console.log(missingFields);
@@ -693,4 +736,126 @@ export class NewServicesComponent  implements OnInit {
     this.multipleAddresses = false;
     this.modalEnderecos.dismiss();
   }
+
+  searchCupom() {
+    this.cupomInvalid = false;
+    this.cupomService.getCuponsByFilters('?nome=' + this.currentCupomName).subscribe({
+      next: (data) => {
+        console.log(data);
+        if (data.items) {
+          const cupom = data.items[0];
+          const isQuantity = cupom.quandidade === cupom.usados;
+          const isPlanDifferentFromAvulsoAndExtra = this.selectedPlano.plano !== 'avulso' && this.selectedPlano.plano !== 'extra';
+
+          if (
+            cupom.ativo &&
+            cupom.status === 'Disponivel' &&
+            moment().isSameOrBefore(moment(cupom.data_validade), 'day') &&
+            !isQuantity &&
+            (!isPlanDifferentFromAvulsoAndExtra || cupom.recorrente === "true") // Verificação ajustada
+          ) {
+            console.log(this.selectedPlano);
+            this.currentCupomProv = cupom;
+          } else {
+            this.cupomInvalid = true;
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao buscar cupons:', err);
+      }
+    });
+  }
+
+  applyCupom(){
+      this.currentCupom = this.currentCupomProv
+      this.formAtendimento.controls['cupom'].setValue(this.currentCupom);
+      this.formAtendimento.controls['desconto'].setValue(this.currentCupom.valor);
+      this.preco.valor -= this.currentCupom.valor;
+      this.modalCupom.dismiss();
+  }
+
+  updateCupom(){
+    if(this.currentCupom){
+      this.currentCupom.usados += 1;
+      if(this.currentCupom.quantidade === this.currentCupom.usados){
+        this.currentCupom.status = 'Usado';
+      }
+      this.currentCupom.ativo = false;
+      this.cupomService.putCupons(this.currentCupom).subscribe({
+        next: (data) => {
+          console.log(data);
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar cupom:', err);
+        }
+      })
+    }
+  }
+  removeCupom(){
+    this.formAtendimento.controls['cupom'].setValue('');
+    this.formAtendimento.controls['desconto'].setValue('')
+    this.preco.valor += this.currentCupom.valor;
+    this.currentCupom = null;
+  }
+
+/*
+  onDateSelectedPlan(event: any) {
+    this.startDate = moment(event.detail.value);
+    console.log("Data de início selecionada:", this.startDate.format('YYYY-MM-DD'));
+    this.highlightedDates = this.generateHighlightedDates();
+  }
+
+  generateHighlightedDates(): Array<{ date: string; textColor: string; backgroundColor: string }> {
+    const endDate = moment(this.selectedDateFim);
+    console.log("Data final:", endDate.format('YYYY-MM-DD'));
+
+    const dates: Array<{ date: string; textColor: string; backgroundColor: string }> = [];
+
+    if (this.selectedPlano.plano === 'semanal') {
+      let currentDate = moment(this.startDate);
+      console.log("Plano semanal - gerando datas:");
+      while (currentDate.isSameOrBefore(endDate)) {
+        dates.push(this.formatHighlightedDate(currentDate));
+        console.log("Data adicionada:", currentDate.format('YYYY-MM-DD'));
+        currentDate = currentDate.add(1, 'weeks'); // Adiciona uma semana
+      }
+    } else if (this.selectedPlano.plano === 'quinzenal') {
+      let currentDate = moment(this.startDate);
+      console.log("Plano quinzenal - gerando datas:");
+      while (currentDate.isSameOrBefore(endDate)) {
+        dates.push(this.formatHighlightedDate(currentDate));
+        console.log("Data adicionada:", currentDate.format('YYYY-MM-DD'));
+        currentDate = currentDate.add(2, 'weeks'); // Adiciona 2 semanas
+      }
+    } else if (this.selectedPlano.plano === '2x-semana') {
+      let currentDate = moment(this.startDate);
+      console.log("Plano 2x por semana - gerando datas:");
+      while (currentDate.isSameOrBefore(endDate)) {
+        dates.push(this.formatHighlightedDate(currentDate)); // Segunda
+        console.log("Data adicionada (segunda):", currentDate.format('YYYY-MM-DD'));
+
+        let nextDay = moment(currentDate).add(1, 'days'); // Terça
+        if (nextDay.isSameOrBefore(endDate)) {
+          dates.push(this.formatHighlightedDate(nextDay));
+          console.log("Data adicionada (terça):", nextDay.format('YYYY-MM-DD'));
+        }
+        currentDate = currentDate.add(1, 'weeks'); // Próxima semana
+      }
+    }
+
+    console.log("Todas as datas geradas:", dates);
+    return dates;
+  }
+
+  formatHighlightedDate(date: moment.Moment): { date: string; textColor: string; backgroundColor: string } {
+    const formattedDate = {
+      date: date.format('YYYY-MM-DD'), // Formato do Ionic
+      textColor: '#ffffff',
+      backgroundColor: '#007BFF' // Cor de fundo para destacar a data
+    };
+    console.log("Data formatada para destaque:", formattedDate);
+    return formattedDate;
+  }
+*/
 }

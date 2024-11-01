@@ -29,8 +29,29 @@
         </svg>
        </div>
      </div>
-     <div (click)="modalCupom.present()" *ngIf="expandInfoValue" class="mx-2 -mt-4 text-center py-2 bg-amarelopaleta rounded-md shadow-md">
+     <div (click)="modalCupom.present()" *ngIf="expandInfoValue && !currentCupom" class="mx-2 -mt-4 text-center text-laranjaprincipal py-2 bg-amarelopaleta rounded-md shadow-md">
       Adicionar cupom
+     </div>
+     <div *ngIf="expandInfoValue && currentCupom" class="flex text-xs -mt-4 py-2 rounded-md">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m9 14.25 6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185ZM9.75 9h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008V13.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+      </svg>
+      <div class="flex justify-between w-full">
+        <div class="flex flex-col ml-3 -mt-1">
+          <div>
+            Cupom: {{currentCupom.nome}}
+          </div>
+          <div>
+            Valor desconto: {{ currentCupom.valor | currency:'BRL':'symbol':'1.2-2' }}
+          </div>
+        </div>
+        <div (click)="removeCupom()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        </div>
+      </div>
+
      </div>
   </div>
   <div class="flex justify-center w-full p-3">
@@ -188,6 +209,7 @@
       <div class="mt-6">
         <div class="flex flex-col">
           <span class="text-azulprincipal font-semibold">Frequencia dos atendimentos</span>
+          <span class="text-sm">Selecione a frequencia que deseja os atendimentos</span>
         </div>
         <ion-radio-group [(ngModel)]="selectedPlano"  (ionChange)="this.calculatePreco();">
           <swiper-container
@@ -326,19 +348,48 @@
           </div>
         </div>
       </div>
+      <!--
+        <div class="py-2 border border-azulprincipal text-azulprincipal rounded-md shadow-md my-6" id="open-custom-dialog-2">
+          <div class="flex flex-col text-center"  *ngIf="!hourInit">
+            <span class="text-sm font-semibold">Selecione a hora</span>
+            <span class="text-xs">(horario que será atendido)</span>
+          </div>
+          <div class="flex flex-col text-center"  *ngIf="hourInit">
+            <span class="text-sm font-semibold">{{hourInit}}</span>
+            <span class="text-xs">(horario que será atendido)</span>
+          </div>
+        </div>
+      -->
+      <div class="flex flex-col">
+        <div class="flex flex-col">
+          <span class="text-azulprincipal font-semibold">Hora de chega</span>
+          <span class="text-sm">Selecione o horario de chegada do profissional</span>
+        </div>
+        <div class="flex justify-between my-2">
+          <div
+            [ngClass]="{'border border-azulprincipal text-azulprincipal ': selectedTime !== '08:00', 'bg-azulprincipal text-white': selectedTime === '08:00'}"
+            class="w-[47%] py-2 rounded-md shadow-md duration-150" (click)="selectHour('08:00')">
+            <div class="flex flex-col text-center" >
+              <span class="text-sm font-semibold">08h - 10h</span>
+            </div>
+          </div>
+          <div
+          [ngClass]="{'border border-azulprincipal text-azulprincipal ': selectedTime !== '12:00', 'bg-azulprincipal text-white': selectedTime === '12:00'}"
+          class="w-[47%] py-2 rounded-md shadow-md duration-150" (click)="selectHour('12:00')">
+            <div class="flex flex-col text-center" >
+              <span class="text-sm font-semibold">12h - 14h</span>
+            </div>
+          </div>
+        </div>
+        <span *ngIf="selectedTime === '12:00' || selectedTime === '08:00'" class="text-azulprincipal text-xs">
+          Profissional chegará a partir de {{selectedTime}}
+        </span>
 
-      <div class="py-2 border border-azulprincipal text-azulprincipal rounded-md shadow-md my-6" id="open-custom-dialog-2">
-        <div class="flex flex-col text-center"  *ngIf="!hourInit">
-          <span class="text-sm font-semibold">Selecione a hora</span>
-          <span class="text-xs">(horario que será atendido)</span>
-        </div>
-        <div class="flex flex-col text-center"  *ngIf="hourInit">
-          <span class="text-sm font-semibold">{{hourInit}}</span>
-          <span class="text-xs">(horario que será atendido)</span>
-        </div>
       </div>
-      <div class="flex flex-col mt-4">
+
+      <div class="flex flex-col mt-5">
         <label class="text-azulprincipal font-semibold">Instruções para o profissional</label>
+        <span class="text-sm">Deixe aqui alguma instrução especifica para o profissional</span>
         <textarea [(ngModel)]="msgProfissional" class="h-24 w-full border border-azulprincipal focus:outline-none rounded-md mt-4 p-4">
 
         </textarea>
@@ -361,13 +412,13 @@
         </div>
       </div>
 
-      <div (click)="submitNext()" class="py-2 bg-azulprincipal text-white rounded-md shadow-md mt-6 mb-6" id="open-custom-dialog-2">
+      <div (click)="submitNext()" class="py-2 bg-azulprincipal text-white rounded-md shadow-md mt-6 mb-6">
         <div class="flex flex-col text-center" >
           <span class="text-sm uppercase font-semibold">Agendar</span>
         </div>
       </div>
 
-      <div (click)="navegate('services')" class="py-2 border border-azulprincipal text-azulprincipal rounded-md shadow-md mt-6 mb-6" id="open-custom-dialog-2">
+      <div (click)="navegate('services')" class="py-2 border border-azulprincipal text-azulprincipal rounded-md shadow-md mt-6 mb-6" >
         <div class="flex flex-col text-center" >
           <span class="text-sm uppercase font-semibold">Voltar</span>
         </div>
@@ -380,8 +431,8 @@
   </div>
   </div>
 </div>
-
-<ion-modal id="example-modal" #modalDateInit trigger="open-custom-dialog-datainicio">
+<!--
+<ion-modal id="example-modal" #modalDateInitPlan trigger="open-custom-dialog-datainicio">
   <ng-template>
     <div class="flex flex-col px-3 pt-3">
       <label class="text-azulprincipal">Data inicio</label>
@@ -393,6 +444,7 @@
       presentation="date"
       [min]="minDate"
       value="2023-11-02"
+      [highlightedDates]="highlightedDates"
       [formatOptions]="{
         date: {
           weekday: 'short',
@@ -400,10 +452,40 @@
           day: '2-digit'
         }
       }"
-      (ionChange)="onDateSelected($event)"
+      (ionChange)="onDateSelectedPlan($event)"
     ></ion-datetime>
   </ng-template>
 </ion-modal>
+-->
+
+
+  <ion-modal id="example-modal" #modalDateInit trigger="open-custom-dialog-datainicio">
+    <ng-template>
+      <div class="flex flex-col px-3 pt-3">
+        <label class="text-azulprincipal">Data inicio</label>
+        <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione o dia do primeiro atendimento</label>
+        <label class="text-sm" *ngIf="selectedPlano.plano === 'avulso'">Selecione o dia do atendimento</label>
+      </div>
+      <ion-datetime
+        id="datetime"
+        presentation="date"
+        [min]="minDate"
+        value="2023-11-02"
+        [formatOptions]="{
+          date: {
+            weekday: 'short',
+            month: 'long',
+            day: '2-digit'
+          }
+        }"
+        (ionChange)="onDateSelected($event)"
+      ></ion-datetime>
+      <div class="-mt-5 mb-3 rounded-md mx-2 p-1 text-xs bg-azulsombreado border border-azulprincipal" *ngIf="selectedPlano.plano !== 'avulso'">
+        <b>OBS:</b> Selecione apenas a data de inicio, as demais datas serão agendadas automaticamente. Após o agendamento é possivel alterar a data do atendimento na aba de serviços.
+      </div>
+    </ng-template>
+  </ion-modal>
+
 
 <ion-modal id="example-modal" #modalDateFim trigger="open-custom-dialog-3">
   <ng-template>
@@ -425,6 +507,7 @@
       }"
       (ionChange)="onDateSelectedFinal($event)"
     ></ion-datetime>
+
   </ng-template>
 </ion-modal>
 
@@ -477,11 +560,29 @@
             label-placement="floating"
             fill="outline"
             class="custom mt-2"
+            (keyup)="cupomInvalid = false"
+            [(ngModel)]="currentCupomName"
         ></ion-input>
       </div>
-
+      <div (click)="searchCupom()" class="mt-2 text-center py-2 bg-amarelopaleta text-laranjaprincipal rounded-md shadow-md">
+        Buscar cupom
+       </div>
+       <div *ngIf="currentCupomProv" class="mt-2 text-center text-xs flex flex-col py-2 bg-laranjaprincipal text-white rounded-md shadow-md">
+        <div>
+          Valor desconto: {{ currentCupomProv.valor | currency:'BRL':'symbol':'1.2-2' }}
+        </div>
+        <div>
+          Validade: {{formatDate( currentCupomProv.data_validade)}}
+        </div>
+       </div>
+       <div *ngIf="cupomInvalid" class="mt-2 text-center text-xs flex flex-col py-2 bg-red-700 text-white rounded-md shadow-md">
+        <div>
+          Cupom vencido ou inativo
+        </div>
+       </div>
       <div class="flex justify-between mt-2">
-        <button class="text-azulprincipal" (click)="modalCupom.dismiss()">Confirmar</button>
+        <button class="text-azulprincipal" (click)="modalCupom.dismiss(); currentCupomProv = null">Fechar</button>
+        <button class="text-laranjaprincipal" *ngIf="currentCupomProv" (click)="applyCupom()">USAR CUPOM</button>
       </div>
     </div>
   </ng-template>

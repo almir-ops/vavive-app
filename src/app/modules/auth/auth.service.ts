@@ -135,30 +135,43 @@ export class AuthService {
     return this.token?.jwtToken;
   }
 
-  saveNewPassword(pass:any, paramUser:any){
-    const cpf = localStorage.getItem('cpfUser')
+  saveNewPassword(pass: any, paramUser: any): Observable<Token> {
+    const cpf = localStorage.getItem('cpfUser');
     const encoded = btoa(cpf + ':' + pass);
-    return this.httpClient.post<Token>( `${environment.baseUrl}updatepass`, encoded).pipe(
+    return this.apiService.loadApiUrl().pipe(
+      switchMap(url =>
+        this.httpClient.post<Token>(`https://${url}/api/v1/${paramUser}/updatepass`, encoded)
+      ),
       take(1)
     );
   }
 
-  forgotPassword(url:any, email:any, paramUser:any){
-    return this.httpClient.post<Token>( `${environment.baseUrl}${paramUser}/forgot?email=${email}&url=${url}`, {"encoded":""}).pipe(
+  forgotPassword(url: any, email: any, paramUser: any): Observable<Token> {
+    return this.apiService.loadApiUrl().pipe(
+      switchMap(apiUrl =>
+        this.httpClient.post<Token>(`https://${apiUrl}/api/v1/${paramUser}/forgot?email=${email}&url=${url}`, { "encoded": "" })
+      ),
       take(1)
     );
   }
 
-  getInfoUser(paramUser:any){
-    return this.httpClient.get<any>( `${environment.baseUrl}${paramUser}/me`).pipe(
+  getInfoUser(paramUser: any): Observable<any> {
+    return this.apiService.loadApiUrl().pipe(
+      switchMap(url =>
+        this.httpClient.get<any>(`https://${url}/api/v1/${paramUser}/me`)
+      ),
       take(1)
     );
   }
 
-  registerNewUser(user:any, paramUser:any){
-    return this.httpClient.post<Token>( `${environment.baseUrl}${paramUser}/signup`, user).pipe(
+  registerNewUser(user: any, paramUser: any): Observable<Token> {
+    return this.apiService.loadApiUrl().pipe(
+      switchMap(url =>
+        this.httpClient.post<Token>(`https://${url}/api/v1/${paramUser}/signup`, user)
+      ),
       take(1)
     );
   }
+
 }
 

@@ -363,6 +363,8 @@ export class ProfileComponent  implements OnInit {
     await this.storage.set('api_url', this.franquiaEncontrada.url);
     await this.storage.set('franquia', this.franquiaEncontrada.nome);
     await this.storage.set('current_cep', this.endereco.cep);
+    console.log(this.endereco);
+
     console.log(this.franquiaEncontrada.url);
     console.log(environment.baseUrl);
 
