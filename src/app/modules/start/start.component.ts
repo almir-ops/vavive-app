@@ -7,6 +7,8 @@ import { Storage } from '@ionic/storage-angular';
 import Swiper from 'swiper';
 import { Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
+import { ServicosService } from 'src/app/shared/services/servicos/servicos.service';
+import { LoadingComponent } from 'src/app/shared/components/loading/loading.component';
 
 register();
 
@@ -30,65 +32,18 @@ export class StartComponent  implements OnInit {
   prependNumber = 1;
 
   user: any
+  @ViewChild('loadingComponent') loadingComponent!: LoadingComponent;
+  loaded = true;
 
   constructor(
     private authService: AuthService,
     private storage: Storage,
-    private router:Router
+    private router:Router,
+    private servicosServices:ServicosService
+
   ) { }
 
   ngOnInit() {
-
-    this.slides =  [
-      {
-        "ID": 1,
-        "name": "Limpeza residencial",
-        "slogan": "Deixe sua casa brilhando.",
-        "bannerApp": "./assets/images/residencial.png"
-      },
-      {
-        "ID": 2,
-        "name": "Limpeza empresarial",
-        "slogan": "Seu escritório sempre impecável.",
-        "bannerApp": "./assets/images/empresarial.png"
-      },
-      {
-        "ID": 3,
-        "name": "Limpeza pós obra",
-        "slogan": "Tire a poeira da reforma.",
-        "bannerApp": "./assets/images/pos-obra.png"
-      },
-      {
-        "ID": 4,
-        "name": "Passar roupas",
-        "slogan": "Roupas passadas com carinho.",
-        "bannerApp": "./assets/images/passar-roupa.png"
-      },
-      {
-        "ID": 5,
-        "name": "Cozinhar",
-        "slogan": "Delícias preparadas especialmente para você.",
-        "bannerApp": "./assets/images/COZINHAR.png"
-      },
-      {
-        "ID": 6,
-        "name": "Babá",
-        "slogan": "Cuidado e carinho para os pequenos.",
-        "bannerApp": "./assets/images/BABA.png"
-      },
-      {
-        "ID": 7,
-        "name": "Limpeza pesada",
-        "slogan": "Para sujeiras difíceis, soluções eficazes.",
-        "bannerApp": "./assets/images/LIMPEZA_PESADA.png"
-      },
-      {
-        "ID": 8,
-        "name": "Limpeza de evento",
-        "slogan": "Seu evento limpo e organizado.",
-        "bannerApp": "./assets/images/LIMPEZA_DE_EVENTO.png"
-      }
-    ];
     this.slidesUtils = [
       /*
       {
@@ -146,6 +101,16 @@ export class StartComponent  implements OnInit {
       }
     ]
     this.getInfoUser();
+    this.servicosServices.getServicos().subscribe({
+      next:(value:any) => {
+        console.log(value);
+        this.slides = value.items;
+      },
+      error:(err:any) => {
+        console.log(err);
+      },
+    })
+
   }
 
   ionViewWillEnter() {
@@ -240,7 +205,20 @@ export class StartComponent  implements OnInit {
     }
   }
 
-  navegateByparam(rota: string, tipo: string,index:any) {
-    this.router.navigate([rota], { queryParams: { tipo: tipo, i: index  } });
+  navegateByparam(rota: string, IDservice: string,index:any) {
+    console.log(IDservice);
+
+    this.router.navigate([rota], { queryParams: { tipo: IDservice, i: index  } });
   }
+
+  showLoading() {
+    this.loaded = true;
+    this.loadingComponent.createLoading();
+  }
+
+  hideLoading() {
+    this.loaded = false;
+    this.loadingComponent.dismissLoading();
+  }
+
 }

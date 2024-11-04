@@ -80,7 +80,6 @@ export class ListServicesComponent  implements OnInit {
   }
 
   getAtendimentos() {
-    this.showLoading();
     this.atendimentoService.filterAtendimentos('cliente_cpf', this.currentClient.cpf).subscribe({
       next: (res: any) => {
         const hoje = moment(); // Data atual
@@ -108,11 +107,9 @@ export class ListServicesComponent  implements OnInit {
 
         console.log('Atendimentos Agendados:', this.listAgendados);
         console.log('Histórico de Atendimentos:', this.listHistorico);
-        this.hideLoading();
       },
       error: (err: any) => {
         console.log(err);
-        this.hideLoading();
       }
     });
   }
@@ -212,7 +209,6 @@ export class ListServicesComponent  implements OnInit {
       next: async (res: any) => {
         console.log(res);
         await Browser.open({ url: res.item.invoiceUrl });
-        this.hideLoading();
       },
       error: (err: any) => {
         console.log(err);

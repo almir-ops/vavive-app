@@ -13,7 +13,7 @@ import { SharedModule } from './shared/shared.module';
 import { HomeComponent } from './modules/home/home.component';
 import { StartComponent } from './modules/start/start.component';
 import {MaskitoDirective} from '@maskito/angular';
-import { TokenProviderInterceptor } from './core/guards/interceptors/token-provider.interceptor';
+import { TokenProviderInterceptor } from './core/interceptors/token-provider.interceptor';
 import { SelectRegionComponent } from './modules/select-region/select-region.component';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { ServicesComponent } from './modules/services/services.component';
@@ -22,6 +22,7 @@ import { NewServicesComponent } from './modules/services/new-services/new-servic
 import { ConfirmServicesComponent } from './modules/services/confirm-services/confirm-services.component';
 import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
+import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,9 @@ import player from 'lottie-web';
     },
     provideLottieOptions({
       player: () => player,
-    })
+    }),
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
+
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

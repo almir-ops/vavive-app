@@ -49,14 +49,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   @ViewChild('modalCupom', { static: false }) modalCupom!: IonModal;
 
   services = [
-    { ID: 1, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza residencial', descricao: 'Limpeza completa de sua casa, cuidando de todos os ambientes.' },
-    { ID: 2, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza empresarial', descricao: 'Seu escritório sempre impecável.' },
-    { ID: 3, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza pós obra', descricao: 'Tire a poeira da reforma.' },
-    { ID: 4, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Passar roupas', descricao: 'Roupas passadas com carinho.' },
-    { ID: 5, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Cozinhar', descricao: 'Delícias preparadas especialmente para você.' },
-    { ID: 6, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Babá', descricao: 'Cuidado e carinho para os pequenos.' },
-    { ID: 7, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza pesada', descricao: 'Para sujeiras difíceis, soluções eficazes.' },
-    { ID: 8, icon:'./assets/icons/home.svg' ,iconwhite:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza de evento', descricao: 'Seu evento limpo e organizado.' }
+    { ID: 1, icon:'./assets/icons/home.svg' ,icon_secundario:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza residencial', descricao: 'Limpeza completa de sua casa, cuidando de todos os ambientes.' },
+
   ];
 
   planos:uPlano [] = [
@@ -107,7 +101,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   startDate!: Moment;
   highlightedDates: Array<{ date: string; textColor: string; backgroundColor: string }> = [];
   addressList:any;
-
+  simpleScreen = false;
+  loaded = true;
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -118,7 +113,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     private cupomService: CuponsService,
     private route: ActivatedRoute,
     private enderecoService: EnderecosService,
-    private atendimentoService: AtendimentosService
+    private atendimentoService: AtendimentosService,
+    private servicosServices:ServicosService
   ) { }
 
   ngOnInit() {
@@ -132,27 +128,52 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
     this.route.queryParams.subscribe(params => {
       this.type = params['tipo'];
-      const i = params['i']
-      if(this.type){
-        this.selectedServiceId = parseInt(this.type);
-        this.indexServiceSelected = i
-      }
+      const i = params['i'];
 
+      if (this.type) {
+        this.servicosServices.getServicos().subscribe({
+          next: (value: any) => {
+            console.log(value);
+            this.services = value.items;
+            this.selectedServiceId = parseInt(this.type);
+            this.indexServiceSelected = i;
+
+            const selectedService = this.services.find(
+              (service: any) => service.ID === this.selectedServiceId
+            );
+
+            if (selectedService) {
+              console.log('Selected Service Name:', selectedService.nome);
+
+              // Define this.simpleScreen como true para os serviços específicos
+              const simpleScreenServices = [
+                'Baba',
+                'Cuidador de idosos',
+                'Limpeza pós obra',
+                'Limpeza pesada'
+              ];
+
+              this.simpleScreen = simpleScreenServices.includes(selectedService.nome);
+            }
+          },
+          error: (err: any) => {
+            console.log(err);
+          },
+        });
+      }
     });
+
   }
 
   ngAfterViewInit() {
-    this.showLoading();
     this.servicos.getServicos().subscribe({
       next: (data) => {
-        this.hideLoading();
         this.services = this.services.map(service => {
           const updatedService = data.items.find((apiService: any) => apiService.ID === service.ID);
           return updatedService ? { ...service, Precos: updatedService.Precos } : service;
         });
       },
       error: (err) => {
-        this.hideLoading();
       }
     });
   }
@@ -377,9 +398,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
 
   onDateSelected(event: any) {
-    this.selectedDate = event.detail.value;
-    console.log(this.modalDateInit);
-
+    this.selectedDate = moment(event.detail.value).format('YYYY-MM-DD');
     this.modalDateInit.dismiss();
   }
 
@@ -590,7 +609,6 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
 
   async saveAtendimentos(atendimentos: any[]) {
-    this.showLoading();
     console.log(atendimentos);
 
     try {
@@ -598,7 +616,6 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
       .subscribe({
         next: (res: any) => {
           console.log(res);
-          this.hideLoading();
           this.modalConfirm.present();
           this.animation = true;
           const modal = this.modalConfirm;
@@ -610,7 +627,6 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
         error: (err: any) => {
           console.log(err);
           console.log(err.error);
-          this.hideLoading();
         },
         complete: () => {
 
@@ -672,7 +688,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     // Verificar data_inicio com formato 'YYYY-MM-DD'
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!this.selectedDate || !dateRegex.test(this.selectedDate)) {
-      this.missingFields.push('Data de início inválida ou ausente (use o formato YYYY-MM-DD)');
+      this.missingFields.push('Data de início inválida ou ausente');
     }
 
     // Se o plano não for avulso, verificar se a data de fim está preenchida
@@ -723,10 +739,12 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   }
 
   showLoading() {
+    this.loaded = true;
     this.loadingComponent.createLoading();
   }
 
   hideLoading() {
+    this.loaded = false;
     this.loadingComponent.dismissLoading();
   }
 

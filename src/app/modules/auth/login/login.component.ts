@@ -90,13 +90,11 @@ export class LoginComponent  implements OnInit{
       email: this.formLogin.controls['username'].value,
       password: this.formLogin.controls['password'].value,
     };
-    this.showLoading();
 
     this.authService.login(user,this.paramUser).subscribe({
       next: (response:any) => {
         console.log(response);
         this.storage.set('param_user', this.paramUser)
-        this.hideLoading();
       },error: (err) =>{
         console.log(err)
         if(err.status === 404){
@@ -108,7 +106,6 @@ export class LoginComponent  implements OnInit{
         if(err === '500'){
 
         }
-        this.hideLoading();
       }
   })
   }

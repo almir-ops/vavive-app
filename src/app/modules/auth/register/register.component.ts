@@ -207,13 +207,11 @@ export class RegisterComponent  implements OnInit {
 
     // Verificação de validação
     if (this.formRegister.valid) {
-      this.showLoading();
 
       // Chama o serviço de registro utilizando o objeto `request` criado acima
       this.authService.registerNewUser(request, 'clientes').subscribe({
         next: (value: any) => {
           console.log(value);
-          this.hideLoading();
           this.alertService.presentAlert(
             'Aviso',
             'Conta criada com sucesso, faça login novamente para prosseguir.',
@@ -224,7 +222,6 @@ export class RegisterComponent  implements OnInit {
         },
         error: (err: any) => {
           console.log(err);
-          this.hideLoading();
           this.alertService.presentAlert('Atenção', `${err.error.detail}`);
         }
       });
@@ -289,7 +286,6 @@ export class RegisterComponent  implements OnInit {
    }
 
    showLoading() {
-    console.log('showLoading');
 
     this.loadingComponent.createLoading();
   }

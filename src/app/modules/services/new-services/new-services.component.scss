@@ -88,3 +88,16 @@ ion-input.custom {
   --max-width: 80%;
   --border-radius: 10px;
 }
+
+.icon-whats {
+  width: 50px;
+  height: 50px;
+  bottom: 50px;
+  right: 50px;
+  color: #fff;
+  border-radius: 50px;
+  text-align: center;
+  font-size: 30px;
+  box-shadow: 1px 1px 2px #888;
+  z-index: 1000;
+}

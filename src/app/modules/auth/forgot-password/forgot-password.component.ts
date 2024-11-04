@@ -81,7 +81,6 @@ export class ForgotPasswordComponent  implements OnInit {
       email: this.formLogin.controls['username'].value,
       password: this.formLogin.controls['password'].value
     };
-    this.showLoading();
 
     this.authService.login(user,this.paramUser).subscribe({
       next: (response:any) => {
@@ -89,10 +88,8 @@ export class ForgotPasswordComponent  implements OnInit {
         //this.router.navigate(['start']);
         this.alertComponent.message = 'Login efetuado com sucesso!';
         this.alertComponent.presentAlert();
-        this.hideLoading();
       },error: (err) =>{
         console.log(err);
-        this.hideLoading();
         //this.invalidUser = true;
         //this.isLoading = false;
       },
