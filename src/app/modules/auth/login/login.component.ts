@@ -54,6 +54,7 @@ export class LoginComponent  implements OnInit{
   ) { }
 
   ngOnInit() {
+
     this.createForm();
     this.getFranquiaInfo();
   }

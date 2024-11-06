@@ -102,7 +102,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   highlightedDates: Array<{ date: string; textColor: string; backgroundColor: string }> = [];
   addressList:any;
   simpleScreen = false;
-  loaded = true;
+
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -736,16 +736,6 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
   navegate(rota:any){
     this.router.navigate([rota]);
-  }
-
-  showLoading() {
-    this.loaded = true;
-    this.loadingComponent.createLoading();
-  }
-
-  hideLoading() {
-    this.loaded = false;
-    this.loadingComponent.dismissLoading();
   }
 
   selectAdress(endereco:any){

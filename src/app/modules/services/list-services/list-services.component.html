@@ -192,6 +192,10 @@
           <img class="h-4" src="./assets/icons/x-mark.svg">
           <label class="ml-3 text-xs uppercase">Cancelar atendimento</label>
         </div>
+        <div *ngIf="canCancelAtendimento()" (click)="openModalCancelAtendimento(); modalEvaluation.prensent()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+          <img class="h-4" src="./assets/icons/x-mark.svg">
+          <label class="ml-3 text-xs uppercase">Avaliar atendimento</label>
+        </div>
       </div>
 
       <div class="flex justify-between mt-4">
@@ -299,6 +303,50 @@
       <div *ngIf="currentAtendimento.observacoes_de_prestador" class="flex mt-2.5">
         <img class="mr-2 h-4" src="./assets/icons/information-circle.svg">
         <span>Observações: {{currentAtendimento.observacoes_de_prestador}}</span>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<ion-modal id="evaluation-modal" #modalEvaluation trigger="open-custom-dialog-evaluation">
+  <ng-template>
+    <div class="flex flex-col p-5">
+      <h2 class="text-xl font-semibold text-center mb-4">Avaliação de Atendimento</h2>
+
+      <!-- Campo de avaliação -->
+      <div class="mb-4">
+        <label class="text-lg text-gray-700" for="evaluation-textarea">Sua Avaliação</label>
+        <textarea
+          id="evaluation-textarea"
+          rows="4"
+          class="w-full p-3 border border-gray-300 rounded-md"
+          placeholder="Deixe sua avaliação aqui..."
+        ></textarea>
+      </div>
+
+      <!-- Estrelas para avaliação -->
+      <div class="flex justify-center space-x-2">
+        <svg
+          *ngFor="let star of stars; let i = index"
+          [attr.class]="i < rating ? 'fill-yellow-400' : 'fill-gray-300'"
+          class="w-8 h-8 cursor-pointer"
+          (click)="setRating(i + 1)"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
+        </svg>
+      </div>
+
+      <!-- Botão para fechar ou enviar -->
+      <div class="mt-4 flex justify-center space-x-4">
+        <ion-button (click)="closeModal()">Fechar</ion-button>
+        <ion-button (click)="submitReview()">Enviar</ion-button>
       </div>
     </div>
   </ng-template>

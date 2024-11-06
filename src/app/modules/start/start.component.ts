@@ -100,7 +100,7 @@ export class StartComponent  implements OnInit {
         bannerApp: "./assets/images/banner-padrao.png"
       }
     ]
-    this.getInfoUser();
+    this.initializeUserData();
     this.servicosServices.getServicos().subscribe({
       next:(value:any) => {
         console.log(value);
@@ -113,10 +113,31 @@ export class StartComponent  implements OnInit {
 
   }
 
+  async initializeUserData() {
+    await this.loadUserFromStorage();
+  }
+  /*
   ionViewWillEnter() {
-    console.log('ionViewWillEnter');
     this.getInfoUser();
   }
+  */
+  async loadUserFromStorage() {
+    try {
+      const userData = await Preferences.get({ key: 'user_data' });
+      if (userData.value) {
+        // Usuário já está salvo localmente
+        this.user = JSON.parse(userData.value);
+        this.userLoggedOut = false;
+        console.log('User loaded from local storage:', this.user);
+      } else {
+        // Nenhum usuário salvo, chamando API para obter informações do usuário
+        await this.getInfoUser();
+      }
+    } catch (error) {
+      console.error('Error loading user from storage:', error);
+    }
+  }
+
 
   ngAfterViewInit() {
     // Acesso direto ao Swiper após a inicialização
@@ -142,13 +163,12 @@ export class StartComponent  implements OnInit {
             this.userLoggedOut = false;
             this.user = response;
 
-            // Armazenar o usuário de forma segura
+            // Armazenar o usuário de forma segura para chamadas futuras
             await this.saveUserSecurely(response);
           },
           error: (err: any) => {
             console.log(err);
             this.userLoggedOut = true;
-
           }
         });
       } else {
@@ -209,16 +229,6 @@ export class StartComponent  implements OnInit {
     console.log(IDservice);
 
     this.router.navigate([rota], { queryParams: { tipo: IDservice, i: index  } });
-  }
-
-  showLoading() {
-    this.loaded = true;
-    this.loadingComponent.createLoading();
-  }
-
-  hideLoading() {
-    this.loaded = false;
-    this.loadingComponent.dismissLoading();
   }
 
 }

@@ -27,10 +27,12 @@ export class ListServicesComponent  implements OnInit {
   @ViewChild('modalCancel', { static: false }) modalCancel!: IonModal;
   @ViewChild('modalDate', { static: false }) modalDate!: IonModal;
   @ViewChild('modalDetails', { static: false }) modalDetails!: IonModal;
+  @ViewChild('modalEvaluation', { static: false }) modalEvaluation!: IonModal;
 
   cancelDescription: string = '';
   minDate!: string;
-
+  rating = 0;
+  stars = [1, 2, 3, 4, 5];
   constructor(
     private atendimentoService: AtendimentosService,
     private router: Router,
@@ -165,14 +167,6 @@ export class ListServicesComponent  implements OnInit {
     this.router.navigate([rota]);
   }
 
-  showLoading() {
-    this.loadingComponent.createLoading();
-  }
-
-  hideLoading() {
-    this.loadingComponent.dismissLoading();
-  }
-
   getDia(data: string): string {
     return moment(data, 'YYYY-MM-DD').format('DD');
   }
@@ -198,7 +192,6 @@ export class ListServicesComponent  implements OnInit {
   }
 
   criaPagamento(){
-    this.showLoading();
     const pagamento = {
       value: this.currentAtendimento.valor_total,
       atendimento: this.currentAtendimento.ID,
@@ -260,7 +253,7 @@ export class ListServicesComponent  implements OnInit {
       next:(res:any)=>{
         console.log(res);
         this.modalCancel.dismiss();
-        this.getAtendimentos();
+        //this.getAtendimentos();
       },
       error:(err:any)=>{
         console.log(err);
@@ -312,4 +305,23 @@ export class ListServicesComponent  implements OnInit {
   formatDate(date:string){
     return moment(date).format('DD/MM/YYYY')
   }
+
+    // Função para definir a nota
+    setRating(starIndex: number) {
+      this.rating = starIndex;
+    }
+
+    // Função para fechar o modal
+    closeModal() {
+      // Fechar o modal logicamente (pode ser implementado com seu modal controlador)
+      console.log('Modal fechado');
+    }
+
+    // Função para enviar a avaliação
+    submitReview() {
+      // Obter o valor do textarea e a nota para envio
+      const reviewText = (document.getElementById('evaluation-textarea') as HTMLTextAreaElement).value;
+      console.log('Avaliação: ', reviewText, 'Nota: ', this.rating);
+      // Aqui você pode adicionar a lógica para enviar os dados para o servidor ou API
+    }
 }
