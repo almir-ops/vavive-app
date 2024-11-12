@@ -1,7 +1,8 @@
-<div class="z-50">
+<div class="z-50" >
   <app-toolbar></app-toolbar>
 </div>
-<div class="overflow-auto bg-radial-blue-radial z-20">
+
+<div class="overflow-auto bg-radial-blue-radial z-20" *ngIf="slides.length > 0">
   <div *ngIf="!userLoggedOut"  class="px-8 text-[18px] py-3 ">
     <h2>
       <span *ngIf="user" class="text-white">
@@ -12,7 +13,7 @@
   <div *ngIf="userLoggedOut"  class="px-8 text-[14px] py-3 bg-amarelosecundario border-b-[0.3px] border-white">
     <h2>
       <span class="text-white font-semibold flex justify-between">
-        Já possui conta? <span class="text-azulprincipal" (click)="navegate('account/sign')">Entre aqui</span>
+        <span class="text-azulprincipal" (click)="navegate('account/sign')">Entre aqui</span>
       </span>
     </h2>
   </div>
@@ -22,7 +23,7 @@
         <span class="text-amareloprincipal font-semibold">
           Facilite sua vida:
         </span>
-         escolha e agende serviços domésticos.
+         escolha e agende serviços domésticos e empresarias.
       </h2>
     </div>
     <div class="swiper" *ngIf="slides.length > 0">
@@ -59,7 +60,7 @@
 
   <div class="mt-10 mb-8 mx-6 border border-white rounded-md px-6 py-4 text-[16px] bg-amarelosecundario/90 font-[500] text-gray-800 shadow-md">
     <h2>
-      Você pode contar com a gente para todo tipo de tarefa doméstica!
+      Você pode deixar com a gente e VAVIVÊ!
     </h2>
   </div>
   <div class="pb-8">

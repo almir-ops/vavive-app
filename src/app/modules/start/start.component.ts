@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
 import { ServicosService } from 'src/app/shared/services/servicos/servicos.service';
 import { LoadingComponent } from 'src/app/shared/components/loading/loading.component';
-
 register();
 
 @Component({
@@ -71,13 +70,16 @@ export class StartComponent  implements OnInit {
           "ID": 1,
           "name": "Trabalhe conosco",
           "slogan": "Faça parte de nossa equipe de funcionarios",
-          "bannerApp": "./assets/images/RH.png"
+          "bannerApp": "./assets/images/quero-trabalhar.jpeg",
+          "link":"https://www.vavive.com.br/seja-um-franqueado-oficial"
         },
+
         {
           "ID": 2,
-          "name": "Avaliações de Clientes",
-          "slogan": "Veja o que nossos clientes dizem sobre nossos serviços.",
-          "bannerApp": "./assets/images/RH.png"
+          "name": "Seja um franquiado",
+          "slogan": "Não perca tempo e comece a faturar muito!",
+          "bannerApp": "./assets/images/RH.png",
+          "link": "https://www.vavive.com.br/seja-um-franqueado-oficial"
         }
 
 
@@ -100,28 +102,39 @@ export class StartComponent  implements OnInit {
         bannerApp: "./assets/images/banner-padrao.png"
       }
     ]
-    this.initializeUserData();
     this.servicosServices.getServicos().subscribe({
-      next:(value:any) => {
-        console.log(value);
-        this.slides = value.items;
+      next: (value: any) => {
+        console.log(value.items);
+        const filteredItems = value.items.filter((item: any) => item.nome !== 'Limpeza pesada');
+
+        // Ordena os itens com base no nome
+        this.slides = filteredItems.sort((a: any, b: any) => {
+          if (a.nome === 'Limpeza residencial') return -1;
+          if (b.nome === 'Limpeza residencial') return 1;
+          if (a.nome === 'Limpeza empresarial') return -1;
+          if (b.nome === 'Limpeza empresarial') return 1;
+          return 0;
+        });
+
+        console.log(this.slides);
       },
-      error:(err:any) => {
+      error: (err: any) => {
         console.log(err);
       },
-    })
+    });
 
+  }
+
+  ionViewWillEnter() {
+    this.initializeUserData();
   }
 
   async initializeUserData() {
     await this.loadUserFromStorage();
   }
-  /*
-  ionViewWillEnter() {
-    this.getInfoUser();
-  }
-  */
+
   async loadUserFromStorage() {
+
     try {
       const userData = await Preferences.get({ key: 'user_data' });
       if (userData.value) {

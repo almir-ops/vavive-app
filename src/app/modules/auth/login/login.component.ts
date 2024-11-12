@@ -88,7 +88,7 @@ export class LoginComponent  implements OnInit{
 
   login(){
     const user: IUser = {
-      email: this.formLogin.controls['username'].value,
+      email: this.formLogin.controls['username'].value.toLowerCase(),
       password: this.formLogin.controls['password'].value,
     };
 

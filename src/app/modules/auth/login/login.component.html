@@ -9,15 +9,16 @@
         </div>
         <div class="flex flex-col">
           <input
-          class="w-full h-10 border-b-2 mt-10 p-2 focus:outline-none"
-          placeholder="Email"
-          formControlName="username"
-          autocomplete="true"
-        />
-        <div *ngIf="formLoginControl['username'].value && formLoginControl['username'].errors">
-          <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+            class="w-full h-10 border-b-2 mt-10 p-2 focus:outline-none"
+            placeholder="Email"
+            formControlName="username"
+            autocomplete="true"
+          />
+          <div *ngIf="formLoginControl['username'].value && formLoginControl['username'].errors">
+            <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
+          </div>
         </div>
-        </div>
+
         <div class="relative">
           <input
             class="w-full h-10 border-b-2 mt-3 p-2 focus:outline-none"

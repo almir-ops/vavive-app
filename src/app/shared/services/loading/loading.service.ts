@@ -1,4 +1,3 @@
-// loading.service.ts
 import { Injectable } from '@angular/core';
 import { LoadingController } from '@ionic/angular';
 
@@ -6,15 +5,14 @@ import { LoadingController } from '@ionic/angular';
   providedIn: 'root'
 })
 export class LoadingService {
-  private loading!: HTMLIonLoadingElement;
-  private requestCount = 0;
+  public loading: HTMLIonLoadingElement | null = null;
+  public requestCount = 0; // Contador de requisições ativas
 
   constructor(private loadingController: LoadingController) {}
 
-  async showLoading(): Promise<void> {
-    this.requestCount++;
-
-    if (this.requestCount === 1) { // Exibe o loading apenas na primeira requisição
+  // Exibe o loading apenas se for a primeira requisição
+  async showLoading() {
+    if (this.requestCount === 0 && !this.loading) {
       this.loading = await this.loadingController.create({
         animated: true,
         backdropDismiss: false,
@@ -24,17 +22,22 @@ export class LoadingService {
         cssClass: 'custom-spinner'
       });
       await this.loading.present();
+      //console.log('[showLoading] Loading exibido');
     }
+    this.requestCount++; // Incrementa o contador de requisições
   }
 
-  async hideLoading(): Promise<void> {
-    if (this.requestCount > 0) {
-      this.requestCount--;
-    }
+  // Esconde o loading apenas se todas as requisições terminarem
+  async hideLoading() {
+    this.requestCount--; // Decrementa o contador de requisições
+    console.log('[hideLoading] requestCount:', this.requestCount);
+    console.log('[hideLoading] loading:', this.loading);
 
-    if (this.requestCount === 0 && this.loading) { // Esconde o loading apenas quando todas as requisições terminam
+
+    if (this.requestCount === 0 && this.loading) {
       await this.loading.dismiss();
-      this.loading = null as any;
+      this.loading = null; // Reseta o objeto loading após o dismiss
+      //console.log('[hideLoading] Loading escondido');
     }
   }
 }

@@ -134,9 +134,20 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
         this.servicosServices.getServicos().subscribe({
           next: (value: any) => {
             console.log(value);
-            this.services = value.items;
+            const filteredItems = value.items.filter((item: any) => item.nome !== 'Limpeza pesada');
+
+            filteredItems.sort((a: any, b: any) => {
+              if (a.nome === 'Limpeza residencial') return -1;
+              if (b.nome === 'Limpeza residencial') return 1;
+              if (a.nome === 'Limpeza empresarial') return -1;
+              if (b.nome === 'Limpeza empresarial') return 1;
+              return 0;
+            });
+            this.services = filteredItems;
+
             this.selectedServiceId = parseInt(this.type);
             this.indexServiceSelected = i;
+            console.log(this.selectedServiceId);
 
             const selectedService = this.services.find(
               (service: any) => service.ID === this.selectedServiceId
@@ -147,7 +158,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
               // Define this.simpleScreen como true para os serviços específicos
               const simpleScreenServices = [
-                'Baba',
+                'Babá',
                 'Cuidador de idosos',
                 'Limpeza pós obra',
                 'Limpeza pesada'
@@ -155,6 +166,28 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
               this.simpleScreen = simpleScreenServices.includes(selectedService.nome);
             }
+          },
+          error: (err: any) => {
+            console.log(err);
+          },
+        });
+      }else{
+        console.log('Nenhum tipo de serviço selecionado.');
+        this.servicosServices.getServicos().subscribe({
+          next: (value: any) => {
+            console.log(value);
+            const filteredItems = value.items.filter((item: any) => item.nome !== 'Limpeza pesada' && item.nome !== 'Babá' && item.nome !== 'Cuidador de idosos'&& item.nome !== 'Limpeza pós obra'&& item.nome !== 'Limpeza pesada');
+
+            filteredItems.sort((a: any, b: any) => {
+              if (a.nome === 'Limpeza residencial') return -1;
+              if (b.nome === 'Limpeza residencial') return 1;
+              if (a.nome === 'Limpeza empresarial') return -1;
+              if (b.nome === 'Limpeza empresarial') return 1;
+              return 0;
+            });
+            this.services = filteredItems;
+
+
           },
           error: (err: any) => {
             console.log(err);

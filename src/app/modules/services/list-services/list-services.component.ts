@@ -211,6 +211,11 @@ export class ListServicesComponent  implements OnInit {
     })
   }
 
+  openModalEvaluation(){
+    this.modalOptions.dismiss();
+    this.modalEvaluation.present();
+  }
+
   openModalCancelAtendimento(){
     this.modalOptions.dismiss();
     this.modalCancel.present();
