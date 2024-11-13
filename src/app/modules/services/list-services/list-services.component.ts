@@ -8,6 +8,8 @@ import { IonModal } from '@ionic/angular';
 import { PagamentosService } from 'src/app/shared/services/pagamentos/pagamentos.service';
 import { Browser } from '@capacitor/browser';
 import { AlertService } from 'src/app/shared/services/alert.service';
+import { ProfissionalService } from 'src/app/shared/services/profissional/profissional.service';
+import { AlertComponent } from 'src/app/shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-list-services',
@@ -28,22 +30,28 @@ export class ListServicesComponent  implements OnInit {
   @ViewChild('modalDate', { static: false }) modalDate!: IonModal;
   @ViewChild('modalDetails', { static: false }) modalDetails!: IonModal;
   @ViewChild('modalEvaluation', { static: false }) modalEvaluation!: IonModal;
+  @ViewChild('modalStatusCliente', { static: false }) modalStatusCliente!: IonModal;
+  @ViewChild('alertComponent') alertComponent!: AlertComponent;
 
   cancelDescription: string = '';
   minDate!: string;
   rating = 0;
   stars = [1, 2, 3, 4, 5];
+  optionListStatusCliente: any;
+  selectStatusValue:any;
   constructor(
     private atendimentoService: AtendimentosService,
     private router: Router,
     private pagamentoService: PagamentosService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private profissionalService: ProfissionalService,
 
   ) { }
 
   ngOnInit() {
     this.loadUserData();
-    this.setMinDate()
+    this.setMinDate();
+
   }
 
   setMinDate() {
@@ -212,6 +220,7 @@ export class ListServicesComponent  implements OnInit {
   }
 
   openModalEvaluation(){
+
     this.modalOptions.dismiss();
     this.modalEvaluation.present();
   }
@@ -231,9 +240,33 @@ export class ListServicesComponent  implements OnInit {
     this.modalDetails.present();
   }
 
+  openModalStatusCliente(){
+    this.selectStatusValue = this.currentAtendimento.status_cliente;
+    this.optionListStatusCliente = [
+      {label:'Aguardando',valor:'Aguardando'},
+      {label:'Atraso - Avisou',valor:'Atraso - Avisou'},
+      {label:'Atraso - Chateado',valor:'Atraso - chateado'},
+      {label:'Atraso - Urgente',valor:'Atraso - urgente'},
+      {label:'Em atendimento',valor:'Em atendimento'},
+      {label:'Produto/equipamento',valor:'Produto/equipamento'},
+      //{label:'Prof - duplicada',valor:'Prof - duplicada'},
+      {label:'Prof - foto',valor:'Prof - foto'},
+      {label:'Prof - função errada',valor:'Prof - função errada'},
+      {label:'Prof - sem carteirinha',valor:'Prof - sem carteirinha'},
+      {label:'Prof. na porta',valor:'Prof. na porta'},
+      {label:'Problema serio - urgente',valor:'Problema serio - urgente'},
+      {label:'Sem status',valor:''},
+      //{label:'Troca - chateado',valor:'Troca - chateado'},
+      //{label:'Troca - prof diferente',valor:'Troca - prof diferente'},
+      //{label:'Troca - urgente',valor:'Troca - urgente'},
+    ];
+    this.modalOptions.dismiss();
+    this.modalStatusCliente.present();
+  }
+
   confirmedAtendimento(){
-    this.currentAtendimento.status_atendimento = 'Realizado'
-    this.currentAtendimento.status_profissional = 'Concluido'
+    this.currentAtendimento.status_atendimento = 'Realizado';
+    this.currentAtendimento.status_profissional = 'Concluido';
     this.updateAtendimento(this.currentAtendimento)
   }
 
@@ -297,7 +330,9 @@ export class ListServicesComponent  implements OnInit {
     this.currentAtendimento.datas_selecionadas = JSON.stringify(updatedDatasSelecionadasArray);
   }
 
+  updateProfissional(){
 
+  }
 
   onDateSelected(event: any) {
     this.updateDatasSelecionadas(this.currentAtendimento.data_inicio,event.detail.value);
@@ -314,6 +349,8 @@ export class ListServicesComponent  implements OnInit {
     // Função para definir a nota
     setRating(starIndex: number) {
       this.rating = starIndex;
+      console.log(this.rating);
+
     }
 
     // Função para fechar o modal
@@ -324,9 +361,27 @@ export class ListServicesComponent  implements OnInit {
 
     // Função para enviar a avaliação
     submitReview() {
+      console.log(this.currentAtendimento);
+
       // Obter o valor do textarea e a nota para envio
       const reviewText = (document.getElementById('evaluation-textarea') as HTMLTextAreaElement).value;
       console.log('Avaliação: ', reviewText, 'Nota: ', this.rating);
-      // Aqui você pode adicionar a lógica para enviar os dados para o servidor ou API
+
+      this.currentAtendimento.nota = this.rating;
+      this.currentAtendimento.avaliacao = reviewText;
+
+      //this.updateAtendimento(this.currentAtendimento);
+
+
+    }
+
+    submitStatus(){
+      this.currentAtendimento.status_cliente = this.selectStatusValue;
+      this.updateAtendimento(this.currentAtendimento);
+      this.modalStatusCliente.dismiss();
+    }
+
+    openAlert() {
+      this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
     }
 }

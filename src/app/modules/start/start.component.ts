@@ -239,9 +239,10 @@ export class StartComponent  implements OnInit {
   }
 
   navegateByparam(rota: string, IDservice: string,index:any) {
-    console.log(IDservice);
-
     this.router.navigate([rota], { queryParams: { tipo: IDservice, i: index  } });
   }
 
+  navegateExternalLink(link: string) {
+    window.open(link, '_blank');
+  }
 }

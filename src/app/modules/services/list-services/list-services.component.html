@@ -7,6 +7,8 @@
     <ion-segment-button value="payments">
       <ion-label>Historico</ion-label>
     </ion-segment-button>
+    <button (click)="openAlert()">Abrir Alerta</button> <!-- Botão para abrir o alerta -->
+
   </ion-segment>
 
   <div *ngIf="screnn==='profile'" class="overflow-auto pb-20" >
@@ -38,14 +40,17 @@
               <div>
                 Serviço: {{atendimento.servicos[0].nome}}
               </div>
-              <div>
-                Plano: {{capitalizeFirstLetter(atendimento.plano)}}
-              </div>
               <div class="flex">
                 <div>
+                  Plano: {{capitalizeFirstLetter(atendimento.plano)}}
+                </div>
+                <div class="ml-2">
                   Valor: {{atendimento.valor_total | currency:'BRL' }}
                 </div>
-                <div class="ml-2 flex">
+              </div>
+              <div class="flex">
+
+                <div class="flex">
                   Pagamento:
                   <div class="ml-1 -mt-0.5">
                     <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pago'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_pagamento === 'Pago'}">
@@ -111,14 +116,16 @@
               <div>
                 Serviço: {{atendimento.servicos[0].nome}}
               </div>
-              <div>
-                Plano: {{capitalizeFirstLetter(atendimento.plano)}}
-              </div>
               <div class="flex">
                 <div>
+                  Plano: {{capitalizeFirstLetter(atendimento.plano)}}
+                </div>
+                <div class="ml-2">
                   Valor: {{atendimento.valor_total | currency:'BRL' }}
                 </div>
-                <div class="ml-2 flex">
+              </div>
+              <div class="flex">
+                <div class="flex">
                   Pagamento:
                   <div class="ml-1 -mt-0.5">
                     <span class="shadow-sm" *ngIf="atendimento.status_pagamento === 'Pago'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_pagamento === 'Pago'}">
@@ -168,7 +175,11 @@
       <div class="flex flex-col">
         <label class="text-azulprincipal">Atenção</label>
         <span class="text-xs mb-5">Escolha uma da opções:</span>
-        <div (click)="criaPagamento()"   *ngIf="currentAtendimento.status_pagamento === 'Pendente' && currentAtendimento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
+        <div (click)="openModalStatusCliente()"   *ngIf="currentAtendimento.status_pagamento === 'Pendente' && currentAtendimento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
+          <img class="h-4" src="./assets/icons/user-circle.svg">
+          <label class="ml-3 text-xs uppercase">Status cliente</label>
+        </div>
+        <div (click)="criaPagamento()"   *ngIf="currentAtendimento.status_pagamento === 'Pendente' && currentAtendimento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
           <img class="h-4" src="./assets/icons/banknotes.svg">
           <label class="ml-3 text-xs uppercase">Fazer pagamento</label>
         </div>
@@ -236,7 +247,7 @@
   </ng-template>
 </ion-modal>
 
-<ion-modal id="example-modal" #modalDate trigger="open-custom-dialog-datainicio">
+<ion-modal id="details-modal" #modalDate trigger="open-custom-dialog-datainicio">
   <ng-template>
     <div class="flex flex-col px-3 pt-3">
       <label class="text-azulprincipal">Data atendimento</label>
@@ -308,21 +319,10 @@
   </ng-template>
 </ion-modal>
 
-<ion-modal id="evaluation-modal" #modalEvaluation trigger="open-custom-dialog-evaluation">
+<ion-modal id="details-modal" #modalEvaluation trigger="open-custom-dialog-evaluation">
   <ng-template>
     <div class="flex flex-col p-5">
-      <h2 class="text-xl font-semibold text-center mb-4">Avaliação de Atendimento</h2>
-
-      <!-- Campo de avaliação -->
-      <div class="mb-4">
-        <label class="text-lg text-gray-700" for="evaluation-textarea">Sua Avaliação</label>
-        <textarea
-          id="evaluation-textarea"
-          rows="4"
-          class="w-full p-3 border border-gray-300 rounded-md"
-          placeholder="Deixe sua avaliação aqui..."
-        ></textarea>
-      </div>
+      <h2 class="text-xl text-center mb-4">Avaliação de Atendimento</h2>
 
       <!-- Estrelas para avaliação -->
       <div class="flex justify-center space-x-2">
@@ -335,7 +335,7 @@
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
+          stroke-width="1"
           stroke-linecap="round"
           stroke-linejoin="round"
         >
@@ -343,13 +343,65 @@
         </svg>
       </div>
 
-      <!-- Botão para fechar ou enviar -->
-      <div class="mt-4 flex justify-center space-x-4">
-        <ion-button (click)="closeModal()">Fechar</ion-button>
-        <ion-button (click)="submitReview()">Enviar</ion-button>
+      <!-- Campo de avaliação -->
+      <div class="mb-4 mt-1">
+        <label class="text-lg text-gray-700 " for="evaluation-textarea">Descrição:</label>
+        <textarea
+          id="evaluation-textarea"
+          rows="4"
+          class="w-full p-3 border border-gray-300 rounded-md"
+          placeholder="Deixe sua avaliação aqui..."
+        ></textarea>
       </div>
+
+      <!-- Botão para fechar ou enviar -->
+      <div class="mt-4 flex justify-between space-x-4">
+        <button (click)="closeModal()">Fechar</button>
+        <!-- Desabilitar o botão se a descrição for menor que 5 letras -->
+        <button
+        [ngClass]="{'text-gray-400 bg-gray-200': rating === 0,'text-white bg-azulprincipal': rating > 0 }"
+        [disabled]="rating === 0"
+        class="duration-100 py-1 px-2 rounded-md shadow-sm"
+        (click)="submitReview()">
+        Enviar
+        </button>
+      </div>
+
+
+    </div>
+  </ng-template>
+</ion-modal>
+
+<ion-modal id="details-modal" #modalStatusCliente trigger="open-custom-dialog-evaluation">
+  <ng-template>
+    <div class="flex flex-col p-5">
+      <h2 class="text-xl text-center mb-4">Status do cliente</h2>
+
+      <!-- Campo de avaliação -->
+      <div class="mb-4 mt-1">
+        <label class="text-lg text-gray-700 " for="evaluation-textarea">Status:</label>
+        <select
+        [(ngModel)]="selectStatusValue"
+        class="h-9 w-full border-[1px] border-gray-300 rounded-md focus:outline-none pl-2">
+          <option *ngFor="let option of optionListStatusCliente" value="{{option.valor}}">{{option.label}}</option>
+        </select>
+      </div>
+
+      <!-- Botão para fechar ou enviar -->
+      <div class="mt-4 flex justify-between space-x-4">
+        <button (click)="closeModal()">Fechar</button>
+        <!-- Desabilitar o botão se a descrição for menor que 5 letras -->
+        <button
+        class="duration-100 py-1 px-2 rounded-md shadow-sm text-white bg-azulprincipal"
+        (click)="submitStatus()">
+        Alterar
+        </button>
+      </div>
+
+
     </div>
   </ng-template>
 </ion-modal>
 
 <app-loading #loadingComponent></app-loading>
+<app-alert #alertComponent></app-alert>

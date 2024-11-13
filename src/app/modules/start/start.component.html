@@ -115,7 +115,7 @@
         [autoplay]="true"
         [spaceBetween]="10"
         [pagination]="{clickable: true, dynamicBullets: true}" style="--swiper-pagination-color: #FD4F04;">
-        <swiper-slide *ngFor="let slide of slidesUtils">
+        <swiper-slide *ngFor="let slide of slidesUtils" (click)="navegateExternalLink(slide.link)">
           <div class="shadow-lg pb-2.5 rounded-[5px] h-[240px] w-[200px] flex flex-col justify-between bg-gray-100">
             <img alt="Silhouette of mountains" class="h-[150px] w-full object-cover rounded-t-[5px]" src="{{slide.bannerApp}}" />
             <div class="flex flex-col p-2.5 flex-grow">

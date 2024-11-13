@@ -85,9 +85,7 @@ export class ForgotPasswordComponent  implements OnInit {
     this.authService.login(user,this.paramUser).subscribe({
       next: (response:any) => {
         console.log(response);
-        //this.router.navigate(['start']);
-        this.alertComponent.message = 'Login efetuado com sucesso!';
-        this.alertComponent.presentAlert();
+
       },error: (err) =>{
         console.log(err);
         //this.invalidUser = true;
