@@ -7,7 +7,6 @@
     <ion-segment-button value="payments">
       <ion-label>Historico</ion-label>
     </ion-segment-button>
-    <button (click)="openAlert()">Abrir Alerta</button> <!-- Botão para abrir o alerta -->
 
   </ion-segment>
 
@@ -21,12 +20,12 @@
               <div class="flex">
                 OS: {{atendimento.ID}}
                 <div class="ml-1 -mt-0.5">
-                  <span class="shadow-sm" *ngIf="atendimento.status_atendimento === 'Realizado'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_atendimento === 'Realizado'}">
+                  <span class="shadow-sm" *ngIf="atendimento.status_atendimento === 'Concluido'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_atendimento === 'Concluido'}">
                     <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
                     Realizado
                   </span>
 
-                    <span class="shadow-sm" *ngIf="atendimento.status_atendimento  !== 'Realizado' && atendimento.status_atendimento  !== 'Cancelado'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_atendimento  !== 'Realizado' && atendimento.status_atendimento  !== 'Cancelado'}">
+                    <span class="shadow-sm" *ngIf="atendimento.status_atendimento  !== 'Concluido' && atendimento.status_atendimento  !== 'Cancelado'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_atendimento  !== 'Concluido' && atendimento.status_atendimento  !== 'Cancelado'}">
                       <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
                       Agendado
                     </span>
@@ -97,12 +96,12 @@
               <div class="flex">
                 OS: {{atendimento.ID}}
                 <div class="ml-1 -mt-0.5">
-                  <span class="shadow-sm" *ngIf="atendimento.status_atendimento === 'Realizado'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_atendimento === 'Realizado'}">
+                  <span class="shadow-sm" *ngIf="atendimento.status_atendimento === 'Concluido'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': atendimento.status_atendimento === 'Concluido'}">
                     <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
                     Realizado
                   </span>
 
-                    <span class="shadow-sm" *ngIf="atendimento.status_atendimento  !== 'Realizado' && atendimento.status_atendimento  !== 'Cancelado'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_atendimento  !== 'Realizado' && atendimento.status_atendimento  !== 'Cancelado'}">
+                    <span class="shadow-sm" *ngIf="atendimento.status_atendimento  !== 'Concluido' && atendimento.status_atendimento  !== 'Cancelado'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': atendimento.status_atendimento  !== 'Concluido' && atendimento.status_atendimento  !== 'Cancelado'}">
                       <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
                       Agendado
                     </span>

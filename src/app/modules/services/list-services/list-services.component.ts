@@ -99,7 +99,7 @@ export class ListServicesComponent  implements OnInit {
         res.items.forEach((atendimento: any) => {
           const dataInicio = moment(atendimento.data_inicio, 'YYYY-MM-DD'); // Converte a data_inicio para um objeto moment
 
-          if (atendimento.status_atendimento === 'Cancelado'|| atendimento.status_atendimento === 'Realizado') {
+          if (atendimento.status_atendimento === 'Cancelado'|| atendimento.status_atendimento === 'Concluido') {
             // Atendimentos cancelados vão para o histórico, independente da data
             this.listHistorico.push(atendimento);
           } else if (dataInicio.isBefore(hoje, 'day') ) {
@@ -136,7 +136,7 @@ export class ListServicesComponent  implements OnInit {
     const dataValida = dataInicioAtendimento.isSameOrBefore(dataAtual, 'day');
     const horaValida = horaDeEntradaAtendimento.isSameOrBefore(dataAtual, 'minute');
 
-    return this.currentAtendimento.status_atendimento !== 'Realizado' && dataValida && horaValida;
+    return this.currentAtendimento.status_atendimento !== 'Concluido' && dataValida && horaValida;
   }
 
   canChangeDate(): boolean {
@@ -150,7 +150,7 @@ export class ListServicesComponent  implements OnInit {
     const diferencaDias = dataInicioAtendimento.diff(dataAtual, 'days');
 
     return this.currentAtendimento.status_atendimento !== 'Cancelado' &&
-           this.currentAtendimento.status_atendimento !== 'Realizado' &&
+           this.currentAtendimento.status_atendimento !== 'Concluido' &&
            diferencaDias >= 1;
   }
 
@@ -167,7 +167,7 @@ export class ListServicesComponent  implements OnInit {
 
     // Permite cancelar se o status não for "Cancelado" ou "Realizado" e a diferença de dias for maior ou igual a 1
     return this.currentAtendimento.status_atendimento !== 'Cancelado' &&
-           this.currentAtendimento.status_atendimento !== 'Realizado' &&
+           this.currentAtendimento.status_atendimento !== 'Concluido' &&
            diferencaDias >= 1;
   }
 
@@ -265,9 +265,15 @@ export class ListServicesComponent  implements OnInit {
   }
 
   confirmedAtendimento(){
-    this.currentAtendimento.status_atendimento = 'Realizado';
-    this.currentAtendimento.status_profissional = 'Concluido';
-    this.updateAtendimento(this.currentAtendimento)
+    if(this.currentAtendimento.profissional.length === 0){
+      this.alertService.presentAlert('Atenção ', `Atendimento sem profissional, impossivel confirmar.`);
+      return
+    }else{
+      this.currentAtendimento.profissional[0].atendimento_feitos =+ 1;
+      this.currentAtendimento.status_atendimento = 'Concluido';
+      this.currentAtendimento.status_profissional = 'Concluido';
+      this.updateAtendimento(this.currentAtendimento);
+    }
   }
 
   confirmCancel() {
