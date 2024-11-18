@@ -16,13 +16,13 @@ export class ClientesService {
 
   createClient(cliente: uCliente) {
     return this.apiService.loadApiUrl().pipe(
-      switchMap(url => this.httpCliente.post(`${url}/signup`, cliente))
+      switchMap(url => this.httpCliente.post(`https://${url}/api/v1/signup`, cliente))
     );
   }
 
   updateClient(cliente: uCliente) {
     return this.apiService.loadApiUrl().pipe(
-      switchMap(url => this.httpCliente.put(`${url}/${cliente.ID}`, cliente))
+      switchMap(url => this.httpCliente.put(`https://${url}/${cliente.ID}`, cliente))
     );
   }
 

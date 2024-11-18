@@ -112,5 +112,8 @@ export class SelectRegionComponent {
     }
   }
 
+  openExternalLink(url: string): void {
+    window.open(url, '_blank');
+  }
 
 }

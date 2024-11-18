@@ -348,7 +348,7 @@
         <textarea
           id="evaluation-textarea"
           rows="4"
-          class="w-full p-3 border border-gray-300 rounded-md"
+          class="w-full p-3 border border-gray-300 rounded-md mt-1"
           placeholder="Deixe sua avaliação aqui..."
         ></textarea>
       </div>
@@ -360,7 +360,7 @@
         <button
         [ngClass]="{'text-gray-400 bg-gray-200': rating === 0,'text-white bg-azulprincipal': rating > 0 }"
         [disabled]="rating === 0"
-        class="duration-100 py-1 px-2 rounded-md shadow-sm"
+        class="duration-100 py-1 px-2 rounded-sm shadow-sm"
         (click)="submitReview()">
         Enviar
         </button>

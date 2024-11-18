@@ -26,6 +26,9 @@
       <div *ngIf="franquiaNotFound" class="bounce bg-amareloprincipal rounded-md shadow-md text-center text-gray-800 p-2 mt-10 ">
         Não atendemos essa região no momento
       </div>
+      <div *ngIf="franquiaNotFound" class="bounce bg-verdepaleta rounded-md shadow-md text-center text-azulprincipal p-2 mt-4" (click)="openExternalLink('https://www.vavive.com.br/seja-um-franqueado-oficial')">
+        Não encontrou? Seja um franquado!
+      </div>
     </div>
   </div>
 </div>

@@ -10,6 +10,8 @@ import { Browser } from '@capacitor/browser';
 import { AlertService } from 'src/app/shared/services/alert.service';
 import { ProfissionalService } from 'src/app/shared/services/profissional/profissional.service';
 import { AlertComponent } from 'src/app/shared/components/alert/alert.component';
+import { FinancasService } from 'src/app/shared/services/financas/financas.service';
+import { RepasseService } from 'src/app/shared/services/repasses/repasse.service';
 
 @Component({
   selector: 'app-list-services',
@@ -45,6 +47,8 @@ export class ListServicesComponent  implements OnInit {
     private pagamentoService: PagamentosService,
     private alertService: AlertService,
     private profissionalService: ProfissionalService,
+    private financasService: FinancasService,
+    private repasseService: RepasseService
 
   ) { }
 
@@ -269,10 +273,13 @@ export class ListServicesComponent  implements OnInit {
       this.alertService.presentAlert('Atenção ', `Atendimento sem profissional, impossivel confirmar.`);
       return
     }else{
-      this.currentAtendimento.profissional[0].atendimento_feitos =+ 1;
+      this.currentAtendimento.profissional[0].atendimentos_feitos =+ 1;
       this.currentAtendimento.status_atendimento = 'Concluido';
       this.currentAtendimento.status_profissional = 'Concluido';
       this.updateAtendimento(this.currentAtendimento);
+      this.updateProfissional(this.currentAtendimento.profissional[0]);
+      this.openModalEvaluation();
+      this.criaRepasse(this.currentAtendimento)
     }
   }
 
@@ -336,10 +343,6 @@ export class ListServicesComponent  implements OnInit {
     this.currentAtendimento.datas_selecionadas = JSON.stringify(updatedDatasSelecionadasArray);
   }
 
-  updateProfissional(){
-
-  }
-
   onDateSelected(event: any) {
     this.updateDatasSelecionadas(this.currentAtendimento.data_inicio,event.detail.value);
     this.currentAtendimento.data_inicio = event.detail.value;
@@ -376,9 +379,12 @@ export class ListServicesComponent  implements OnInit {
       this.currentAtendimento.nota = this.rating;
       this.currentAtendimento.avaliacao = reviewText;
 
-      //this.updateAtendimento(this.currentAtendimento);
-
-
+      this.updateAtendimento(this.currentAtendimento);
+      const valorMedia = this.calcularMediaNota(this.currentAtendimento.profissional[0].atendimentos_feitos, this.currentAtendimento.nota)
+      console.log(valorMedia);
+      this.currentAtendimento.profissional[0].rating = valorMedia;
+      this.updateProfissional(this.currentAtendimento.profissional[0]);
+      this.modalEvaluation.dismiss();
     }
 
     submitStatus(){
@@ -387,7 +393,140 @@ export class ListServicesComponent  implements OnInit {
       this.modalStatusCliente.dismiss();
     }
 
-    openAlert() {
-      this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
+    criaRepasse(atendimento: any) {
+      const atendimentoID = atendimento.ID.toString();
+
+      // Use async/await to get the repasse value
+      const getRepasseValue = async () => {
+        let valorRepasse: number | undefined = await this.buscaValorRepasse(atendimento.duracao, atendimento.profissional[0].grupo_repasse);
+
+        console.log('Valor Repasse:', valorRepasse);
+
+        if (valorRepasse === 0 || valorRepasse === undefined || valorRepasse === null) {
+          valorRepasse = this.profissionalService.calcularValorRepasses(atendimento.duracao, atendimento.profissional[0].grupo_repasse);
+          console.log('Valor Repasse calculado:', valorRepasse);
+        }
+
+        return valorRepasse;
+      };
+
+      // Function to create the 'financa' object
+      const criarFinanca = (valorRepasse: number) => {
+        if (atendimento.repasse_personalizado) {
+          return {
+            nome: atendimento.profissional[0].nome,
+            tipo_financa: "Repasses",
+            observacao: atendimento.repasse_observacao,
+            valor: atendimento.repasse_valor,
+            situacao: "Pendente",
+            forma_de_pagamento: atendimento.repasse_tipo_pagamento,
+            atendimento: { ID: atendimento.ID },
+            profissional: { ID: atendimento.profissional[0].ID },
+            estado: atendimento.endereco.estado,
+            tipo: "Repasse",
+            target_invoice: "profissional",
+            data_vencimento: atendimento.data_inicio
+          };
+        } else {
+          return {
+            nome: atendimento.profissional[0].nome,
+            tipo_financa: "Repasses",
+            observacao: "refente ao atendimento com OS: " + atendimento.ID,
+            valor: valorRepasse ?? 0, // Default to 0 if valorRepasse is still undefined
+            situacao: "Pendente",
+            forma_de_pagamento: atendimento.forma_de_pagamento,
+            atendimento: { ID: atendimento.ID },
+            profissional: { ID: atendimento.profissional[0].ID },
+            estado: atendimento.endereco.estado,
+            tipo: "Repasse",
+            target_invoice: "profissional",
+            data_vencimento: atendimento.data_inicio
+          };
+        }
+      };
+
+      // Use async/await for the whole method
+      const processarRepasse = async () => {
+        try {
+          const valorRepasse = await getRepasseValue();
+          console.log('Final Valor Repasse:', valorRepasse);
+
+          // Executa a verificação de financas antes de criar o repasse
+          this.financasService.getRPagamentosByDatesAndFilter(atendimento.data_inicio, atendimento.data_inicio, '&tipo=Repasse&atendimento_id=' + atendimento.ID)
+            .subscribe({
+              next: (res: any) => {
+                // Apenas cria o repasse se não houver resultado na busca de financa
+                console.log(res);
+                if (res.items.length === 0) {
+                  const financa = criarFinanca(valorRepasse);
+                  // Faz a requisição para criar a financa
+                  console.log(financa);
+
+                  this.financasService.postFinancas([financa]).subscribe({
+                    next: (res: any) => {
+                      console.log('Repasse criado:', res);
+                    },
+                    error: (err: any) => {
+                      console.error('Erro ao criar repasse:', err);
+                    }
+                  });
+                } else {
+                  console.log('Repasse já existe, não será criado.');
+                }
+              },
+              error: (err: any) => {
+                console.error('Erro ao buscar financas:', err);
+              }
+            });
+        } catch (error) {
+          console.error('Erro ao processar o repasse:', error);
+        }
+      };
+
+      processarRepasse();
     }
+
+    buscaValorRepasse(duracao: any, grupo_repasse: any): Promise<number | undefined> {
+      return new Promise((resolve, reject) => {
+        this.repasseService.getRepassesByFilters('?duracao=' + duracao + '&grupo_repasse=' + grupo_repasse).subscribe({
+          next: (res: any) => {
+            if (res.items && res.items.length > 0 && res.items[0].valor != null) {
+              console.log('Valor encontrado ', res.items[0].valor);
+              resolve(res.items[0].valor);
+            } else {
+              console.log('Nenhum valor encontrado. Usando valor padrão ou undefined.');
+              resolve(undefined); // ou um valor padrão, como resolve(0)
+            }
+          },
+          error: (err: any) => {
+            console.error(err);
+            reject(err);
+          }
+        });
+      });
+    }
+
+    updateProfissional(profissional:any){
+      this.profissionalService.putProfissional(profissional)
+      .subscribe(
+        response => {
+          console.log(response);
+        },
+        error => {
+          //this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
+
+        }
+      );
+    }
+
+    calcularMediaNota( quantidadeAtendimentos: number,somaNotas: number): number {
+      if (quantidadeAtendimentos === 0) {
+        // Evita divisão por zero
+        return 0;
+      }
+
+      const media = somaNotas / quantidadeAtendimentos;
+      return parseFloat(media.toFixed(2)); // Arredonda para 2 casas decimais
+    }
+
 }

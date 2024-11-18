@@ -134,7 +134,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
         this.servicosServices.getServicos().subscribe({
           next: (value: any) => {
             console.log(value);
-            const filteredItems = value.items.filter((item: any) => item.nome !== 'Limpeza pesada');
+            const filteredItems = value.items.filter((item: any) => item.nome !== 'Limpeza pesada' && item.nome !== 'Babá' && item.nome !== 'Cuidador de idosos'&& item.nome !== 'Limpeza pós obra'&& item.nome !== 'Limpeza pesada');
 
             filteredItems.sort((a: any, b: any) => {
               if (a.nome === 'Limpeza residencial') return -1;

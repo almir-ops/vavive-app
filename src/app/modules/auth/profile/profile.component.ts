@@ -373,5 +373,8 @@ export class ProfileComponent  implements OnInit {
     this.navegate('account/sign')
   }
 
+  openExternalLink(url: string): void {
+    window.open(url, '_blank');
+  }
 
 }

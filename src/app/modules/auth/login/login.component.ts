@@ -127,8 +127,11 @@ export class LoginComponent  implements OnInit{
     this.router.navigate([rota]);
   }
 
-
   navigateToForgotPass() {
     this.router.navigate(['account/forgot']);
+  }
+
+  openExternalLink(url: string): void {
+    window.open(url, '_blank'); // Abre em uma nova aba/janela
   }
 }
