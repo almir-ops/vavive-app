@@ -102,7 +102,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   highlightedDates: Array<{ date: string; textColor: string; backgroundColor: string }> = [];
   addressList:any;
   simpleScreen = false;
-
+  selectServiceSimple!: any;
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -134,8 +134,16 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
         this.servicosServices.getServicos().subscribe({
           next: (value: any) => {
             console.log(value);
-            const filteredItems = value.items.filter((item: any) => item.nome !== 'Limpeza pesada' && item.nome !== 'Babá' && item.nome !== 'Cuidador de idosos'&& item.nome !== 'Limpeza pós obra'&& item.nome !== 'Limpeza pesada');
 
+            // Filtra os serviços indesejados
+            const filteredItems = value.items.filter((item: any) =>
+              item.nome !== 'Limpeza pesada' &&
+              item.nome !== 'Babá' &&
+              item.nome !== 'Cuidador de idosos' &&
+              item.nome !== 'Limpeza pós obra'
+            );
+
+            // Ordena os serviços desejados
             filteredItems.sort((a: any, b: any) => {
               if (a.nome === 'Limpeza residencial') return -1;
               if (b.nome === 'Limpeza residencial') return 1;
@@ -143,18 +151,26 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
               if (b.nome === 'Limpeza empresarial') return 1;
               return 0;
             });
+
             this.services = filteredItems;
 
-            this.selectedServiceId = parseInt(this.type);
-            this.indexServiceSelected = i;
-            console.log(this.selectedServiceId);
+            // Converte o tipo selecionado para número e encontra o serviço correspondente
+            this.selectedServiceId = parseInt(this.type, 10);
 
-            const selectedService = this.services.find(
+            const selectedService = value.items.find(
               (service: any) => service.ID === this.selectedServiceId
             );
 
+            // Encontra o índice do serviço selecionado na lista filtrada e ordenada
+            this.indexServiceSelected = filteredItems.findIndex(
+              (service: any) => service.ID === this.selectedServiceId
+            );
+
+            console.log('Índice do serviço selecionado:', this.indexServiceSelected);
+
             if (selectedService) {
               console.log('Selected Service Name:', selectedService.nome);
+              this.selectServiceSimple = selectedService;
 
               // Define this.simpleScreen como true para os serviços específicos
               const simpleScreenServices = [
@@ -171,6 +187,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
             console.log(err);
           },
         });
+
       }else{
         console.log('Nenhum tipo de serviço selecionado.');
         this.servicosServices.getServicos().subscribe({

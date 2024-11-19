@@ -175,6 +175,16 @@ export class ListServicesComponent  implements OnInit {
            diferencaDias >= 1;
   }
 
+  canAvaliacao(): boolean {
+    if (!this.currentAtendimento) {
+      return false;
+    }
+
+    return this.currentAtendimento.status_atendimento !== 'Cancelado' &&
+           this.currentAtendimento.status_atendimento === 'Concluido' &&
+           this.currentAtendimento.nota === 0;
+  }
+
   navegate(rota:any){
     this.router.navigate([rota]);
   }

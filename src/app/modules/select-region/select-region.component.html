@@ -24,10 +24,22 @@
         Precisamos verificar o local de atendimento para confirmar a disponibilidade na sua região.
       </div>
       <div *ngIf="franquiaNotFound" class="bounce bg-amareloprincipal rounded-md shadow-md text-center text-gray-800 p-2 mt-10 ">
-        Não atendemos essa região no momento
+        Não atendemos essa região no momento.
       </div>
-      <div *ngIf="franquiaNotFound" class="bounce bg-verdepaleta rounded-md shadow-md text-center text-azulprincipal p-2 mt-4" (click)="openExternalLink('https://www.vavive.com.br/seja-um-franqueado-oficial')">
-        Não encontrou? Seja um franquado!
+      <div  *ngIf="franquiaNotFound" class="relative">
+        <div class="bounce bg-verdepaleta rounded-md shadow-md text-center text-azulprincipal p-2 mt-4" (click)="openExternalLink('https://www.vavive.com.br/seja-um-franqueado-oficial')">
+          <div class="flex flex-col">
+            <span>
+              Aproveite e seja um franquiado!
+            </span>
+          </div>
+        </div>
+        <div class="absolute -bottom-14 right-0 opacity-0 animate-fade-in -rotate-[30deg] ">
+          <svg class=" pulsate " xmlns="http://www.w3.org/2000/svg" version="1.1" width="80px" height="80px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <g><path style="opacity:0.835" fill="#bb9d49" d="M 25.5,7.5 C 29.0071,6.99353 32.1737,7.66019 35,9.5C 36.2148,14.0509 36.8814,18.7176 37,23.5C 37.7247,22.9415 38.5581,22.6082 39.5,22.5C 41.8721,23.1034 44.0387,24.1034 46,25.5C 50.7784,23.4245 54.2784,24.7578 56.5,29.5C 61.0595,27.4491 64.2262,28.7824 66,33.5C 66.6667,43.5 66.6667,53.5 66,63.5C 65.1161,70.0489 61.6161,74.5489 55.5,77C 46.8333,77.6667 38.1667,77.6667 29.5,77C 23.7591,71.3758 18.5924,65.2091 14,58.5C 13.3333,56.1667 13.3333,53.8333 14,51.5C 16.6153,47.2171 19.6153,43.2171 23,39.5C 23.3333,29.8333 23.6667,20.1667 24,10.5C 24.5133,9.47344 25.0133,8.47344 25.5,7.5 Z"/></g>
+            <g><path style="opacity:1" fill="#feeda2" d="M 27.5,9.5 C 29.7224,9.17798 31.5557,9.84464 33,11.5C 33.1681,20.1858 33.6681,28.8525 34.5,37.5C 35.3236,34.2152 35.8236,30.8818 36,27.5C 38.3333,24.8333 40.6667,24.8333 43,27.5C 43.1764,30.8818 43.6764,34.2152 44.5,37.5C 45.3184,34.8929 45.8184,32.2263 46,29.5C 48.3333,26.8333 50.6667,26.8333 53,29.5C 53.1816,32.2263 53.6816,34.8929 54.5,37.5C 55.48,31.6296 58.3133,30.2962 63,33.5C 63.6667,44.1667 63.6667,54.8333 63,65.5C 61.6001,68.9024 59.4335,71.7357 56.5,74C 47.9105,75.5762 39.2438,75.9095 30.5,75C 24.9036,69.4069 20.0703,63.2402 16,56.5C 16.4325,51.3099 18.7659,46.9766 23,43.5C 23.1816,46.2263 23.6816,48.8929 24.5,51.5C 25.3327,38.1791 25.8327,24.8458 26,11.5C 26.7172,10.9558 27.2172,10.2891 27.5,9.5 Z"/></g>
+          </svg>
+        </div>
       </div>
     </div>
   </div>

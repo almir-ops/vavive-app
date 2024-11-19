@@ -59,7 +59,7 @@ import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
     provideLottieOptions({
       player: () => player,
     }),
-    //{ provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
 
   ],
   bootstrap: [AppComponent],
