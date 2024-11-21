@@ -31,6 +31,7 @@ export class ListServicesComponent  implements OnInit {
   @ViewChild('modalCancel', { static: false }) modalCancel!: IonModal;
   @ViewChild('modalDate', { static: false }) modalDate!: IonModal;
   @ViewChild('modalDetails', { static: false }) modalDetails!: IonModal;
+  @ViewChild('modalDetailsProfissional', { static: false }) modalDetailsProfissional!: IonModal;
   @ViewChild('modalEvaluation', { static: false }) modalEvaluation!: IonModal;
   @ViewChild('modalStatusCliente', { static: false }) modalStatusCliente!: IonModal;
   @ViewChild('alertComponent') alertComponent!: AlertComponent;
@@ -254,6 +255,16 @@ export class ListServicesComponent  implements OnInit {
     this.modalDetails.present();
   }
 
+  openModalDetailsProfissional(){
+    if(this.currentAtendimento.profissional.length > 0){
+      this.modalOptions.dismiss();
+      this.modalDetailsProfissional.present();
+    }else{
+      this.alertService.presentAlert('Atenção ', `Atendimento sem profissional escalado.`);
+
+    }
+  }
+
   openModalStatusCliente(){
     this.selectStatusValue = this.currentAtendimento.status_cliente;
     this.optionListStatusCliente = [
@@ -390,6 +401,7 @@ export class ListServicesComponent  implements OnInit {
       this.currentAtendimento.avaliacao = reviewText;
 
       this.updateAtendimento(this.currentAtendimento);
+      this.currentAtendimento.profissional[0].atendimentos_feitos =+ 1;
       const valorMedia = this.calcularMediaNota(this.currentAtendimento.profissional[0].atendimentos_feitos, this.currentAtendimento.nota)
       console.log(valorMedia);
       this.currentAtendimento.profissional[0].rating = valorMedia;

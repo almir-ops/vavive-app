@@ -182,7 +182,7 @@
           <img class="h-4" src="./assets/icons/banknotes.svg">
           <label class="ml-3 text-xs uppercase">Fazer pagamento</label>
         </div>
-        <div *ngIf="currentAtendimento.profissional.length > 0" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+        <div (click)="openModalDetailsProfissional()" *ngIf="currentAtendimento.profissional.length > 0" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
           <img class="h-4" src="./assets/icons/identification.svg">
           <label class="ml-3 text-xs uppercase">Ver profissional</label>
         </div>
@@ -318,10 +318,42 @@
   </ng-template>
 </ion-modal>
 
+<ion-modal id="details-modal" #modalDetailsProfissional>
+  <ng-template>
+    <div class="flex flex-col px-3 pt-3">
+      <label class="text-azulprincipal">Detalhes do profissional</label>
+    </div>
+
+    <div class="w-full flex justify-center mt-2.5">
+      <img class="rounded-full shadow-md m-2 w-[40%] h-[40%]" *ngIf="currentAtendimento.profissional[0].avatar === ''" src="./assets/icons/user.svg">
+      <img class="rounded-full shadow-md m-2 w-[40%] h-[40%] object-cover" *ngIf="currentAtendimento.profissional[0].avatar" src="{{currentAtendimento.profissional[0].avatar}}">
+    </div>
+
+    <div class="flex-col flex px-3 py-5 text-xs">
+      <div class="flex">
+        <img class="mr-2 h-4" src="./assets/icons/identification.svg">
+        <span>Matricula: {{currentAtendimento.profissional[0].ID}}</span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/user-circle.svg">
+        <span>Nome: {{currentAtendimento.profissional[0].nome}}</span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/check-circle.svg">
+        <span>Atendimentos feitos: {{currentAtendimento.profissional[0].atendimentos_feitos}}</span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/star.svg">
+        <span>Nota: {{currentAtendimento.profissional[0].rating}}</span>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
 <ion-modal id="details-modal" #modalEvaluation trigger="open-custom-dialog-evaluation">
   <ng-template>
     <div class="flex flex-col p-5">
-      <h2 class="text-xl text-center mb-4">Avaliação de Atendimento</h2>
+      <h2 class="text-azulprincipal text-center mb-4">Avaliação de Atendimento</h2>
 
       <!-- Estrelas para avaliação -->
       <div class="flex justify-center space-x-2">
@@ -344,7 +376,7 @@
 
       <!-- Campo de avaliação -->
       <div class="mb-4 mt-1">
-        <label class="text-lg text-gray-700 " for="evaluation-textarea">Descrição:</label>
+        <label class=" text-gray-700 " for="evaluation-textarea">Descrição:</label>
         <textarea
           id="evaluation-textarea"
           rows="4"
@@ -355,7 +387,7 @@
 
       <!-- Botão para fechar ou enviar -->
       <div class="mt-4 flex justify-between space-x-4">
-        <button (click)="closeModal()">Fechar</button>
+        <button (click)="modalEvaluation.dismiss()">Fechar</button>
         <!-- Desabilitar o botão se a descrição for menor que 5 letras -->
         <button
         [ngClass]="{'text-gray-400 bg-gray-200': rating === 0,'text-white bg-azulprincipal': rating > 0 }"
