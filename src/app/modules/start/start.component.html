@@ -58,10 +58,24 @@
 
   </div>
 
-  <div class="mt-10 mb-8 mx-6 border border-white rounded-md px-6 py-4 text-[16px] bg-amarelosecundario/90 font-[500] text-gray-800 shadow-md">
-    <h2>
-      Você pode deixar com a gente e VAVIVÊ!
-    </h2>
+  <div class="mt-10 mb-8 mx-6 px-1 py-4 text-[16px]  font-[500] ">
+    <div class="flex relative" >
+
+      <img
+        *ngFor="let image of images; let i = index"
+        class="absolute object-cover transition-opacity duration-1000 "
+        [class.opacity-0]="currentImageIndex !== i"
+        [class.opacity-100]="currentImageIndex === i"
+        [ngClass]="customStyles[i]"
+        [src]="image"
+        alt="Imagem dinâmica"
+      />
+      <div class="ml-9 pr-4 bg-amarelosecundario border text-azulprincipal border-white shadow-md pl-6 py-4 rounded-md ">
+        <h2>
+          Deixe com a gente e VAVIVÊ!
+        </h2>
+      </div>
+    </div>
   </div>
   <div class="pb-8">
     <!--
@@ -131,6 +145,10 @@
 
       </swiper-container>
     </div>
+
+  </div>
+  <div class="bg-gray-800 py-2">
+    <img class="h-10 mx-auto" src="https://lirp.cdn-website.com/6d9e534c/dms3rep/multi/opt/ABF_LOGO2023_ASSOCIADO_H_RGB_Negativo_Final-1920w.png">
   </div>
 </div>
 <app-loading #loadingComponent></app-loading>

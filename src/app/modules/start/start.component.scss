@@ -36,3 +36,8 @@
 .swiper-pagination-horizontal.swiper-pagination-bullets.swiper-pagination-bullets-dynamic .swiper-pagination-bullet {
   background-color: #1931B6 !important;
 }
+
+.transition-opacity {
+  transition: opacity 1s ease-in-out;
+}
+

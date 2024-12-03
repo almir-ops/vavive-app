@@ -85,7 +85,6 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
       // Callback que é chamado quando a animação é criada
   animationCreated(animationItem: AnimationItem): void {
-
     // O evento "complete" pode ser usado para ações após o término da animação
     animationItem.addEventListener('complete', () => {
     });
@@ -103,6 +102,9 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   addressList:any;
   simpleScreen = false;
   selectServiceSimple!: any;
+
+  selectedDates: string[] = [];
+  maxSelectableDates: number = 1;
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -140,7 +142,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
               item.nome !== 'Limpeza pesada' &&
               item.nome !== 'Babá' &&
               item.nome !== 'Cuidador de idosos' &&
-              item.nome !== 'Limpeza pós obra'
+              item.nome !== 'Limpeza pós-obra'
             );
 
             // Ordena os serviços desejados
@@ -176,7 +178,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
               const simpleScreenServices = [
                 'Babá',
                 'Cuidador de idosos',
-                'Limpeza pós obra',
+                'Limpeza pós-obra',
                 'Limpeza pesada'
               ];
 
@@ -193,7 +195,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
         this.servicosServices.getServicos().subscribe({
           next: (value: any) => {
             console.log(value);
-            const filteredItems = value.items.filter((item: any) => item.nome !== 'Limpeza pesada' && item.nome !== 'Babá' && item.nome !== 'Cuidador de idosos'&& item.nome !== 'Limpeza pós obra'&& item.nome !== 'Limpeza pesada');
+            const filteredItems = value.items.filter((item: any) => item.nome !== 'Limpeza pesada' && item.nome !== 'Babá' && item.nome !== 'Cuidador de idosos'&& item.nome !== 'Limpeza pós-obra'&& item.nome !== 'Limpeza pesada');
 
             filteredItems.sort((a: any, b: any) => {
               if (a.nome === 'Limpeza residencial') return -1;
@@ -421,15 +423,19 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   }
 
   upHour() {
-    if (this.hourSelected < 23) {
-      this.hourSelected++;
+    console.log(this.hourSelected);
+
+    if (this.hourSelected < 8) {
+      this.hourSelected += 2;
+      console.log(this.hourSelected);
+
       this.calculatePreco();
     }
   }
 
   downHour() {
-    if (this.hourSelected > 1) {
-      this.hourSelected--;
+    if (this.hourSelected > 4) {
+      this.hourSelected -= 2;
       this.calculatePreco();
     }
   }
@@ -446,11 +452,122 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     this.selectedDateFim = day.fullDate;
   }
 
-
+/*
   onDateSelected(event: any) {
     this.selectedDate = moment(event.detail.value).format('YYYY-MM-DD');
     this.modalDateInit.dismiss();
   }
+*/
+
+onDateSelected(event: any) {
+  const selectedDate = Array.isArray(event.detail.value)
+  ? event.detail.value[event.detail.value.length - 1] // Pega a última data se for um array
+  : event.detail.value; // Usa diretamente se não for um array
+  let selectedCustomDates = [];
+  console.log("Última data selecionada:", selectedDate);
+
+  if (!selectedDate) {
+    alert("Data inválida. Selecione uma data válida.");
+    return;
+  }
+
+  // Atualiza o valor da última data selecionada
+  this.selectedDate = selectedDate;
+
+  if (!this.selectedDateFim) {
+    alert("Defina uma data final para o agendamento.");
+    return;
+  }
+
+  // Calcula as datas subsequentes
+  const calculatedDates = this.calculateSubsequentDates(selectedDate, this.selectedDateFim);
+  console.log("Datas calculadas:", calculatedDates);
+
+  // Atualiza o array de datas selecionadas com as novas datas
+  selectedCustomDates.push(...this.selectedDates, ...calculatedDates);
+
+  this.selectedDates = selectedCustomDates;
+  console.log("Última data selecionada:", this.selectedDate);
+  console.log("Datas selecionadas automaticamente:", this.selectedDates);
+}
+
+calculateSubsequentDates(startDate: string, endDate: string): string[] {
+  const resultDates: string[] = [];
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const dayOfWeek = start.getDay(); // Dia da semana da data inicial
+
+  if (start > end) {
+    console.error("A data inicial não pode ser maior que a data final.");
+    return [];
+  }
+
+  let currentDate = start;
+
+  while (currentDate <= end) {
+    if (currentDate.getDay() === dayOfWeek) {
+      resultDates.push(currentDate.toISOString().split("T")[0]); // Adiciona a data no formato ISO
+    }
+    currentDate.setDate(currentDate.getDate() + 1); // Incrementa o dia
+  }
+
+  return resultDates;
+}
+
+
+updatePlano(uPlano: any) {
+  this.selectedDates = []; // Reseta as datas selecionadas
+  const plano = uPlano.plano;
+  console.log(uPlano);
+
+  if (plano === '2x') {
+    this.maxSelectableDates = 2;
+  } else if (plano === '3x') {
+    this.maxSelectableDates = 3;
+  } else {
+    this.maxSelectableDates = 1; // Valor padrão para outros planos
+  }
+}
+
+finalizeSchedule() {
+  if (this.selectedDates.length !== this.maxSelectableDates) {
+    alert(`Selecione ${this.maxSelectableDates} datas antes de prosseguir.`);
+    return;
+  }
+  console.log('Agendamento finalizado com as datas:', this.selectedDates);
+}
+
+getWeekNumber(date: string): number {
+  const dt = new Date(date);
+
+  if (isNaN(dt.getTime())) {
+    return NaN; // Retorna NaN se a data não for válida
+  }
+
+  const startOfYear = new Date(dt.getFullYear(), 0, 1);
+  const diffInDays = Math.floor((dt.getTime() - startOfYear.getTime()) / 86400000);
+  const dayOfWeek = startOfYear.getDay();
+
+  return Math.ceil((diffInDays + dayOfWeek) / 7);
+}
+
+dayValues() {
+  if (!this.selectedDate) {
+    return undefined;
+  }
+
+  const selectedDate = new Date(this.selectedDate);
+  const startOfWeek = Math.floor((selectedDate.getDate() - 1) / 7) * 7 + 1; // Primeiro dia da semana
+  const endOfWeek = Math.min(startOfWeek + 6, new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate()); // Último dia da semana ou fim do mês
+
+  const weekDays = [];
+  for (let day = startOfWeek; day <= endOfWeek; day++) {
+    weekDays.push(day);
+  }
+
+  return weekDays;
+}
+
 
   onDateSelectedFinal(event: any) {
     this.selectedDateFim = event.detail.value;

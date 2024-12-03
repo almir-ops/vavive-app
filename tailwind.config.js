@@ -47,6 +47,9 @@ module.exports = {
         'radial-blue':'radial-gradient(circle, #172DA7, #0C185C)'
 
       },
+      transitionProperty: {
+        'opacity': 'opacity',
+      }
     },
   },
   plugins: [],

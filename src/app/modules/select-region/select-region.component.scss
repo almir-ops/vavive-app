@@ -79,3 +79,11 @@ ion-input {
 .animate-fade-in {
   animation: fade-in 0.5s ease-out 3s forwards;
 }
+
+.custom-modal-franqueado {
+  --max-width: 90%;
+  --border-radius: 10px;
+  --background: #293ca9;
+  --height: auto; /* Ajusta a altura ao conteúdo */
+  --min-height: auto; /* Remove altura mínima */
+}

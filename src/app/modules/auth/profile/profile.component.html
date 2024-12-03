@@ -169,7 +169,7 @@
               Editar
               <img class="h-4 ml-2" src="./assets/icons/pencil.svg">
             </div>
-            <div (click)="openModalDeleteEndereco(endereco)"class="bg-gray-200 flex items-center py-1 justify-center w-[50%]">
+            <div (click)="openModalDeleteEndereco(endereco,i )"class="bg-gray-200 flex items-center py-1 justify-center w-[50%]">
               Excluir
               <img class="h-4 ml-2" src="./assets/icons/lixeira.svg">
             </div>
@@ -198,7 +198,7 @@
           type="tel"
           inputmode="numeric"
           [(ngModel)]="cep"
-          (keyup)="buscarCep()"
+          (keyup)="searchCep()"
           maxlength="9"
           placeholder="00000-000"
           [maskito]="cepMask"
@@ -290,7 +290,7 @@
           type="tel"
           inputmode="numeric"
           [(ngModel)]="cep"
-          (keyup)="buscarCep()"
+          (keyup)="searchCep()"
           maxlength="9"
           placeholder="00000-000"
           [maskito]="cepMask"
@@ -382,7 +382,7 @@
           type="tel"
           inputmode="numeric"
           [(ngModel)]="cep"
-          (keyup)="buscarCep()"
+          (keyup)="searchCep()"
           maxlength="9"
           placeholder="00000-000"
           [maskito]="cepMask"

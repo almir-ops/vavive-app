@@ -208,10 +208,10 @@
       </div>
       <div class="mt-6">
         <div class="flex flex-col">
-          <span class="text-azulprincipal font-semibold">Frequencia dos atendimentos</span>
-          <span class="text-sm">Selecione a frequencia que deseja os atendimentos</span>
+          <span class="text-azulprincipal font-semibold">Frequência dos atendimentos</span>
+          <span class="text-sm">Selecione a frequência que deseja os atendimentos</span>
         </div>
-        <ion-radio-group [(ngModel)]="selectedPlano"  (ionChange)="this.calculatePreco();">
+        <ion-radio-group [(ngModel)]="selectedPlano"  (ionChange)="this.calculatePreco(); updatePlano(selectedPlano)">
           <swiper-container
             #swiper
             [modules]="swiperModules"
@@ -222,7 +222,7 @@
 
             <!-- Iterate over services and create each slide -->
             <swiper-slide *ngFor="let plano of planos">
-              <div class="border border-gray-400 h-[100px] flex flex-col p-4 w-full text-center text-sm my-10 shadow-md">
+              <div class="border border-gray-400 flex flex-col p-4 w-full text-center text-sm mt-5 mb-10 shadow-md">
                 <div class="h-[50%]">
                   <ion-radio
                     [value]="plano"
@@ -230,7 +230,7 @@
                     alignment="start">
                   </ion-radio>
                 </div>
-                <div class="h-[50%] flex items-center justify-center">
+                <div class="h-[50%] flex items-center justify-center whitespace-nowrap">
                   {{ plano.name }}
                 </div>
               </div>
@@ -239,60 +239,6 @@
           </swiper-container>
         </ion-radio-group>
 
-      </div>
-      <div class="mt-6">
-        <div class="flex flex-col">
-          <span class="text-azulprincipal font-semibold">Dia do atendimento</span>
-          <span class="text-sm">Data do primeiro do atendimento</span>
-        </div>
-        <div class="flex mt-4">
-          <swiper-container
-            #swiper
-            [modules]="swiperModules"
-            [slidesPerView]="4"
-            [spaceBetween]="15"
-            [pagination]="{ clickable: true }"
-            style="--swiper-pagination-color: #FD4F04;"
-            class="duration-150 h-32"
-            [ngClass]="{'w-full': selectedDate==='','w-0': selectedDate!==''}"
-          >
-            <!-- Iterate over the next 5 days -->
-            <swiper-slide *ngFor="let day of nextFiveDays">
-              <div class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" (click)="onDaySelect(day)">
-                <div class="h-[50%] font-semibold">{{ day.dayOfWeek }}</div>
-                <div class="h-[50%] flex items-center justify-center text-lg">{{ day.dateNumber }}</div>
-              </div>
-            </swiper-slide>
-
-            <!-- Calendar option -->
-            <swiper-slide>
-              <div id="open-custom-dialog-datainicio" class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" >
-                <div class="h-[50%] flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                  </svg>
-                </div>
-                <span class="mt-1">Mais</span>
-              </div>
-            </swiper-slide>
-          </swiper-container>
-          <div class="w-0 h-[80px] bg-azulprincipal mb-1 shadow-md rounded-md duration-150 text-white"
-          [ngClass]="{'w-full': selectedDate!=='','w-0': selectedDate===''}">
-          <div class="h-full" [ngClass]="{'flex': selectedDate!=='','hidden': selectedDate===''}">
-            <div class="w-[80%] flex items-center px-8">
-              <div class="flex flex-col">
-                <span>{{formatDate(selectedDate)}}</span>
-                <span class="text-[11px]">Será a data de inicio do atendimento</span>
-              </div>
-            </div>
-            <div class="w-[20%] bg-azulprincipal/60 h-full border-l border-white flex items-center" (click)="selectedDate = ''">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-7 mx-auto">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-              </svg>
-            </div>
-          </div>
-          </div>
-        </div>
       </div>
       <div class="mt-6" [ngClass]="{'hidden':selectedPlano.plano === 'avulso', 'block': selectedPlano.plano !== 'avulso'}">
         <div class="flex flex-col">
@@ -348,6 +294,61 @@
           </div>
         </div>
       </div>
+      <div class="mt-6">
+        <div class="flex flex-col">
+          <span class="text-azulprincipal font-semibold">Dia do atendimento</span>
+          <span class="text-sm">Data do primeiro do atendimento</span>
+        </div>
+        <div class="flex mt-4">
+          <swiper-container
+            #swiper
+            [modules]="swiperModules"
+            [slidesPerView]="4"
+            [spaceBetween]="15"
+            [pagination]="{ clickable: true }"
+            style="--swiper-pagination-color: #FD4F04;"
+            class="duration-150 h-32"
+            [ngClass]="{'w-full': selectedDate==='','w-0': selectedDate!==''}"
+          >
+            <!-- Iterate over the next 5 days -->
+            <swiper-slide *ngFor="let day of nextFiveDays">
+              <div class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" (click)="onDaySelect(day)">
+                <div class="h-[50%] font-semibold">{{ day.dayOfWeek }}</div>
+                <div class="h-[50%] flex items-center justify-center text-lg">{{ day.dateNumber }}</div>
+              </div>
+            </swiper-slide>
+
+            <!-- Calendar option -->
+            <swiper-slide>
+              <div id="open-custom-dialog-datainicio" class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" >
+                <div class="h-[50%] flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                  </svg>
+                </div>
+                <span class="mt-1 whitespace-nowrap">Mais</span>
+              </div>
+            </swiper-slide>
+          </swiper-container>
+          <div class="w-0 h-[80px] bg-azulprincipal mb-1 shadow-md rounded-md duration-150 text-white"
+          [ngClass]="{'w-full': selectedDate!=='','w-0': selectedDate===''}">
+          <div class="h-full" [ngClass]="{'flex': selectedDate!=='','hidden': selectedDate===''}">
+            <div class="w-[80%] flex items-center px-8">
+              <div class="flex flex-col">
+                <span>{{formatDate(selectedDate)}}</span>
+                <span class="text-[11px]">Será a data de inicio do atendimento</span>
+              </div>
+            </div>
+            <div class="w-[20%] bg-azulprincipal/60 h-full border-l border-white flex items-center" (click)="selectedDate = ''">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-7 mx-auto">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
       <!--
         <div class="py-2 border border-azulprincipal text-azulprincipal rounded-md shadow-md my-6" id="open-custom-dialog-2">
           <div class="flex flex-col text-center"  *ngIf="!hourInit">
@@ -508,19 +509,15 @@
         <label class="text-sm" *ngIf="selectedPlano.plano === 'avulso'">Selecione o dia do atendimento</label>
       </div>
       <ion-datetime
-        id="datetime"
-        presentation="date"
-        [min]="minDate"
-        value="2023-11-02"
-        [formatOptions]="{
-          date: {
-            weekday: 'short',
-            month: 'long',
-            day: '2-digit'
-          }
-        }"
-        (ionChange)="onDateSelected($event)"
-      ></ion-datetime>
+      id="datetime"
+      presentation="date"
+      [min]="minDate"
+      [multiple]="true"
+      [dayValues]="dayValues()"
+      (ionChange)="onDateSelected($event)"
+      [value]="selectedDates"
+
+    ></ion-datetime>
       <div class="-mt-5 mb-3 rounded-md mx-2 p-1 text-xs bg-azulsombreado border border-azulprincipal" *ngIf="selectedPlano.plano !== 'avulso'">
         <b>OBS:</b> Selecione apenas a data de inicio, as demais datas serão agendadas automaticamente. Após o agendamento é possivel alterar a data do atendimento na aba de serviços.
       </div>

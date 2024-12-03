@@ -5,7 +5,7 @@ import { AuthService } from '../auth.service';
 import { VerificationService } from 'src/app/shared/verifications/verification-service.service';
 import { Storage } from '@ionic/storage-angular';
 import { Preferences } from '@capacitor/preferences';
-import { IonModal } from '@ionic/angular';
+import { IonModal, AlertController } from '@ionic/angular';
 import { ViacepService } from 'src/app/shared/services/viacep/viacep.service';
 import { MaskitoElementPredicate, MaskitoOptions } from '@maskito/core';
 import { ClientesService } from 'src/app/shared/services/clientes/clientes.service';
@@ -13,6 +13,7 @@ import { EnderecosService } from 'src/app/shared/services/enderecos/enderecos.se
 import { AlertComponent } from 'src/app/shared/components/alert/alert.component';
 import { FranquiasService } from 'src/app/shared/services/franquias/franquias.service';
 import { environment } from 'src/environments/environment';
+import { AlertService } from 'src/app/shared/services/alert.service';
 
 @Component({
   selector: 'app-profile',
@@ -71,7 +72,8 @@ export class ProfileComponent  implements OnInit {
     private viacepService: ViacepService,
     private clienteService: ClientesService,
     private enderecoService: EnderecosService,
-    private franquiasService: FranquiasService
+    private franquiasService: FranquiasService,
+    private alertService: AlertService,
 
   ) { }
 
@@ -193,11 +195,15 @@ export class ProfileComponent  implements OnInit {
     this.modalEditEndereco.present();
   }
 
-  openModalDeleteEndereco(endereco:any){
-    this.enderecoEncontrado = true;
-    this.endereco = endereco;
-    this.cep = endereco.cep
-    this.modalDeleteEndereco.present();
+  openModalDeleteEndereco(endereco:any, index:any){
+    if(index > 0){
+      this.enderecoEncontrado = true;
+      this.endereco = endereco;
+      this.cep = endereco.cep
+      this.modalDeleteEndereco.present();
+    }else{
+      this.alertService.presentAlert('Atenção ', `Adicione um novo endereço para excluir o principal.`);
+    }
   }
 
 
@@ -254,6 +260,120 @@ export class ProfileComponent  implements OnInit {
       });
     }else{
       this.enderecoEncontrado = false;
+    }
+  }
+
+  searchCep() {
+    let cep = this.cep;
+
+    // Remove tudo que não for dígito
+    cep = cep.replace(/\D/g, '');
+    console.log(cep);
+
+    if (cep.length === 8) {
+    // Chama o serviço ViaCEP para obter os dados do endereço
+    this.viacepService.buscarEndereco(cep).subscribe(
+      async (endereco: any) => {
+        if (endereco && !endereco.erro) {
+          console.log('Endereço encontrado:', endereco);
+          console.log(this.regions);
+
+          let region: any;
+
+          // Primeiro, busca pela cidade na lista de franquias
+          region = this.regions.find((r: any) =>
+            r.cidade.toLowerCase() === endereco.localidade.toLowerCase()
+          );
+
+          if (region) {
+            console.log('Cidade encontrada na franquia:', region);
+          } else {
+            console.log('Cidade não encontrada. Comparando com:', endereco.localidade);
+          }
+
+          // Se não encontrou a cidade e o estado é DF, buscar pela franquia correspondente ao estado
+          if (!region && endereco.uf === 'DF') {
+            region = this.regions.find((r: any) => r.estado.toLowerCase() === 'df');
+            if (region) {
+              console.log('Estado DF encontrado na franquia:', region);
+            } else {
+              console.log('Estado DF não encontrado. Comparando com:', endereco.uf);
+            }
+          }
+
+        // Verificar se o CEP está dentro da faixa de valores
+        if (!region) {
+          const cepNumber = parseInt(cep.replace('-', ''), 10); // Remove o hífen e converte para número
+          console.log('Verificando faixa de CEP:', cepNumber);
+
+          region = this.regions.find((r: any) => {
+            const startCep = parseInt(r.latitude.replace('-', ''), 10); // Remove o hífen e converte
+            const endCep = parseInt(r.longitude.replace('-', ''), 10);  // Remove o hífen e converte
+
+            console.log(`Comparando CEP ${cepNumber} com faixa: ${startCep} - ${endCep}`);
+            return cepNumber >= startCep && cepNumber <= endCep;
+          });
+
+          if (region) {
+            console.log('CEP encontrado na faixa da franquia:', region);
+          } else {
+            console.log('CEP não encontrado na faixa. Comparando:', cepNumber);
+          }
+        }
+
+
+          // Se ainda não encontrou, verificar se o CEP está dentro da faixa de valores
+          if (!region) {
+            const cepNumber = parseInt(cep, 10); // Certifique-se de que o CEP é tratado como número
+            console.log('Verificando faixa de CEP:', cepNumber);
+
+            region = this.regions.find((r: any) =>
+              cepNumber >= parseInt(r.latitude, 10) && cepNumber <= parseInt(r.longitude, 10)
+            );
+
+            if (region) {
+              console.log('CEP encontrado na faixa da franquia:', region);
+            } else {
+              console.log('CEP não encontrado na faixa. Comparando:', cepNumber);
+            }
+          }
+
+          // Se não encontrou uma franquia e o estado é SP ou RJ, usa a franquia "Matriz"
+          if (!region && (endereco.uf === 'SP' || endereco.uf === 'RJ')) {
+            region = this.regions.find((r: any) => r.nome.toLowerCase() === 'matriz');
+            if (region) {
+              console.log('Franquia "Matriz" encontrada:', region);
+            } else {
+              console.log('Franquia "Matriz" não encontrada.');
+            }
+          }
+          console.log(this.currentFranquia, region.nome);
+
+          if (this.currentFranquia !== region.nome) {
+            this.franquiaEncontrada = region
+            this.openMoralChangeFranquia()
+          } else {
+            this.endereco.rua = endereco.logradouro;
+            this.endereco.bairro = endereco.bairro;
+            this.endereco.cidade = endereco.localidade;
+            this.endereco.estado = endereco.uf;
+            this.endereco.cep = endereco.cep;
+            this.enderecoEncontrado = true;
+          }
+
+        } else {
+          console.log('CEP inválido ou não encontrado.');
+        }
+      },
+      (error: any) => {
+        console.error('Erro ao buscar o CEP:', error);
+      }
+    );
+
+
+
+    } else {
+      console.log('CEP incompleto ou inválido.');
     }
   }
 
@@ -367,8 +487,8 @@ export class ProfileComponent  implements OnInit {
 
     console.log(this.franquiaEncontrada.url);
     console.log(environment.baseUrl);
-
-
+    this.modalNovoEndereco.dismiss();
+    this.modalFranquiaChange.dismiss();
     this.logout();
     this.navegate('account/sign')
   }

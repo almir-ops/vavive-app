@@ -33,7 +33,13 @@ export class StartComponent  implements OnInit {
   user: any
   @ViewChild('loadingComponent') loadingComponent!: LoadingComponent;
   loaded = true;
-
+  images = ['./assets/images/VA.png', './assets/images/VI.png', './assets/images/Ve.png'];
+  customStyles = [
+    'h-24 -top-4 -left-6', // Estilo para VA.png
+    'h-24 -top-4 -left-4', // Estilo para VA.png
+    'h-24 -top-4 -left-6', // Estilo para VI.png
+  ];
+  currentImageIndex = 0;
   constructor(
     private authService: AuthService,
     private storage: Storage,
@@ -68,15 +74,15 @@ export class StartComponent  implements OnInit {
 
         {
           "ID": 1,
-          "name": "Trabalhe conosco",
-          "slogan": "Faça parte de nossa equipe de funcionarios",
+          "name": "Cadastre-se como parceiro",
+          "slogan": "Faça parte de nossa equipe",
           "bannerApp": "./assets/images/quero-trabalhar.jpeg",
           "link":"https://www.vavive.com.br/seja-um-franqueado-oficial"
         },
 
         {
           "ID": 2,
-          "name": "Seja um franquiado",
+          "name": "Seja um franqueado",
           "slogan": "Não perca tempo e comece a faturar muito!",
           "bannerApp": "./assets/images/RH.png",
           "link": "https://www.vavive.com.br/seja-um-franqueado-oficial"
@@ -98,35 +104,52 @@ export class StartComponent  implements OnInit {
       },
       {
         name: "CONFIANÇA",
-        slogan: "Sua Confiança Garantida em Cada Serviço, Sempre no Dia e Horário Combinados.",
+        slogan: "Sua confiança garantida em cada serviço, sempre no sia e horário combinados.",
         bannerApp: "./assets/images/banner-padrao.png"
       }
     ]
-    this.servicosServices.getServicos().subscribe({
-      next: (value: any) => {
-        console.log(value.items);
-        const filteredItems = value.items.filter((item: any) => item.nome !== 'Limpeza pesada');
+    this.startImageLoop();
 
-        // Ordena os itens com base no nome
-        this.slides = filteredItems.sort((a: any, b: any) => {
-          if (a.nome === 'Limpeza residencial') return -1;
-          if (b.nome === 'Limpeza residencial') return 1;
-          if (a.nome === 'Limpeza empresarial') return -1;
-          if (b.nome === 'Limpeza empresarial') return 1;
-          return 0;
-        });
 
-        console.log(this.slides);
-      },
-      error: (err: any) => {
-        console.log(err);
-      },
-    });
 
   }
 
   ionViewWillEnter() {
     this.initializeUserData();
+    const storedSlides = localStorage.getItem('slides');
+
+    if (storedSlides) {
+      // Se o array já estiver salvo no localStorage, usa o valor armazenado
+      this.slides = JSON.parse(storedSlides);
+      console.log('Loaded slides from localStorage:', this.slides);
+    } else {
+      // Faz a chamada ao serviço se não houver slides no localStorage
+      this.servicosServices.getServicos().subscribe({
+        next: (value: any) => {
+          console.log('API response:', value.items);
+
+          // Filtra e ordena os itens
+          const filteredItems = value.items.filter(
+            (item: any) => item.nome !== 'Limpeza pesada'
+          );
+          const sortedItems = filteredItems.sort((a: any, b: any) => {
+            if (a.nome === 'Limpeza residencial') return -1;
+            if (b.nome === 'Limpeza residencial') return 1;
+            if (a.nome === 'Limpeza empresarial') return -1;
+            if (b.nome === 'Limpeza empresarial') return 1;
+            return 0;
+          });
+
+          // Armazena os itens processados no localStorage
+          localStorage.setItem('slides', JSON.stringify(sortedItems));
+          this.slides = sortedItems;
+          console.log('Slides saved to localStorage:', this.slides);
+        },
+        error: (err: any) => {
+          console.error('Error fetching servicos:', err);
+        },
+      });
+    }
   }
 
   async initializeUserData() {
@@ -246,5 +269,11 @@ export class StartComponent  implements OnInit {
 
   navegateExternalLink(link: string) {
     window.open(link, '_blank');
+  }
+
+  startImageLoop() {
+    setInterval(() => {
+      this.currentImageIndex = (this.currentImageIndex + 1) % this.images.length;
+    }, 5000); // Troca a cada 3 segundos
   }
 }

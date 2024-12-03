@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { IonModal } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { MaskitoElementPredicate, MaskitoOptions } from '@maskito/core';
 import { FranquiasService } from 'src/app/shared/services/franquias/franquias.service';
@@ -19,10 +20,14 @@ export class SelectRegionComponent {
       /\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/
     ]
   };
+
+  @ViewChild('modalSejaFranqueado', { static: false }) modalSejaFranqueado!: IonModal;
+
   public readonly predicate: MaskitoElementPredicate = (element) =>
     (element as HTMLIonInputElement).getInputElement();
 
   franquiaNotFound = false;
+  hideModal = false;
   constructor(
     private storage: Storage,
     private router: Router,
@@ -35,9 +40,18 @@ export class SelectRegionComponent {
       this.regions = data;
       console.log(this.regions);
     });
+    localStorage.removeItem('slides');
   }
 
+  ionViewWillEnter() {
+    const hideModal = localStorage.getItem('hideModalFranqueado')
+    console.log(hideModal);
 
+    if(hideModal !== 'true'){
+      this.modalSejaFranqueado.present();
+    }
+
+  }
   async searchCep(event: any) {
     let cep = event.target.value;
 
@@ -160,6 +174,13 @@ export class SelectRegionComponent {
 
   openExternalLink(url: string): void {
     window.open(url, '_blank');
+  }
+
+  changeHideModal(){
+    console.log(this.hideModal);
+    if(this.hideModal){
+      localStorage.setItem('hideModalFranqueado', 'true');
+    }
   }
 
 }
