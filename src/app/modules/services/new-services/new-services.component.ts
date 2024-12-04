@@ -105,6 +105,10 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
   selectedDates: string[] = [];
   maxSelectableDates: number = 1;
+  countSelectedDates: number = 0;
+
+  weekDays: any[] = [];
+  monthNumber: any;
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -127,7 +131,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     this.setMinDate();
     this.generateTimeOptions();
     this.loadUserData();
-
+    this.weekDays = Array.from({ length: 31 }, (_, i) => i + 1);
     this.route.queryParams.subscribe(params => {
       this.type = params['tipo'];
       const i = params['i'];
@@ -460,36 +464,72 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 */
 
 onDateSelected(event: any) {
-  const selectedDate = Array.isArray(event.detail.value)
-  ? event.detail.value[event.detail.value.length - 1] // Pega a última data se for um array
-  : event.detail.value; // Usa diretamente se não for um array
-  let selectedCustomDates = [];
-  console.log("Última data selecionada:", selectedDate);
+  console.log(this.maxSelectableDates);
+  console.log(this.countSelectedDates);
 
-  if (!selectedDate) {
+  if(this.countSelectedDates === this.maxSelectableDates){
+    this.selectedDate = '';
+    console.log(this.countSelectedDates);
+
+  }else{
+    this.countSelectedDates++;
+      // Pega o valor selecionado do evento
+    const selectedDate = Array.isArray(event.detail.value)
+    ? event.detail.value[event.detail.value.length - 1] // Pega a última data se for um array
+    : event.detail.value; // Usa diretamente se não for um array
+
+    if (!selectedDate) {
     alert("Data inválida. Selecione uma data válida.");
     return;
-  }
+    }
 
-  // Atualiza o valor da última data selecionada
-  this.selectedDate = selectedDate;
+    // Verifica se a data já está na lista de selectedDates
+    const dateAlreadySelected = this.selectedDates.some(
+    (date) => new Date(date).getTime() === new Date(selectedDate).getTime()
+    );
 
-  if (!this.selectedDateFim) {
+    if (dateAlreadySelected) {
+    console.log("A data já está na lista. Nenhuma ação será tomada.");
+    // Restaura o estado das datas selecionadas no componente
+    const datetimeElement = document.querySelector('#datetime') as HTMLIonDatetimeElement;
+    if (datetimeElement) {
+      datetimeElement.value = [...this.selectedDates]; // Restaura as datas selecionadas
+    }
+    return; // Sai do método sem tomar nenhuma ação
+    }
+
+    // Atualiza o valor da última data selecionada
+    this.selectedDate = selectedDate;
+
+    if (!this.selectedDateFim) {
     alert("Defina uma data final para o agendamento.");
     return;
-  }
+    }
 
-  // Calcula as datas subsequentes
-  const calculatedDates = this.calculateSubsequentDates(selectedDate, this.selectedDateFim);
-  console.log("Datas calculadas:", calculatedDates);
+    // Calcula as datas subsequentes
+    const calculatedDates = this.calculateSubsequentDates(selectedDate, this.selectedDateFim);
+    console.log("Datas calculadas:", calculatedDates);
 
-  // Atualiza o array de datas selecionadas com as novas datas
-  selectedCustomDates.push(...this.selectedDates, ...calculatedDates);
+    // Atualiza o array de datas selecionadas com as novas datas
+    const selectedCustomDates = [...this.selectedDates, ...calculatedDates];
+    this.selectedDates = selectedCustomDates;
+    this.dayValues();
+    console.log("Última data selecionada:", this.selectedDate);
+    console.log("Datas selecionadas automaticamente:", this.selectedDates);
 
-  this.selectedDates = selectedCustomDates;
-  console.log("Última data selecionada:", this.selectedDate);
-  console.log("Datas selecionadas automaticamente:", this.selectedDates);
+    // Atualiza o estado do componente datetime
+    const datetimeElement = document.querySelector('#datetime') as HTMLIonDatetimeElement;
+    if (datetimeElement) {
+    datetimeElement.value = [...this.selectedDates]; // Atualiza as datas selecionadas
+      if(this.countSelectedDates === this.maxSelectableDates){
+      this.weekDays = [];
+      }
+    }
+    }
+
 }
+
+
 
 calculateSubsequentDates(startDate: string, endDate: string): string[] {
   const resultDates: string[] = [];
@@ -524,7 +564,15 @@ updatePlano(uPlano: any) {
     this.maxSelectableDates = 2;
   } else if (plano === '3x') {
     this.maxSelectableDates = 3;
-  } else {
+  } else if (plano === '4x') {
+    this.maxSelectableDates = 4;
+  } else if (plano === '5x') {
+    this.maxSelectableDates = 5;
+  } else if (plano === '6x') {
+    this.maxSelectableDates = 6;
+  } else if (plano === '7x') {
+    this.maxSelectableDates = 7;
+  }  else {
     this.maxSelectableDates = 1; // Valor padrão para outros planos
   }
 }
@@ -557,15 +605,23 @@ dayValues() {
   }
 
   const selectedDate = new Date(this.selectedDate);
-  const startOfWeek = Math.floor((selectedDate.getDate() - 1) / 7) * 7 + 1; // Primeiro dia da semana
-  const endOfWeek = Math.min(startOfWeek + 6, new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate()); // Último dia da semana ou fim do mês
+
+  // Extrai o mês no formato MM e converte para inteiro
+  const monthNumber = selectedDate.getMonth() + 1; // getMonth() retorna 0 para janeiro, +1 ajusta para o formato MM
+
+  this.monthNumber = monthNumber
+  const startOfWeek = Math.floor((selectedDate.getDate()) / 7) * 7 + 1; // Primeiro dia da semana
+  const endOfWeek = Math.min(
+    startOfWeek + 6,
+    new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate()
+  ); // Último dia da semana ou fim do mês
 
   const weekDays = [];
   for (let day = startOfWeek; day <= endOfWeek; day++) {
     weekDays.push(day);
   }
 
-  return weekDays;
+  this.weekDays = weekDays;
 }
 
 

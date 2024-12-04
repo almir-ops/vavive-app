@@ -513,8 +513,10 @@
       presentation="date"
       [min]="minDate"
       [multiple]="true"
-      [dayValues]="dayValues()"
+      [dayValues]="weekDays"
       (ionChange)="onDateSelected($event)"
+      [monthValues]="monthNumber"
+
       [value]="selectedDates"
 
     ></ion-datetime>
