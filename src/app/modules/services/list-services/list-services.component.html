@@ -174,10 +174,12 @@
       <div class="flex flex-col">
         <label class="text-azulprincipal">Atenção</label>
         <span class="text-xs mb-5">Escolha uma da opções:</span>
-        <div (click)="openModalStatusCliente()"   *ngIf="currentAtendimento.status_pagamento === 'Pendente' && currentAtendimento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
-          <img class="h-4" src="./assets/icons/user-circle.svg">
-          <label class="ml-3 text-xs uppercase">Status cliente</label>
-        </div>
+        <!--
+          <div (click)="openModalStatusCliente()"   *ngIf="currentAtendimento.status_pagamento === 'Pendente' && currentAtendimento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
+            <img class="h-4" src="./assets/icons/user-circle.svg">
+            <label class="ml-3 text-xs uppercase">Status cliente</label>
+          </div>
+        -->
         <div (click)="criaPagamento()"   *ngIf="currentAtendimento.status_pagamento === 'Pendente' && currentAtendimento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
           <img class="h-4" src="./assets/icons/banknotes.svg">
           <label class="ml-3 text-xs uppercase">Fazer pagamento</label>

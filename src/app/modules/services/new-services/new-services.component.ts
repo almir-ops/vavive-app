@@ -16,6 +16,7 @@ import { AnimationOptions } from 'ngx-lottie';
 import { AnimationItem } from 'lottie-web';
 import { CuponsService } from 'src/app/shared/services/cupons/cupons.service';
 import { Moment } from 'moment';
+import { AlertService } from 'src/app/shared/services/alert.service';
 
 @Component({
   selector: 'app-new-services',
@@ -120,7 +121,9 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     private route: ActivatedRoute,
     private enderecoService: EnderecosService,
     private atendimentoService: AtendimentosService,
-    private servicosServices:ServicosService
+    private servicosServices:ServicosService,
+    private alertService: AlertService,
+
   ) { }
 
   ngOnInit() {
@@ -132,6 +135,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     this.generateTimeOptions();
     this.loadUserData();
     this.weekDays = Array.from({ length: 31 }, (_, i) => i + 1);
+    this.selectedPlano = this.planos[0];
+
     this.route.queryParams.subscribe(params => {
       this.type = params['tipo'];
       const i = params['i'];
@@ -432,6 +437,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     if (this.hourSelected < 8) {
       this.hourSelected += 2;
       console.log(this.hourSelected);
+      this.selectedTime = '';
+      this.hourInit = this.selectedTime;
 
       this.calculatePreco();
     }
@@ -472,7 +479,17 @@ onDateSelected(event: any) {
     console.log(this.countSelectedDates);
 
   }else{
-    this.countSelectedDates++;
+    if(this.selectedPlano.plano === 'avulso'){
+      this.selectedDates = [];
+      this.countSelectedDates = 0;
+      const selectedDate = Array.isArray(event.detail.value)
+      ? event.detail.value[event.detail.value.length - 1]
+      : event.detail.value;
+      this.selectedDate = selectedDate;
+      this.selectedDates.push(selectedDate);
+      this.modalDateInit.dismiss();
+    }else{
+      this.countSelectedDates++;
       // Pega o valor selecionado do evento
     const selectedDate = Array.isArray(event.detail.value)
     ? event.detail.value[event.detail.value.length - 1] // Pega a última data se for um array
@@ -527,6 +544,9 @@ onDateSelected(event: any) {
     }
     }
 
+    }
+    this.calculatePreco();
+
 }
 
 
@@ -547,12 +567,19 @@ calculateSubsequentDates(startDate: string, endDate: string): string[] {
   while (currentDate <= end) {
     if (currentDate.getDay() === dayOfWeek) {
       resultDates.push(currentDate.toISOString().split("T")[0]); // Adiciona a data no formato ISO
+
+      // Se o plano for quinzenal, pula uma semana (7 dias * 2)
+      if (this.selectedPlano.plano === 'quinzenal') {
+        currentDate.setDate(currentDate.getDate() + 14);
+        continue;
+      }
     }
-    currentDate.setDate(currentDate.getDate() + 1); // Incrementa o dia
+    currentDate.setDate(currentDate.getDate() + 1); // Incrementa o dia para planos normais
   }
 
   return resultDates;
 }
+
 
 
 updatePlano(uPlano: any) {
@@ -599,31 +626,37 @@ getWeekNumber(date: string): number {
   return Math.ceil((diffInDays + dayOfWeek) / 7);
 }
 
-dayValues() {
-  if (!this.selectedDate) {
-    return undefined;
+  dayValues() {
+    if (!this.selectedDate) {
+      return undefined;
+    }
+
+    const selectedDate = new Date(this.selectedDate);
+
+    // Extrai o mês no formato MM e converte para inteiro
+    const monthNumber = selectedDate.getMonth() + 1; // getMonth() retorna 0 para janeiro, +1 ajusta para o formato MM
+
+    this.monthNumber = monthNumber
+    const startOfWeek = Math.floor((selectedDate.getDate()) / 7) * 7 + 1; // Primeiro dia da semana
+    const endOfWeek = Math.min(
+      startOfWeek + 6,
+      new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate()
+    ); // Último dia da semana ou fim do mês
+
+    const weekDays = [];
+    for (let day = startOfWeek; day <= endOfWeek; day++) {
+      weekDays.push(day);
+    }
+
+    this.weekDays = weekDays;
   }
 
-  const selectedDate = new Date(this.selectedDate);
-
-  // Extrai o mês no formato MM e converte para inteiro
-  const monthNumber = selectedDate.getMonth() + 1; // getMonth() retorna 0 para janeiro, +1 ajusta para o formato MM
-
-  this.monthNumber = monthNumber
-  const startOfWeek = Math.floor((selectedDate.getDate()) / 7) * 7 + 1; // Primeiro dia da semana
-  const endOfWeek = Math.min(
-    startOfWeek + 6,
-    new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate()
-  ); // Último dia da semana ou fim do mês
-
-  const weekDays = [];
-  for (let day = startOfWeek; day <= endOfWeek; day++) {
-    weekDays.push(day);
+  resetSelection(){
+    this.selectedDates = [];
+    this.countSelectedDates = 0;
+    this.selectedDate = '';
+    this.weekDays = Array.from({ length: 31 }, (_, i) => i + 1);
   }
-
-  this.weekDays = weekDays;
-}
-
 
   onDateSelectedFinal(event: any) {
     this.selectedDateFim = event.detail.value;
@@ -633,10 +666,32 @@ dayValues() {
   }
 
   selectHour(hora:string) {
-    this.selectedTime = hora;
-    this.hourInit = this.selectedTime;
+    if(this.hourSelected === 4){
+      this.selectedTime = hora;
+      this.hourInit = this.selectedTime;
+    }else{
+      this.selectedTime = '08:00';
+      this.hourInit = this.selectedTime;
+      this.alertService.presentAlert('Atenção','Para serviços acima de 4 horas só poderá ser agendado para as 08:00 horas.');
+    }
   }
 
+  confirmAtendimentoPlan(){
+    if(this.maxSelectableDates === this.countSelectedDates){
+      this.modalDateInit.dismiss();
+    }else{
+      this.alertService.presentAlert('Atenção','Selecione o número máximo de datas para o plano selecionado.');
+    }
+  }
+
+  openModalDataInicio(){
+    if(this.selectedDateFim){
+      this.modalDateInit.present();
+    }else{
+      this.alertService.presentAlert('Atenção','Selecione de encerramento dos atendimentos antes de selecionar a data de início.');
+
+    }
+  }
 
   onWillDismiss() {
     if (this.selectedTime) {

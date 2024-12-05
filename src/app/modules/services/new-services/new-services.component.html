@@ -211,7 +211,7 @@
           <span class="text-azulprincipal font-semibold">Frequência dos atendimentos</span>
           <span class="text-sm">Selecione a frequência que deseja os atendimentos</span>
         </div>
-        <ion-radio-group [(ngModel)]="selectedPlano"  (ionChange)="this.calculatePreco(); updatePlano(selectedPlano)">
+        <ion-radio-group [(ngModel)]="selectedPlano"  (ionChange)="this.calculatePreco(); updatePlano(selectedPlano); resetSelection()">
           <swiper-container
             #swiper
             [modules]="swiperModules"
@@ -253,7 +253,7 @@
             [spaceBetween]="15"
             [pagination]="{ clickable: true }"
             style="--swiper-pagination-color: #FD4F04;"
-            class="duration-150 h-32"
+            class="duration-150 h-24"
             [ngClass]="{'w-full': selectedDateFim==='','w-0': selectedDateFim!==''}"
           >
             <!-- Iterate over the next 5 days -->
@@ -299,7 +299,7 @@
           <span class="text-azulprincipal font-semibold">Dia do atendimento</span>
           <span class="text-sm">Data do primeiro do atendimento</span>
         </div>
-        <div class="flex mt-4">
+        <div class="flex mt-4" *ngIf="selectedPlano.plano === 'avulso'">
           <swiper-container
             #swiper
             [modules]="swiperModules"
@@ -307,16 +307,16 @@
             [spaceBetween]="15"
             [pagination]="{ clickable: true }"
             style="--swiper-pagination-color: #FD4F04;"
-            class="duration-150 h-32"
+            class="duration-150 h-24"
             [ngClass]="{'w-full': selectedDate==='','w-0': selectedDate!==''}"
           >
-            <!-- Iterate over the next 5 days -->
-            <swiper-slide *ngFor="let day of nextFiveDays">
-              <div class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" (click)="onDaySelect(day)">
-                <div class="h-[50%] font-semibold">{{ day.dayOfWeek }}</div>
-                <div class="h-[50%] flex items-center justify-center text-lg">{{ day.dateNumber }}</div>
-              </div>
-            </swiper-slide>
+          <!-- Iterate over the next 5 days -->
+          <swiper-slide *ngFor="let day of nextFiveDays">
+            <div class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" (click)="onDaySelect(day)">
+              <div class="h-[50%] font-semibold">{{ day.dayOfWeek }}</div>
+              <div class="h-[50%] flex items-center justify-center text-lg">{{ day.dateNumber }}</div>
+            </div>
+          </swiper-slide>
 
             <!-- Calendar option -->
             <swiper-slide>
@@ -347,6 +347,34 @@
           </div>
           </div>
         </div>
+        <div class="relative mt-3 mb-6" *ngIf="selectedPlano.plano !== 'avulso'">
+          <div
+            (click)="openModalDataInicio()"
+            class="w-full border border-azulprincipal text-azulprincipal text-center px-2 py-3 rounded-md shadow-md">
+            <div class="flex flex-col">
+              <div>
+                Selecione a data de inicio
+              </div>
+              <div class="text-xs text-gray-800">Escolha apenas os primeiros dias do atendimento</div>
+            </div>
+          </div>
+          <div class="w-0 h-[80px] absolute top-0 bg-azulprincipal mb-1 shadow-md rounded-md duration-150 text-white"
+          [ngClass]="{'w-full': selectedDate!=='','w-0': selectedDate===''}">
+          <div class="h-full" [ngClass]="{'flex': selectedDate!=='','hidden': selectedDate===''}">
+            <div class="w-[80%] flex items-center px-8">
+              <div class="flex flex-col">
+                <span>{{formatDate(selectedDate[0])}}</span>
+                <span class="text-[11px]">Será a data de inicio do atendimento</span>
+              </div>
+            </div>
+            <div class="w-[20%] bg-azulprincipal/60 h-full border-l border-white flex items-center" (click)="selectedDate = ''">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="size-7 mx-auto">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </div>
+          </div>
+          </div>
+        </div>
       </div>
 
       <!--
@@ -361,7 +389,7 @@
           </div>
         </div>
       -->
-      <div class="flex flex-col">
+      <div class="flex flex-col mt-6">
         <div class="flex flex-col">
           <span class="text-azulprincipal font-semibold">Hora de chega</span>
           <span class="text-sm">Selecione o horario de chegada do profissional</span>
@@ -501,26 +529,31 @@
 -->
 
 
-  <ion-modal id="example-modal" #modalDateInit trigger="open-custom-dialog-datainicio">
+  <ion-modal id="example-modal" #modalDateInit trigger="open-custom-dialog-datainicio" backdropDismiss="false">
     <ng-template>
       <div class="flex flex-col px-3 pt-3">
         <label class="text-azulprincipal">Data inicio</label>
-        <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione o dia do primeiro atendimento</label>
+        <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione <span class="text-laranjaprincipal">{{maxSelectableDates}} dias</span> de atendimento</label>
         <label class="text-sm" *ngIf="selectedPlano.plano === 'avulso'">Selecione o dia do atendimento</label>
       </div>
-      <ion-datetime
-      id="datetime"
-      presentation="date"
-      [min]="minDate"
-      [multiple]="true"
-      [dayValues]="weekDays"
-      (ionChange)="onDateSelected($event)"
-      [monthValues]="monthNumber"
+        <ion-datetime
+          id="datetime"
+          presentation="date"
+          [min]="minDate"
+          [multiple]="true"
+          [dayValues]="weekDays"
+          (ionChange)="onDateSelected($event)"
+          [monthValues]="monthNumber"
 
-      [value]="selectedDates"
+          [value]="selectedDates"
 
-    ></ion-datetime>
-      <div class="-mt-5 mb-3 rounded-md mx-2 p-1 text-xs bg-azulsombreado border border-azulprincipal" *ngIf="selectedPlano.plano !== 'avulso'">
+        ></ion-datetime>
+        <div class="flex justify-between -mt-7 mb-4 px-4">
+          <div *ngIf="selectedPlano.plano !== 'avulso'" class="bg-azulsombreado border-[0.5px] border-azulprincipal rounded-md shadow-md px-2 py-1" (click)="resetSelection()">Resetar</div>
+          <div *ngIf="selectedPlano.plano === 'avulso'" class="bg-azulsombreado border-[0.5px] border-azulprincipal rounded-md shadow-md px-2 py-1" (click)="modalDateInit.dismiss()">Fechar</div>
+          <div class="bg-azulprincipal text-white rounded-md shadow-md px-2 py-1" (click)="confirmAtendimentoPlan()">Confirmar</div>
+        </div>
+          <div class=" mb-4 rounded-md mx-2 p-1 text-xs bg-azulsombreado border border-azulprincipal" *ngIf="selectedPlano.plano !== 'avulso'">
         <b>OBS:</b> Selecione apenas a data de inicio, as demais datas serão agendadas automaticamente. Após o agendamento é possivel alterar a data do atendimento na aba de serviços.
       </div>
     </ng-template>
