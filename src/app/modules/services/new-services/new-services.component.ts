@@ -432,11 +432,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   }
 
   upHour() {
-    console.log(this.hourSelected);
-
     if (this.hourSelected < 8) {
       this.hourSelected += 2;
-      console.log(this.hourSelected);
       this.selectedTime = '';
       this.hourInit = this.selectedTime;
 
@@ -496,7 +493,6 @@ onDateSelected(event: any) {
     : event.detail.value; // Usa diretamente se não for um array
 
     if (!selectedDate) {
-    alert("Data inválida. Selecione uma data válida.");
     return;
     }
 
@@ -506,7 +502,6 @@ onDateSelected(event: any) {
     );
 
     if (dateAlreadySelected) {
-    console.log("A data já está na lista. Nenhuma ação será tomada.");
     // Restaura o estado das datas selecionadas no componente
     const datetimeElement = document.querySelector('#datetime') as HTMLIonDatetimeElement;
     if (datetimeElement) {
@@ -530,6 +525,8 @@ onDateSelected(event: any) {
     // Atualiza o array de datas selecionadas com as novas datas
     const selectedCustomDates = [...this.selectedDates, ...calculatedDates];
     this.selectedDates = selectedCustomDates;
+    this.selectedDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
     this.dayValues();
     console.log("Última data selecionada:", this.selectedDate);
     console.log("Datas selecionadas automaticamente:", this.selectedDates);
@@ -604,13 +601,6 @@ updatePlano(uPlano: any) {
   }
 }
 
-finalizeSchedule() {
-  if (this.selectedDates.length !== this.maxSelectableDates) {
-    alert(`Selecione ${this.maxSelectableDates} datas antes de prosseguir.`);
-    return;
-  }
-  console.log('Agendamento finalizado com as datas:', this.selectedDates);
-}
 
 getWeekNumber(date: string): number {
   const dt = new Date(date);
@@ -660,8 +650,6 @@ getWeekNumber(date: string): number {
 
   onDateSelectedFinal(event: any) {
     this.selectedDateFim = event.detail.value;
-    console.log(this.modalDateFim);
-
     this.modalDateFim.dismiss();
   }
 
@@ -780,86 +768,37 @@ getWeekNumber(date: string): number {
       return; // Sai da função, pois não precisamos de mais atendimentos
     }
 
-    // Variáveis para controlar os intervalos e o número de atendimentos por semana
-    let intervaloDias = 0;
-    let atendimentosPorSemana = 1; // Padrão para semanal e quinzenal
 
-    // Definindo o intervalo e o número de atendimentos por semana com base no plano
-    switch (plano.plano) {
-      case 'semanal':
-        intervaloDias = 7; // Intervalo de 7 dias para semanal
-        break;
-      case 'quinzenal':
-        intervaloDias = 14; // Intervalo de 14 dias para quinzenal
-        break;
-      case '2x':
-        intervaloDias = 3; // Aproximadamente 3 dias de intervalo entre os atendimentos na semana
-        atendimentosPorSemana = 2; // 2 atendimentos por semana
-        break;
-      case '3x':
-        intervaloDias = 2; // Aproximadamente 2 dias de intervalo entre os atendimentos na semana
-        atendimentosPorSemana = 3; // 3 atendimentos por semana
-        break;
-      case '4x':
-        intervaloDias = 1; // 1 ou 2 dias de intervalo
-        atendimentosPorSemana = 4; // 4 atendimentos por semana
-        break;
-      case '5x':
-        intervaloDias = 1; // 1 dia de intervalo
-        atendimentosPorSemana = 5; // 5 atendimentos por semana
-        break;
-      case '6x':
-        intervaloDias = 1; // 1 dia de intervalo
-        atendimentosPorSemana = 6; // 6 atendimentos por semana
-        break;
-      case '7x':
-        intervaloDias = 1; // Sem intervalo (diariamente)
-        atendimentosPorSemana = 7; // 7 atendimentos por semana (diários)
-        break;
-      default:
-        console.log('Plano não suportado.');
-        return;
-    }
+    const atendimentos: any[] = []; // Especifica o tipo de atendimentos
 
-    // Gerar lista de atendimentos e datas selecionadas
-    const atendimentos = [];
-    let proximaDataAtendimento = dataInicio.clone(); // Começa com a data de início
+    this.selectedDates.forEach((dateStr: string) => {
+      const date = new Date(dateStr); // Converte a string para um objeto Date
+      const diaDaSemana = date.getDay(); // Obtém o dia da semana (0 = domingo, 1 = segunda, ..., 6 = sábado)
 
-    // Enquanto a data do próximo atendimento estiver dentro do intervalo permitido
-    while (proximaDataAtendimento.isSameOrBefore(dataFim)) {
-      for (let i = 0; i < atendimentosPorSemana; i++) {
-        if (proximaDataAtendimento.isSameOrBefore(dataFim)) {
-          const diaDaSemana = proximaDataAtendimento.isoWeekday(); // Dia da semana (segunda = 1, domingo = 7)
+      // Clonar os valores do formulário, mas remover cliente e endereco
+      const { cliente, endereco, ...formSemClienteEndereco } = formValues;
+      const atendimento = {
+        ...formSemClienteEndereco, // Clona todos os campos exceto cliente e endereco
+        data_inicio: dateStr, // Data de início do atendimento (no formato original)
+        data_fim: dataFim.format('YYYY-MM-DD'), // Exemplo: atendimento de 2 horas (formato 'YYYY-MM-DD')
+        plano: plano.plano, // Atualiza o plano de cada atendimento
+        cliente: this.currentClient, // Adiciona o cliente
+        endereco: this.currentEndereco, // Adiciona o endereço
+        servicos: [{ ID: this.selectedServiceId }],
+        duracao: this.getTimeFromNumber(this.hourSelected),
+        valor_servicos: this.preco.valor,
+        valor_total: this.preco.valor,
+        observacoes_de_prestador: this.msgProfissional,
+        hora_de_entrada: this.selectedTime,
+        datas_selecionadas: JSON.stringify([`${dateStr} (${diaDaSemana})`]) // Adiciona datas formatadas
+      };
 
-          // Clonar os valores do formulário, mas remover cliente e endereco
-          const { cliente, endereco, ...formSemClienteEndereco } = formValues;
-          const atendimento = {
-            ...formSemClienteEndereco, // Clona todos os campos exceto cliente e endereco
-            data_inicio: proximaDataAtendimento.format('YYYY-MM-DD'), // Data de início do atendimento
-            data_fim: dataFim.format('YYYY-MM-DD'), // Exemplo: atendimento de 2 horas
-            plano: plano.plano, // Atualiza o plano de cada atendimento
-            cliente: this.currentClient, // Adiciona o cliente
-            endereco: this.currentEndereco, // Adiciona o endereço
-            servicos: [{ ID: this.selectedServiceId }],
-            duracao: this.getTimeFromNumber(this.hourSelected),
-            valor_servicos: this.preco.valor,
-            valor_total: this.preco.valor,
-            observacoes_de_prestador: this.msgProfissional,
-            hora_de_entrada: this.selectedTime,
-            datas_selecionadas: JSON.stringify([`${proximaDataAtendimento.format('YYYY-MM-DD')} (${diaDaSemana})`]) // Adiciona datas formatadas
-          };
+      atendimentos.push(atendimento);
 
-          atendimentos.push(atendimento);
-
-          // Formatar a data selecionada com o dia da semana no formato "2023-11-11 (6)"
-          const dataSelecionada = `${proximaDataAtendimento.format('YYYY-MM-DD')} (${diaDaSemana})`;
-          datasSelecionadas.push(dataSelecionada);
-        }
-
-        // Próximo atendimento com intervalo definido
-        proximaDataAtendimento.add(intervaloDias, 'days');
-      }
-    }
+      // Formatar a data selecionada com o dia da semana no formato "2023-11-11 (6)"
+      const dataSelecionada = `${dateStr} (${diaDaSemana})`;
+      datasSelecionadas.push(dataSelecionada);
+    });
 
     // Atualizar o campo 'datas_selecionadas' no formulário
     this.formAtendimento.patchValue({
