@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { Preferences } from '@capacitor/preferences';
 import { ServicosService } from 'src/app/shared/services/servicos/servicos.service';
 import { LoadingComponent } from 'src/app/shared/components/loading/loading.component';
+import { ClientesService } from 'src/app/shared/services/clientes/clientes.service';
 register();
 
 @Component({
@@ -44,7 +45,8 @@ export class StartComponent  implements OnInit {
     private authService: AuthService,
     private storage: Storage,
     private router:Router,
-    private servicosServices:ServicosService
+    private servicosServices:ServicosService,
+    private clienteService:ClientesService
 
   ) { }
 
@@ -164,6 +166,7 @@ export class StartComponent  implements OnInit {
         // Usuário já está salvo localmente
         this.user = JSON.parse(userData.value);
         this.userLoggedOut = false;
+
         console.log('User loaded from local storage:', this.user);
       } else {
         // Nenhum usuário salvo, chamando API para obter informações do usuário
@@ -196,9 +199,18 @@ export class StartComponent  implements OnInit {
         this.authService.getInfoUser(paramUser).subscribe({
           next: async (response) => {
             console.log(response);
+            const token_notification = await Preferences.get({ key: 'token_notification' });
             this.userLoggedOut = false;
             this.user = response;
-
+            this.user.token_notification = token_notification.value;
+            this.clienteService.updateClient(this.user).subscribe({
+              next:(value:any)=> {
+                console.log('User atualizado: ', value);
+              },
+              error:(err:any) => {
+                console.log(err);
+              },
+            })
             // Armazenar o usuário de forma segura para chamadas futuras
             await this.saveUserSecurely(response);
           },
@@ -244,7 +256,6 @@ export class StartComponent  implements OnInit {
         key: 'user_data',
         value: JSON.stringify(user), // Converte o objeto para string e armazena
       });
-      console.log('User saved securely.');
     } catch (error) {
       console.error('Error saving user data securely:', error);
     }

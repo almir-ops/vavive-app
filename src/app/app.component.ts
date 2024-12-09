@@ -4,6 +4,9 @@ import { Platform } from '@ionic/angular';
 import { register } from 'swiper/element/bundle';
 import { Storage } from '@ionic/storage-angular';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { PushNotifications, Token, PermissionStatus } from '@capacitor/push-notifications';
+import { ClientesService } from './shared/services/clientes/clientes.service';
+import { Preferences } from '@capacitor/preferences';
 
 register();
 
@@ -16,15 +19,16 @@ export class AppComponent {
   constructor(
     private platform: Platform,
     private storage: Storage,
-    private router: Router
+    private router: Router,
+    private clienteService: ClientesService
   ) {
     this.initializeApp();
-    this.disableDarkMode()
+    this.disableDarkMode();
   }
 
   disableDarkMode() {
-    document.body.classList.add('light'); // Força o tema claro
-    document.body.classList.remove('dark'); // Remove qualquer classe que ative o modo escuro
+    document.body.classList.add('light');
+    document.body.classList.remove('dark');
   }
 
   async initializeApp() {
@@ -41,10 +45,49 @@ export class AppComponent {
     } else {
       this.router.navigate(['/']);
     }
+
+    this.configureStatusBar();
+    this.checkPushNotificationPermission();
   }
 
   configureStatusBar() {
     StatusBar.setBackgroundColor({ color: '#ffffff' });
     StatusBar.setStyle({ style: Style.Dark });
+  }
+
+  async checkPushNotificationPermission() {
+    // Verificar status da permissão
+    const permissionStatus: PermissionStatus = await PushNotifications.checkPermissions();
+
+    if (permissionStatus.receive === 'granted') {
+      // Já tem permissão, registra o dispositivo
+      this.registerForPushNotifications();
+    } else {
+      // Solicitar permissão ao usuário
+      const result = await PushNotifications.requestPermissions();
+      if (result.receive === 'granted') {
+        this.registerForPushNotifications();
+      } else {
+        console.log('Permissão para notificações push negada.');
+      }
+    }
+  }
+
+  registerForPushNotifications() {
+    PushNotifications.register();
+
+    // Evento disparado quando o token é gerado
+    PushNotifications.addListener('registration', (token: Token) => {
+      console.log('Token de notificação gerado:', token.value);
+      Preferences.set({
+        key: 'token_notification',
+        value: JSON.stringify(token.value)
+      })
+    });
+
+    // Evento disparado se o registro falhar
+    PushNotifications.addListener('registrationError', (error) => {
+      console.error('Erro no registro de notificações push:', error);
+    });
   }
 }

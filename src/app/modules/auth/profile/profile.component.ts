@@ -14,6 +14,7 @@ import { AlertComponent } from 'src/app/shared/components/alert/alert.component'
 import { FranquiasService } from 'src/app/shared/services/franquias/franquias.service';
 import { environment } from 'src/environments/environment';
 import { AlertService } from 'src/app/shared/services/alert.service';
+import { uCliente } from 'src/app/shared/interfaces/uCliente';
 
 @Component({
   selector: 'app-profile',
@@ -114,18 +115,18 @@ export class ProfileComponent  implements OnInit {
 
   createForm(){
     this.formRegister = this.formBuilder.group({
-      username:['', Validators.required],
+      ID:['', Validators.required],
       password:['', Validators.required],
-      nome:[],
-      celular:[],
-      cpf:[],
-      email:[]
+      nome:['', Validators.required],
+      celular:['', Validators.required],
+      cpf:['', Validators.required],
+      email:['', Validators.required]
     })
   }
 
   setFormValues(values: any) {
     this.formRegister.setValue({
-      username: values.username || '',
+      ID: values.ID,
       password: values.password || '',
       nome: values.nome || '',
       celular: values.celular || '',
@@ -177,7 +178,22 @@ export class ProfileComponent  implements OnInit {
    }
 
    updateClient(){
+    console.log(this.formRegister.getRawValue());
+    const cliente: uCliente = this.formRegister.getRawValue();
+    this.clienteService.updateClient(cliente).subscribe({
+      next:(value:any) => {
+        console.log(value);
+        Preferences.set({
+          key: 'user_data',
+          value: JSON.stringify(value.item)
+        })
+      },
+      error:(err:any) => {
+        console.log(err);
+        this.alertService.presentAlert('Atenção ', `Erro ao atualizar cliente`);
 
+      },
+    })
    }
 
   onWillDismiss() {

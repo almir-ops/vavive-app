@@ -7,6 +7,7 @@ import { AlertComponent } from 'src/app/shared/components/alert/alert.component'
 import { LoadingComponent } from 'src/app/shared/components/loading/loading.component';
 import { AlertService } from 'src/app/shared/services/alert.service';
 import { Storage } from '@ionic/storage-angular';
+import { Preferences } from '@capacitor/preferences';
 
 @Component({
   selector: 'app-login',
@@ -96,6 +97,9 @@ export class LoginComponent  implements OnInit{
       next: (response:any) => {
         console.log(response);
         this.storage.set('param_user', this.paramUser)
+
+
+
       },error: (err) =>{
         console.log(err)
         if(err.status === 404){

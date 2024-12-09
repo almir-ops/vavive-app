@@ -63,7 +63,7 @@
 
       <img
         *ngFor="let image of images; let i = index"
-        class="absolute object-cover transition-opacity duration-1000 "
+        class="absolute object-cover transition-opacity duration-1000 -mt-5 -ml-2.5"
         [class.opacity-0]="currentImageIndex !== i"
         [class.opacity-100]="currentImageIndex === i"
         [ngClass]="customStyles[i]"

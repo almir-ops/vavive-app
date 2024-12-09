@@ -22,7 +22,7 @@ export class ClientesService {
 
   updateClient(cliente: uCliente) {
     return this.apiService.loadApiUrl().pipe(
-      switchMap(url => this.httpCliente.put(`https://${url}/${cliente.ID}`, cliente))
+      switchMap(url => this.httpCliente.put(`https://${url}/api/v1/clientes/${cliente.ID}`, cliente))
     );
   }
 
