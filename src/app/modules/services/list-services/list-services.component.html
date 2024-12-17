@@ -1,11 +1,11 @@
 <div class="h-screen flex flex-col overflow-auto relative bg-white pb-24">
 
-  <ion-segment [(ngModel)]="screnn" class="top-0 z-10" (ionChange)="segmentChanged($event)">
+  <ion-segment [(ngModel)]="screnn" class="top-0 z-10 text-sm" (ionChange)="segmentChanged($event)">
     <ion-segment-button value="profile">
-      <ion-label>Agendados</ion-label>
+      <ion-label class="text-xs">Agendados</ion-label>
     </ion-segment-button>
     <ion-segment-button value="payments">
-      <ion-label>Histórico</ion-label>
+      <ion-label class="text-xs">Histórico</ion-label>
     </ion-segment-button>
 
   </ion-segment>
@@ -163,8 +163,20 @@
       </div>
     </div>
   </div>
-  <div (click)="navegate('services/new')" class="h-10 py-3 px-4 rounded-full uppercase text-xs font-[500] bg-azulprincipal text-white flex absolute bottom-32 right-5 shadow-md">
-    Novo agendamento
+  <div class="h-10 py-3 px-4 rounded-full uppercase text-xs font-[500]  flex absolute bottom-40 right-16">
+    <ion-fab>
+      <ion-fab-button>
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-list side="top">
+        <ion-fab-button>
+          <ion-icon name="cash-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button (click)="navegate('services/new')">
+          <ion-icon name="today-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab-list>
+    </ion-fab>
   </div>
 </div>
 

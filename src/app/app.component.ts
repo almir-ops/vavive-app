@@ -7,6 +7,7 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { PushNotifications, Token, PermissionStatus } from '@capacitor/push-notifications';
 import { ClientesService } from './shared/services/clientes/clientes.service';
 import { Preferences } from '@capacitor/preferences';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 register();
 
@@ -24,7 +25,11 @@ export class AppComponent {
   ) {
     this.initializeApp();
     this.disableDarkMode();
+    //this.configureStatusBar();
+
   }
+
+
 
   disableDarkMode() {
     document.body.classList.add('light');
@@ -32,6 +37,8 @@ export class AppComponent {
   }
 
   async initializeApp() {
+    //await ScreenOrientation.lock({ orientation: 'portrait' });
+
     await this.platform.ready();
     await this.storage.create();
     const apiUrl = await this.storage.get('api_url');
@@ -46,7 +53,6 @@ export class AppComponent {
       this.router.navigate(['/']);
     }
 
-    this.configureStatusBar();
     this.checkPushNotificationPermission();
   }
 

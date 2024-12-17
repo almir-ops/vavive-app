@@ -51,7 +51,9 @@ export class ListServicesComponent  implements OnInit {
     private financasService: FinancasService,
     private repasseService: RepasseService
 
-  ) { }
+  ) {
+
+  }
 
   ngOnInit() {
     this.loadUserData();
