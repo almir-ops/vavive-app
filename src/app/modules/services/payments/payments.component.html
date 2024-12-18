@@ -1,3 +1,73 @@
-<p>
-  payments works!
-</p>
+<div class="w-full flex justify-center px-4">
+  <div class="px-2 pb-8 rounded-sm w-full text-[11px]">
+    <div *ngFor="let pagamento of listPagamentos" (click)="openOptionsModal(pagamento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
+      <div class="flex h-full">
+        <div class="w-[78%] flex flex-col">
+          <div class="flex">
+            OS: {{pagamento.ID}}
+            <div class="ml-1 -mt-0.5">
+              <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Concluido'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': pagamento.status_pagamento === 'Concluido'}">
+                <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
+                Realizado
+              </span>
+
+                <span class="shadow-sm" *ngIf="pagamento.status_pagamento  !== 'Concluido' && pagamento.status_pagamento  !== 'Cancelado'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': pagamento.status_pagamento  !== 'Concluido' && pagamento.status_pagamento  !== 'Cancelado'}">
+                  <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
+                  Agendado
+                </span>
+
+              <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Cancelado'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': pagamento.status_pagamento === 'Cancelado'}">
+                <span *ngIf="pagamento.status_pagamento === 'Cancelado'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
+                  Cancelado
+              </span>
+            </div>
+          </div>
+          <div>
+            Serviço: {{pagamento.servicos[0].nome}}
+          </div>
+          <div class="flex">
+            <div>
+              Plano: {{capitalizeFirstLetter(pagamento.plano)}}
+            </div>
+            <div class="ml-2">
+              Valor: {{pagamento.valor_total | currency:'BRL' }}
+            </div>
+          </div>
+          <div class="flex">
+
+            <div class="flex">
+              Pagamento:
+              <div class="ml-1 -mt-0.5">
+                <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Pago'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': pagamento.status_pagamento === 'Pago'}">
+                  <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
+                  Pago
+                </span>
+
+                  <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': pagamento.status_pagamento  === 'Pendente'}">
+                    <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
+                    Pendente
+                  </span>
+
+                <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Cancelado'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': pagamento.status_pagamento === 'Cancelado'}">
+                  <span *ngIf="pagamento.status_pagamento === 'Cancelado'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
+                    Vencido
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="w-[22%] pl-2 h-full flex items-center justify-center border-l border-azulprincipal">
+          <div class="flex flex-col">
+            <div class="text-xl text-center text-azulprincipal">{{ getDia(pagamento.data_inicio) }}</div>
+            <div>{{ getMesComAno(pagamento.data_inicio) }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div *ngIf="listPagamentos.length === 0"  class="h-full flex flex-col mt-32">
+      <img class="h-8" src="./assets/icons/warning.svg"/>
+      <span class="text-[11px] text-gray-800 text-center">Nenhum pagamento encontrado</span>
+    </div>
+  </div>
+</div>

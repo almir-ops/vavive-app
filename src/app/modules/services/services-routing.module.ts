@@ -4,6 +4,7 @@ import { ServicesComponent } from './services.component';
 import { NewServicesComponent } from './new-services/new-services.component';
 import { ConfirmServicesComponent } from './confirm-services/confirm-services.component';
 import { ListServicesComponent } from './list-services/list-services.component';
+import { PaymentsComponent } from './payments/payments.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
       {
         path:'confirm',
         component: ConfirmServicesComponent,
+      },
+      {
+        path:'pagamentos',
+        component: PaymentsComponent,
       }
     ]
   },

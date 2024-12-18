@@ -23,6 +23,7 @@ import { ConfirmServicesComponent } from './modules/services/confirm-services/co
 import { LottieComponent, provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
+import { PaymentsComponent } from './modules/services/payments/payments.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
     ServicesComponent,
     NewServicesComponent,
     ConfirmServicesComponent,
-    ListServicesComponent
+    ListServicesComponent,
+    PaymentsComponent
   ],
   imports: [
     BrowserModule,
