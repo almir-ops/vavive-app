@@ -1,0 +1,40 @@
+/* Material Design styles */
+ion-segment-button.md {
+  --color: #000;
+  --color-checked: #1931B6;
+  --indicator-height: 1px;
+}
+
+/* iOS styles */
+ion-segment-button.ios {
+  --color: #1931B6;
+  --color-checked: #fff;
+  --border-radius: 20px;
+}
+
+ion-modal#filter-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --max-width:90%;
+  --height: fit-content;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+ion-modal#details-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --max-width:90%;
+  --height: fit-content;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+ion-modal#options-modal {
+  --width: fit-content;
+  --min-width: 250px;
+  --max-width:90%;
+  --height: fit-content;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}

@@ -1,73 +1,285 @@
-<div class="w-full flex justify-center px-4">
-  <div class="px-2 pb-8 rounded-sm w-full text-[11px]">
-    <div *ngFor="let pagamento of listPagamentos" (click)="openOptionsModal(pagamento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
-      <div class="flex h-full">
-        <div class="w-[78%] flex flex-col">
-          <div class="flex">
-            OS: {{pagamento.ID}}
-            <div class="ml-1 -mt-0.5">
-              <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Concluido'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': pagamento.status_pagamento === 'Concluido'}">
-                <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
-                Realizado
-              </span>
+<div class="h-screen pb-10">
+  <ion-segment [(ngModel)]="screen" class="top-0 z-10 text-sm" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="pendentes">
+      <ion-label class="text-xs">Pendentes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="pagos">
+      <ion-label class="text-xs">Pagos</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 
-                <span class="shadow-sm" *ngIf="pagamento.status_pagamento  !== 'Concluido' && pagamento.status_pagamento  !== 'Cancelado'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': pagamento.status_pagamento  !== 'Concluido' && pagamento.status_pagamento  !== 'Cancelado'}">
-                  <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
-                  Agendado
-                </span>
+  <div *ngIf="screen === 'pendentes'" class="w-full flex justify-center px-4 h-full ">
+    <div class="px-2 pb-8 rounded-sm w-full text-[11px] flex flex-col">
+      <div class="flex justify-between items-center mt-4">
+        <div class="pr-2">
+          <div class="font-semibold text-azulprincipal uppercase">Pagamentos Pendentes</div>
+          <div class="text-gray-700">Todos os seus pagamentos pendentes aparecerão aqui</div>
+        </div>
+        <div (click)="modalFilterPagamentos.present()" class="flex text-white bg-azulprincipal py-1 px-2 -mt-6 rounded-md cursor-pointer shadow-sm hover:scale-105">
+          Filtros
+          <ion-icon class="mt-0.5 ml-1" name="filter-outline"></ion-icon>
+        </div>
+      </div>
+      <!-- Contêiner com scroll flexível -->
+      <div class="overflow-y-auto flex-grow">
+        <div *ngFor="let pagamento of listPagamentosPendentes" (click)="openOptionsModal(pagamento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
+          <div class="flex h-full">
+            <div class="w-[78%] flex flex-col">
+              <div class="flex">
+                Referente ao atendimento OS: {{pagamento.atendimento.ID}}
+              </div>
+              <div class="flex">
+                <div class="flex">
+                  Pagamento:
+                  <div class="ml-1 -mt-0.5">
+                    <span class="shadow-sm" *ngIf="pagamento.situacao === 'Pago'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': pagamento.situacao === 'Pago'}">
+                      <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
+                      Pago
+                    </span>
 
-              <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Cancelado'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': pagamento.status_pagamento === 'Cancelado'}">
-                <span *ngIf="pagamento.status_pagamento === 'Cancelado'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
-                  Cancelado
-              </span>
+                    <span class="shadow-sm" *ngIf="pagamento.situacao === 'Pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': pagamento.situacao  === 'Pendente'}">
+                      <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
+                      Pendente
+                    </span>
+
+                    <span class="shadow-sm" *ngIf="pagamento.situacao === 'Vencido'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': pagamento.situacao === 'Vencido'}">
+                      <span *ngIf="pagamento.situacao === 'Vencido'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
+                      Vencido
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                Valor: {{pagamento.valor | currency:'BRL' }}
+              </div>
+              <div>
+                Vencimento: {{formatDate(pagamento.data_vencimento) }}
+              </div>
             </div>
-          </div>
-          <div>
-            Serviço: {{pagamento.servicos[0].nome}}
-          </div>
-          <div class="flex">
-            <div>
-              Plano: {{capitalizeFirstLetter(pagamento.plano)}}
-            </div>
-            <div class="ml-2">
-              Valor: {{pagamento.valor_total | currency:'BRL' }}
-            </div>
-          </div>
-          <div class="flex">
-
-            <div class="flex">
-              Pagamento:
-              <div class="ml-1 -mt-0.5">
-                <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Pago'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': pagamento.status_pagamento === 'Pago'}">
-                  <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
-                  Pago
-                </span>
-
-                  <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': pagamento.status_pagamento  === 'Pendente'}">
-                    <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
-                    Pendente
-                  </span>
-
-                <span class="shadow-sm" *ngIf="pagamento.status_pagamento === 'Cancelado'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': pagamento.status_pagamento === 'Cancelado'}">
-                  <span *ngIf="pagamento.status_pagamento === 'Cancelado'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
-                    Vencido
-                </span>
+            <div class="w-[22%] pl-2 h-full flex items-center justify-center border-l border-azulprincipal">
+              <div class="flex flex-col">
+                <div class="text-xl text-center text-azulprincipal">
+                  <ion-icon name="cash-outline"></ion-icon>
+                </div>
+                <div>Pagar</div>
               </div>
             </div>
           </div>
         </div>
-        <div class="w-[22%] pl-2 h-full flex items-center justify-center border-l border-azulprincipal">
-          <div class="flex flex-col">
-            <div class="text-xl text-center text-azulprincipal">{{ getDia(pagamento.data_inicio) }}</div>
-            <div>{{ getMesComAno(pagamento.data_inicio) }}</div>
-          </div>
+      </div>
+      <!-- Mensagem para lista vazia -->
+      <div *ngIf="listPagamentosPendentes.length === 0" class="h-full flex flex-col mt-32">
+        <img class="h-8" src="./assets/icons/warning.svg" />
+        <span class="text-[11px] text-gray-800 text-center">Nenhum pagamento encontrado</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="screen === 'pagos'" class="w-full flex justify-center px-4 h-full ">
+    <div class="px-2 pb-8 rounded-sm w-full text-[11px] flex flex-col">
+      <div class="flex justify-between items-center mt-4">
+        <div class="pr-2">
+          <div class="font-semibold text-azulprincipal uppercase">Pagamentos Pagos</div>
+          <div class="text-gray-700">Todos os seus pagamentos realizados aparecerão aqui</div>
+        </div>
+        <div (click)="modalFilterPagamentos.present()" class="flex text-white bg-azulprincipal py-1 px-2 -mt-6 rounded-md cursor-pointer shadow-sm hover:scale-105">
+          Filtros
+          <ion-icon class="mt-0.5 ml-1" name="filter-outline"></ion-icon>
         </div>
       </div>
 
-    </div>
-    <div *ngIf="listPagamentos.length === 0"  class="h-full flex flex-col mt-32">
-      <img class="h-8" src="./assets/icons/warning.svg"/>
-      <span class="text-[11px] text-gray-800 text-center">Nenhum pagamento encontrado</span>
+      <!-- Contêiner com scroll flexível -->
+      <div class="overflow-y-auto flex-grow">
+        <div *ngFor="let pagamento of listPagamentosPagos" (click)="openOptionsModal(pagamento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
+          <div class="flex h-full">
+            <div class="w-[78%] flex flex-col">
+              <div class="flex">
+                Referente ao atendimento OS: {{pagamento.atendimento.ID}}
+              </div>
+              <div class="flex">
+                <div class="flex">
+                  Pagamento:
+                  <div class="ml-1 -mt-0.5">
+                    <span class="shadow-sm" *ngIf="pagamento.situacao === 'Pago'" [ngClass]="{'inline-flex items-center bg-green-100 text-green-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-green-900 dark:text-green-300': pagamento.situacao === 'Pago'}">
+                      <span class="w-1 h-1 mr-1 bg-green-500 rounded-full"></span>
+                      Pago
+                    </span>
+
+                    <span class="shadow-sm" *ngIf="pagamento.situacao === 'Pendente'" [ngClass]="{'inline-flex items-center bg-yellow-100 text-yellow-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-yellow-900 dark:text-yellow-300': pagamento.situacao  === 'Pendente'}">
+                      <span class="w-1 h-1 mr-1 bg-yellow-500 rounded-full"></span>
+                      Pendente
+                    </span>
+
+                    <span class="shadow-sm" *ngIf="pagamento.situacao === 'Vencido'" [ngClass]="{'inline-flex items-center bg-red-100 text-red-800 text-[10px] font-medium mr-2 px-1 rounded-full dark:bg-red-900 dark:text-red-300': pagamento.situacao === 'Vencido'}">
+                      <span *ngIf="pagamento.situacao === 'Vencido'" class="w-1 h-1 mr-1 bg-red-500 rounded-full"></span>
+                      Vencido
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                Valor: {{pagamento.valor | currency:'BRL' }}
+              </div>
+              <div>
+                Vencimento: {{formatDate(pagamento.data_vencimento) }}
+              </div>
+            </div>
+            <div class="w-[22%] pl-2 h-full flex items-center justify-center border-l border-azulprincipal">
+              <div class="flex flex-col">
+                <div class="text-xl text-center text-azulprincipal">
+                  <ion-icon name="cash-outline"></ion-icon>
+                </div>
+                <div>Pagar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Mensagem para lista vazia -->
+      <div *ngIf="listPagamentosPagos.length === 0" class="h-full flex flex-col mt-32">
+        <img class="h-8" src="./assets/icons/warning.svg" />
+        <span class="text-[11px] text-gray-800 text-center">Nenhum pagamento encontrado</span>
+      </div>
     </div>
   </div>
+
+
 </div>
+
+<ion-modal id="filter-modal" #modalFilterPagamentos trigger="open-filter-dialog">
+  <ng-template>
+    <div class="flex flex-col p-5">
+      <h2 class="text-lg text-center mb-4 font-semibold text-gray-800">Filtrar Pagamentos</h2>
+
+      <!-- Filtro por data de vencimento -->
+      <div class="mb-4">
+        <label class="block text-sm text-gray-700 mb-1" for="filter-date">Data de Vencimento:</label>
+        <input
+          type="date"
+          id="filter-date"
+          [(ngModel)]="filterDataVencimento"
+          class="w-full h-10 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-azulprincipal focus:outline-none"
+        />
+      </div>
+
+      <!-- Filtro por OS do atendimento -->
+      <div class="mb-4">
+        <label class="block text-sm text-gray-700 mb-1" for="filter-os">OS do Atendimento:</label>
+        <input
+          type="text"
+          id="filter-os"
+          [(ngModel)]="filterOsAtendimento"
+          placeholder="Digite o número da OS"
+          class="w-full h-10 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-azulprincipal focus:outline-none"
+        />
+      </div>
+
+      <!-- Filtro por status do pagamento -->
+      <div class="mb-4">
+        <label class="block text-sm text-gray-700 mb-1" for="filter-status">Situação:</label>
+        <select
+          id="filter-status"
+          [(ngModel)]="filterStatusPagamento"
+          class="w-full h-10 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-azulprincipal focus:outline-none"
+        >
+          <option value="" disabled selected>Selecione uma situação</option>
+          <option *ngFor="let status of situacoesPagamento" [value]="status.valor">{{ status.label }}</option>
+        </select>
+      </div>
+
+      <!-- Botões -->
+      <div class="mt-6 flex justify-between space-x-4">
+        <button
+          (click)="closeModal()"
+          class="py-2 px-4 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition duration-150"
+        >
+          Fechar
+        </button>
+        <button
+          (click)="applyFilters()"
+          class="py-2 px-4 rounded-md bg-azulprincipal text-white shadow hover:bg-azulprincipal-dark transition duration-150"
+        >
+          Aplicar Filtros
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<ion-modal id="options-modal" #modalOptions trigger="open-custom-dialog-missing">
+  <ng-template>
+    <div class="p-4">
+      <div class="flex flex-col">
+        <label class="text-azulprincipal">Atenção</label>
+        <span class="text-xs mb-5">Escolha uma da opções:</span>
+        <!--
+          <div (click)="openModalStatusCliente()"   *ngIf="currentPagamento.status_pagamento === 'Pendente' && currentPagamento.status_atendimento !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center ">
+            <img class="h-4" src="./assets/icons/user-circle.svg">
+            <label class="ml-3 text-xs uppercase">Status cliente</label>
+          </div>
+        -->
+        <div (click)="criaPagamento()"   *ngIf="currentPagamento.situacao === 'Pendente' && currentPagamento.situcao !== 'Cancelado'" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+          <img class="h-4" src="./assets/icons/banknotes.svg">
+          <label class="ml-3 text-xs uppercase">Fazer pagamento</label>
+        </div>
+        <div  (click)="openModalDetails()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+          <img class="h-4" src="./assets/icons/search.svg">
+          <label class="ml-3 text-xs uppercase">Ver atendimento</label>
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button class="text-gray-700" (click)="modalOptions.dismiss()">Fechar</button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<ion-modal id="details-modal" #modalDetails>
+  <ng-template>
+    <div class="flex flex-col px-3 pt-3">
+      <label class="text-azulprincipal">Detalhes atendimento</label>
+    </div>
+    <div class="flex-col flex px-3 py-5 text-xs">
+      <div>
+        <span>OS: {{currentPagamento.atendimento.ID}}</span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/data.svg">
+        <span>Data atendimento: {{formatDate(currentPagamento.atendimento.data_inicio)}}</span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/clock.svg">
+        <span>Hora do atendimento: {{currentPagamento.atendimento.hora_de_entrada}}</span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/chart-pie.svg">
+        <span>Duracao: {{currentPagamento.atendimento.duracao}}</span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/wrench-screwdriver.svg">
+        <span>Serviço: {{currentPagamento.atendimento.servicos[0].nome}}</span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/document-text.svg">
+        <span>Plano: {{capitalizeFirstLetter(currentPagamento.atendimento.plano)}}</span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/home-modern.svg">
+        <span>Endereço: {{currentPagamento.atendimento.endereco.rua}}, nº {{currentPagamento.atendimento.endereco.numero}} - {{currentPagamento.endereco.bairro}} </span>
+      </div>
+      <div class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/user-circle.svg">
+        <span>Cliente: {{currentPagamento.atendimento.cliente.nome}}</span>
+      </div>
+      <div *ngIf="currentPagamento.atendimento.profissional.length > 0" class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/information-circle.svg">
+        <span>Profissional: {{currentPagamento.atendimento.profissional[0].nome}}</span>
+      </div>
+      <div *ngIf="currentPagamento.atendimento.observacoes_de_prestador" class="flex mt-2.5">
+        <img class="mr-2 h-4" src="./assets/icons/information-circle.svg">
+        <span>Observações: {{currentPagamento.atendimento.observacoes_de_prestador}}</span>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

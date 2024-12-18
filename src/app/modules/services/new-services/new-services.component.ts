@@ -48,9 +48,11 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   @ViewChild('modalConfirm', { static: false }) modalConfirm!: IonModal;
   @ViewChild('modalEnderecos', { static: false }) modalEnderecos!: IonModal;
   @ViewChild('modalCupom', { static: false }) modalCupom!: IonModal;
+  @ViewChild('modalDuvidas', { static: false }) modalDuvidas!: IonModal;
+
 
   services = [
-    { ID: 1, icon:'./assets/icons/home.svg' ,icon_secundario:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza residencial', descricao: 'Limpeza completa de sua casa, cuidando de todos os ambientes.' },
+    { ID: 1, icon:'./assets/icons/home.svg' ,icon_secundario:'./assets/icons/home-white.svg' , Precos: [], nome: 'Limpeza residencial', slogan: 'Limpeza completa de sua casa, cuidando de todos os ambientes.', descricao: '' },
 
   ];
 
@@ -151,7 +153,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
               item.nome !== 'Limpeza pesada' &&
               item.nome !== 'Babá' &&
               item.nome !== 'Cuidador de idosos' &&
-              item.nome !== 'Limpeza pós-obra'
+              item.nome !== 'Limpeza pós-obra' &&
+              item.nome !== 'Recrutamento e seleção'
             );
 
             // Ordena os serviços desejados

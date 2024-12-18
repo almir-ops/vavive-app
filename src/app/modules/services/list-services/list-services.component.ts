@@ -20,7 +20,7 @@ import { RepasseService } from 'src/app/shared/services/repasses/repasse.service
 })
 export class ListServicesComponent  implements OnInit {
 
-  screnn: string = 'profile';
+  screen: string = 'profile';
   currentClient: any;
   currentAtendimento: any;
 
@@ -42,6 +42,7 @@ export class ListServicesComponent  implements OnInit {
   stars = [1, 2, 3, 4, 5];
   optionListStatusCliente: any;
   selectStatusValue:any;
+
   constructor(
     private atendimentoService: AtendimentosService,
     private router: Router,
@@ -65,7 +66,7 @@ export class ListServicesComponent  implements OnInit {
     this.minDate = moment().add(1, 'days').format('YYYY-MM-DD');
   }
   segmentChanged(event: any) {
-    this.screnn = event.detail.value;
+    this.screen = event.detail.value;
   }
 
   async loadUserData() {

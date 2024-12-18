@@ -59,7 +59,10 @@
       <div class="bg-white p-3 rounded-md">
 
         <div>
-          <span class="text-azulprincipal font-semibold">Escolha um serviço</span>
+          <div class="flex justify-between">
+            <span class="text-azulprincipal font-semibold">Escolha um serviço</span>
+            <span (click)="modalDuvidas.present()" class="text-azulprincipal text-sm">Duvidas?</span>
+          </div>
 
           <div class="relative h-[150px] pt-3">
             <swiper-container
@@ -78,7 +81,7 @@
                 'border-r': i !== services.length - 1
               }" class="border border-gray-400 h-[100px] flex-col p-4 text-center text-sm mb-10 shadow-md" (click)="selectService(service.ID, i)">
                 <div class="h-[50%]">
-                  <img class="h-[22px] mx-auto" src="{{service.icon}}">
+                  <img class="h-[25px] mx-auto" src="{{service.icon}}">
                 </div>
                 <div class="h-[50%] flex items-center justify-center">
                   {{ service.nome }}
@@ -96,7 +99,7 @@
                 </div>
                 <div class="flex flex-col">
                   <span class="text-amarelopaleta">{{services[indexServiceSelected].nome}}</span>
-                  <span class="text-white text-[13px] pr-2">{{services[indexServiceSelected].descricao}}</span>
+                  <span class="text-white text-[13px] pr-2">{{services[indexServiceSelected].slogan}}</span>
                 </div>
               </div>
               <div class=" absolute bg-amarelopaleta -right-2 -top-2 rounded-full flex items-center" (click)="selectedServiceId = null; preco = null">
@@ -473,7 +476,7 @@
         {{selectServiceSimple.nome}}
       </div>
       <div class="text-sm">
-        {{selectServiceSimple.descricao}}
+        {{selectServiceSimple.slogan}}
       </div>
       <link class="" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
       <div class="py-2 bg-verdepaleta text-azulprincipal rounded-md shadow-md mt-6 mb-6">
@@ -704,6 +707,126 @@
     </div>
   </ng-template>
 </ion-modal>
+
+<ion-modal id="duvidas-service-modal" #modalDuvidas trigger="open-custom-dialog-faq">
+  <ng-template>
+    <div class="flex flex-col h-full">
+      <!-- Cabeçalho fixo -->
+      <div class="flex-shrink-0 bg-white border-b border-gray-300 p-4">
+        <h2 class="text-xl text-center text-gray-800">Dúvidas Frequentes</h2>
+      </div>
+
+      <!-- Conteúdo rolável -->
+      <div class="flex-grow overflow-y-auto p-4 space-y-4">
+        <!-- Item 1 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">1) Limpeza Residencial</h3>
+          <p class="text-gray-700">
+            Deixe sua casa impecável! Escolha a quantidade de horas e áreas a serem limpas, e conte com nossos profissionais qualificados para atender suas preferências.
+          </p>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">2) Passar Roupas</h3>
+          <p class="text-gray-700">
+            Precisa de roupas bem passadas? Contrate por hora e tenha peças do dia a dia prontas com cuidado e habilidade.
+          </p>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">3) Cozinhar</h3>
+          <p class="text-gray-700">
+            Comidas simples e deliciosas! Nosso profissional cozinha refeições caseiras, perfeitas para o dia a dia ou para congelar.
+          </p>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">4) Diarista</h3>
+          <p class="text-gray-700">
+            Limpeza, roupas passadas e até refeições em um só atendimento. Personalize conforme suas necessidades!
+          </p>
+        </div>
+
+        <!-- Item 5 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">5) Limpeza de Vidros e Janelas</h3>
+          <p class="text-gray-700">
+            Vidros brilhantes, sem complicação! Cuidamos da limpeza interna de vidros e janelas, com segurança e eficiência.
+          </p>
+        </div>
+
+        <!-- Item 6 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">6) Limpeza Pós-Obra</h3>
+          <p class="text-gray-700">
+            Deixe sua casa ou empresa livre de sujeira e resíduos com nossa equipe especializada em pós-obra.
+          </p>
+        </div>
+
+        <!-- Item 7 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">7) Limpeza de Eventos</h3>
+          <p class="text-gray-700">
+            Antes, durante ou após o evento, garantimos a limpeza completa com agilidade e eficiência.
+          </p>
+        </div>
+
+        <!-- Item 8 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">8) Garçom/Copeiro</h3>
+          <p class="text-gray-700">
+            Refeições e eventos com atendimento impecável. Conte com nossa equipe discreta e profissional.
+          </p>
+        </div>
+
+        <!-- Item 9 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">9) Limpeza Empresarial</h3>
+          <p class="text-gray-700">
+            Sua empresa sempre limpa e organizada, com serviços avulsos ou planos programados, sob medida para sua demanda.
+          </p>
+        </div>
+
+        <!-- Item 10 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">10) Recrutamento e Seleção</h3>
+          <p class="text-gray-700">
+            Encontre o profissional ideal com nosso serviço personalizado de recrutamento e seleção. Faremos toda triagem para você!
+          </p>
+        </div>
+
+        <!-- Item 11 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">11) Cuidador(a) de Idosos</h3>
+          <p class="text-gray-700">
+            Cuidado personalizado e de confiança para idosos, adaptado às suas necessidades e perfil familiar.
+          </p>
+        </div>
+
+        <!-- Item 12 -->
+        <div class="bg-gray-100 p-4 rounded-md shadow-sm">
+          <h3 class="font-semibold text-lg text-azulprincipal">12) Babá</h3>
+          <p class="text-gray-700">
+            Cuidado confiável e personalizado para seus pequenos, com profissionais experientes e atenciosos.
+          </p>
+        </div>
+      </div>
+
+      <!-- Botão para fechar -->
+      <div class="my-2 flex justify-center">
+        <button
+          (click)="modalDuvidas.dismiss()"
+          class="px-4 py-2 bg-azulprincipal text-white rounded-md shadow-sm">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
 
 <app-loading #loadingComponent></app-loading>
 

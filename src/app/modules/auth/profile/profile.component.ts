@@ -25,7 +25,7 @@ export class ProfileComponent  implements OnInit {
 
 
   token:any;
-  screnn: string = 'profile';
+  screen: string = 'profile';
   formRegister!: FormGroup;
   hiddenPassword: boolean = false;
   type!:string;
@@ -148,7 +148,7 @@ export class ProfileComponent  implements OnInit {
   }
 
   segmentChanged(event: any) {
-    this.screnn = event.detail.value;
+    this.screen = event.detail.value;
   }
 
   verificationCPF(cpf:any){

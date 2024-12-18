@@ -17,6 +17,12 @@ export class FinancasService {
   }
 
 
+  getFinancasByFilter(filter: string){
+    return this.apiService.loadApiUrl().pipe(
+      switchMap(url => this.httpClient.get(`https://${url}/api/v1/financas` + filter))
+    );
+  }
+
   getRecebidosByDatesAndFilter(dataDe: any, dataAte: any, queryString: any) {
     return this.apiService.loadApiUrl().pipe(
       switchMap(url => this.httpClient.get(`https://${url}/api/v1/financas`+ 'financas?de=' + dataDe + '&ate=' + dataAte + '&tipo=Entrada'+ queryString ))

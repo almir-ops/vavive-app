@@ -40,6 +40,15 @@ ion-modal#example-modal {
   --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
 }
 
+ion-modal#duvidas-service-modal {
+  --width: fit-content;
+  --width: 90%;
+  --height: 90%;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+
 ion-modal#example-modal h1 {
   margin: 20px 20px 10px 20px;
 }

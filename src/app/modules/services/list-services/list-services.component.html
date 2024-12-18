@@ -1,16 +1,15 @@
 <div class="h-screen flex flex-col overflow-auto relative bg-white pb-24">
 
-  <ion-segment [(ngModel)]="screnn" class="top-0 z-10 text-sm" (ionChange)="segmentChanged($event)">
+  <ion-segment [(ngModel)]="screen" class="top-0 z-10 text-sm" (ionChange)="segmentChanged($event)">
     <ion-segment-button value="profile">
       <ion-label class="text-xs">Agendados</ion-label>
     </ion-segment-button>
     <ion-segment-button value="payments">
       <ion-label class="text-xs">Histórico</ion-label>
     </ion-segment-button>
-
   </ion-segment>
 
-  <div *ngIf="screnn==='profile'" class="overflow-auto pb-20" >
+  <div *ngIf="screen==='profile'" class="overflow-auto pb-20" >
 
     <div class="w-full flex justify-center px-4">
       <div class="px-2 pb-8 rounded-sm w-full text-[11px]">
@@ -87,7 +86,7 @@
     </div>
   </div>
 
-  <div *ngIf="screnn==='payments'" class="overflow-auto pb-20"  >
+  <div *ngIf="screen==='payments'" class="overflow-auto pb-20"  >
     <div class="w-full flex justify-center px-4">
       <div class="px-2 pb-8 rounded-sm w-full text-[11px]">
         <div *ngFor="let atendimento of listHistorico" (click)="openOptionsModal(atendimento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
@@ -442,8 +441,6 @@
         Alterar
         </button>
       </div>
-
-
     </div>
   </ng-template>
 </ion-modal>
