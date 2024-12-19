@@ -450,7 +450,7 @@
         </div>
       </div>
 
-      <div (click)="navegate('/voltar')" class="py-2 border border-azulprincipal text-azulprincipal rounded-md shadow-md mt-6 mb-6" >
+      <div (click)="navegate('/start')" class="py-2 border border-azulprincipal text-azulprincipal rounded-md shadow-md mt-6 mb-6" >
         <div class="flex flex-col text-center" >
           <span class="text-sm uppercase font-semibold">Voltar</span>
         </div>
@@ -666,20 +666,49 @@
 
 <ion-modal [keepContentsMounted]="true" #modalConfirm class="custom-modal-confirmed">
   <ng-template>
-    <div class="px-6 pt-5 text-laranjaprincipal font-semibold text-center text-xl">
-      Atendimento agendado!
-    </div>
-    <div class="flex justify-center">
-      <ng-lottie *ngIf="animation" [options]="options" (animationCreated)="animationCreated($event)" width="200px" height="200px"></ng-lottie>
-    </div>
-    <div class="px-6 pb-5 -mt-6 text-sm text-center">
-      Faça acompanhamento e pagamento dos atendimentos na tela de listagem!
-    </div>
-    <div class="px-6 py-2.5 bg-laranjaprincipal text-white font-semibold text-center" (click)="this.modalConfirm.dismiss();">
-      Listagem
+    <div class="flex flex-col">
+      <!-- Título -->
+      <div class="px-6 pt-5 text-laranjaprincipal font-semibold text-center text-xl">
+        Atendimento agendado!
+      </div>
+
+      <!-- Animação -->
+      <div class="flex justify-center">
+        <ng-lottie *ngIf="animation" [options]="options" (animationCreated)="animationCreated($event)" width="100px" height="100px"></ng-lottie>
+      </div>
+
+      <!-- Mensagem de pagamento -->
+      <div class="px-6 pb-5 mt-2 text-sm text-justify">
+        Para confirmar sua visita, efetue o pagamento do <span class="font-bold">primeiro atendimento</span> com antecedência de 24 horas. Você pode pagar agora ou acessar a lista de pagamentos para concluir mais tarde.
+      </div>
+
+      <!-- Botões de ação -->
+      <div class="grid gap-3 px-6 py-3">
+        <!-- Pagar primeiro atendimento -->
+        <button
+          class="w-full py-2.5 bg-laranjaprincipal text-white font-semibold rounded-md shadow-md hover:bg-orange-600 transition"
+          (click)="handlePaymentNow()">
+          Pagar primeiro atendimento
+        </button>
+
+        <!-- Ir para lista de pagamentos -->
+        <button
+          class="w-full py-2.5 bg-gray-100 text-laranjaprincipal font-semibold rounded-md shadow-md hover:bg-gray-200 transition"
+          (click)="goToPaymentsList()">
+          Ir para lista de pagamentos
+        </button>
+
+        <!-- Ir para agendamentos -->
+        <button
+          class="w-full py-2.5 bg-gray-100 text-laranjaprincipal font-semibold rounded-md shadow-md hover:bg-gray-200 transition"
+          (click)="goToScheduling()">
+          Ir para agendamentos
+        </button>
+      </div>
     </div>
   </ng-template>
 </ion-modal>
+
 
 <ion-modal [keepContentsMounted]="true" #modalEnderecos class="custom-modal-confirmed p-2">
   <ng-template>

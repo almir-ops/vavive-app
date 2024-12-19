@@ -227,6 +227,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
       }
     });
 
+
   }
 
   ngAfterViewInit() {
@@ -240,6 +241,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
       error: (err) => {
       }
     });
+    this.modalConfirm.present();
+    this.animation = true;
   }
 
   initializeForm() {
@@ -1086,4 +1089,16 @@ getWeekNumber(date: string): number {
     return formattedDate;
   }
 */
+
+handlePaymentNow(){
+
+}
+
+goToPaymentsList(){
+
+}
+
+goToScheduling(){
+
+}
 }
