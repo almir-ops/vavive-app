@@ -41,6 +41,7 @@ export class StartComponent  implements OnInit {
     'h-24 -top-4 -left-6', // Estilo para VI.png
   ];
   currentImageIndex = 0;
+  frontUrl = ''
   constructor(
     private authService: AuthService,
     private storage: Storage,
@@ -51,48 +52,34 @@ export class StartComponent  implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.slidesUtils = [
-      /*
-      {
-        name: "Indique e Ganhe",
-        slogan: "Deixe sua casa brilhando.",
-        bannerApp: "./assets/images/banner-padrao.png"
-      },
-      {
-        name: "Falar com profissional",
-        slogan: "Deixe sua casa brilhando.",
-        bannerApp: "./assets/images/banner-padrao.png"
-      },
-      {
-        name: "Compre produtos",
-        slogan: "Deixe sua casa brilhando.",
-        bannerApp: "./assets/images/banner-padrao.png"
-      },
-      {
-        name: "Indique e Ganhe",
-        slogan: "Deixe sua casa brilhando.",
-        bannerApp: "./assets/images/banner-padrao.png"
-      },*/
+    this.getFrontUrl().then(url => {
+      if (url) {
+        console.log('URL recuperada:', url);
+        // Use a URL como necessário
+        this.frontUrl = url;
+        this.slidesUtils = [
+          {
+            "ID": 1,
+            "name": "Cadastre-se como parceiro",
+            "slogan": "Faça parte de nossa equipe",
+            "bannerApp": "./assets/images/quero-trabalhar.jpeg",
+            "link":`https://${this.frontUrl}/pre-cadastro-profissional`
+          },
 
-        {
-          "ID": 1,
-          "name": "Cadastre-se como parceiro",
-          "slogan": "Faça parte de nossa equipe",
-          "bannerApp": "./assets/images/quero-trabalhar.jpeg",
-          "link":"https://www.vavive.com.br/seja-um-franqueado-oficial"
-        },
-
-        {
-          "ID": 2,
-          "name": "Seja um franqueado",
-          "slogan": "Não perca tempo e comece a faturar muito!",
-          "bannerApp": "./assets/images/RH.png",
-          "link": "https://www.vavive.com.br/seja-um-franqueado-oficial"
-        }
+          {
+            "ID": 2,
+            "name": "Seja um franqueado",
+            "slogan": "Não perca tempo e comece a faturar muito!",
+            "bannerApp": "./assets/images/RH.png",
+            "link": "https://www.vavive.com.br/seja-um-franqueado-oficial"
+          }
+      ]
+      } else {
+        console.log('Nenhuma URL armazenada');
+      }
+    });
 
 
-
-    ]
     this.slidesUtils2= [
       {
         name: "GARANTIA",
@@ -114,6 +101,11 @@ export class StartComponent  implements OnInit {
 
 
 
+  }
+
+  async getFrontUrl(): Promise<string | null> {
+    const url = await this.storage.get('front_url');
+    return url ? url : null;
   }
 
   ionViewWillEnter() {

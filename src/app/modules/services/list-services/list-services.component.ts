@@ -218,23 +218,34 @@ export class ListServicesComponent  implements OnInit {
   }
 
   criaPagamento(){
-    const pagamento = {
-      value: this.currentAtendimento.valor_total,
-      atendimento: this.currentAtendimento.ID,
-      billingType: "UNDEFINED",
-      dueDate: this.currentAtendimento.data_inicio
-    }
-    this.pagamentoService.criaPagamento(pagamento).subscribe({
-      next: async (res: any) => {
-        console.log(res);
-        await Browser.open({ url: res.item.invoiceUrl });
-      },
-      error: (err: any) => {
-        console.log(err);
-        this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
+    this.financasService.getFinancasByFilter('?atendimento_id=' + this.currentAtendimento.ID).subscribe({
+      next: (response:any) => {
+        console.log(response);
 
+        const entradas = response.items.filter((item: any) => item.tipo === 'Entrada');
+        console.log(entradas);
+        const pagamento = {
+          value: entradas[0].valor,
+          financa: entradas[0].ID,
+          billingType: "UNDEFINED",
+          dueDate: '07-01-2025'
+        }
+        this.pagamentoService.criaPagamento(pagamento).subscribe({
+          next: async (res: any) => {
+            console.log(res);
+            await Browser.open({ url: res.item.invoiceUrl });
+          },
+          error: (err: any) => {
+            console.log(err);
+            this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
+
+          }
+        })
+      },error: (response:any)=> {
+        console.log(response);
       }
     })
+
   }
 
   openModalEvaluation(){

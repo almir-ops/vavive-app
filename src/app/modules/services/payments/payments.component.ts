@@ -131,7 +131,7 @@ export class PaymentsComponent  implements OnInit {
   criaPagamento(){
     const pagamento = {
       value: this.currentPagamento.valor,
-      atendimento: this.currentPagamento.atendimento.ID,
+      financa: this.currentPagamento.atendimento.ID,
       billingType: "UNDEFINED",
       dueDate: this.currentPagamento.data_vencimento
     }

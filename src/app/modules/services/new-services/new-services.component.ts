@@ -17,6 +17,10 @@ import { AnimationItem } from 'lottie-web';
 import { CuponsService } from 'src/app/shared/services/cupons/cupons.service';
 import { Moment } from 'moment';
 import { AlertService } from 'src/app/shared/services/alert.service';
+import { Browser } from '@capacitor/browser';
+import { ProfissionalService } from 'src/app/shared/services/profissional/profissional.service';
+import { FinancasService } from 'src/app/shared/services/financas/financas.service';
+import { PagamentosService } from 'src/app/shared/services/pagamentos/pagamentos.service';
 
 @Component({
   selector: 'app-new-services',
@@ -112,6 +116,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
   weekDays: any[] = [];
   monthNumber: any;
+  primeiroAgendamento:any;
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -125,6 +130,9 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     private atendimentoService: AtendimentosService,
     private servicosServices:ServicosService,
     private alertService: AlertService,
+    private profissionalService: ProfissionalService,
+    private financasService: FinancasService,
+    private pagamentoService: PagamentosService,
 
   ) { }
 
@@ -241,8 +249,6 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
       error: (err) => {
       }
     });
-    this.modalConfirm.present();
-    this.animation = true;
   }
 
   initializeForm() {
@@ -838,22 +844,22 @@ getWeekNumber(date: string): number {
       this.atendimentoService.saveListAtendimentos(atendimentos)
       .subscribe({
         next: (res: any) => {
-          console.log(res);
+          this.primeiroAgendamento = res.item;
           this.modalConfirm.present();
           this.animation = true;
           const modal = this.modalConfirm;
           modal.onDidDismiss().then(() => {
-            this.navegate('services')
-        });
+            this.navegate('services');
+          });
           this.updateCupom();
-        },
-        error: (err: any) => {
-          console.log(err);
-          console.log(err.error);
-        },
-        complete: () => {
+          },
+          error: (err: any) => {
+            console.log(err);
+            console.log(err.error);
+          },
+          complete: () => {
 
-        },
+          },
       });
       console.log(this.currentClient);
       this.atualizaEndereco()
@@ -1092,13 +1098,44 @@ getWeekNumber(date: string): number {
 
 handlePaymentNow(){
 
+  if(this.primeiroAgendamento){
+    this.financasService.getFinancasByFilter('?atendimento_id=' + this.primeiroAgendamento.ID).subscribe({
+      next: (response:any) => {
+        console.log(response);
+
+        const entradas = response.items.filter((item: any) => item.tipo === 'Entrada');
+        console.log(entradas);
+        const pagamento = {
+          value: entradas[0].valor,
+          financa: entradas[0].ID,
+          billingType: "UNDEFINED",
+          dueDate: '07-01-2025'
+        }
+        this.pagamentoService.criaPagamento(pagamento).subscribe({
+          next: async (res: any) => {
+            console.log(res);
+            await Browser.open({ url: res.item.invoiceUrl });
+          },
+          error: (err: any) => {
+            console.log(err);
+            this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
+
+          }
+        })
+      },error: (response:any)=> {
+        console.log(response);
+      }
+    })
+  }
 }
 
 goToPaymentsList(){
-
+  this.modalConfirm.dismiss();
+  this.navegate('services/pagamentos');
 }
 
 goToScheduling(){
-
+  this.modalConfirm.dismiss();
+  this.navegate('services');
 }
 }
