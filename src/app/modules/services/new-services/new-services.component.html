@@ -534,11 +534,20 @@
 
   <ion-modal id="example-modal" #modalDateInit trigger="open-custom-dialog-datainicio" backdropDismiss="false">
     <ng-template>
-      <div class="flex flex-col px-3 pt-3">
-        <label class="text-azulprincipal">Data inicio</label>
-        <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione <span class="text-laranjaprincipal">{{maxSelectableDates}} dia(s)</span> de atendimento</label>
-        <label class="text-sm" *ngIf="selectedPlano.plano === 'avulso'">Selecione o dia do atendimento</label>
+      <div class="flex">
+        <div class="w-[80%]">
+          <div class="flex flex-col px-3 pt-3">
+            <label class="text-azulprincipal">Data inicio</label>
+            <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione <span class="text-laranjaprincipal font-bold">{{maxSelectableDates}} dia(s)</span> de atendimento</label>
+            <label class="text-sm" *ngIf="selectedPlano.plano === 'avulso'">Selecione o dia do atendimento</label>
+          </div>
+        </div>
+        <div class="relative w-[20%] h-10 !text-sm" (click)="modalDateInit.dismiss()">
+          <ion-icon name="close-outline"size="small" class="!h-8 !text-sm absolute top-0 right-0"></ion-icon>
+        </div>
+
       </div>
+
         <ion-datetime
           id="datetime"
           presentation="date"
@@ -565,10 +574,16 @@
 
 <ion-modal id="example-modal" #modalDateFim trigger="open-custom-dialog-3">
   <ng-template>
-    <div class="flex flex-col px-3 pt-3">
-      <label class="text-azulprincipal">Data fim</label>
-      <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione o dia do encerramento dos atendimentos</label>
+    <div class="flex">
+      <div class="flex flex-col px-3 pt-3">
+        <label class="text-azulprincipal">Data fim</label>
+        <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione o dia do encerramento dos atendimentos</label>
+      </div>
+      <div class="relative w-[20%] h-10 !text-sm" (click)="modalDateFim.dismiss()">
+        <ion-icon name="close-outline"size="small" class="!h-8 !text-sm absolute top-0 right-0"></ion-icon>
+      </div>
     </div>
+
     <ion-datetime
       id="datetime"
       presentation="date"

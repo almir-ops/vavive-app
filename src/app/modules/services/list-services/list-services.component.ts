@@ -217,34 +217,41 @@ export class ListServicesComponent  implements OnInit {
 
   }
 
-  criaPagamento(){
-    this.financasService.getFinancasByFilter('?atendimento_id=' + this.currentAtendimento.ID).subscribe({
-      next: (response:any) => {
-        console.log(response);
+  async criaPagamento(){
+    if(!this.currentAtendimento.transaction_receipt_url){
+      this.financasService.getFinancasByFilter('?atendimento_id=' + this.currentAtendimento.ID).subscribe({
+        next: (response:any) => {
+          console.log(response);
 
-        const entradas = response.items.filter((item: any) => item.tipo === 'Entrada');
-        console.log(entradas);
-        const pagamento = {
-          value: entradas[0].valor,
-          financa: entradas[0].ID,
-          billingType: "UNDEFINED",
-          dueDate: '07-01-2025'
-        }
-        this.pagamentoService.criaPagamento(pagamento).subscribe({
-          next: async (res: any) => {
-            console.log(res);
-            await Browser.open({ url: res.item.invoiceUrl });
-          },
-          error: (err: any) => {
-            console.log(err);
-            this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
-
+          const entradas = response.items.filter((item: any) => item.tipo === 'Entrada');
+          console.log(entradas);
+          const pagamento = {
+            value: entradas[0].valor,
+            financa: entradas[0].ID,
+            billingType: "UNDEFINED",
+            dueDate: moment().add(3, 'days').format('YYYY-MM-DD')
           }
-        })
-      },error: (response:any)=> {
-        console.log(response);
-      }
-    })
+          this.pagamentoService.criaPagamento(pagamento).subscribe({
+            next: async (res: any) => {
+              console.log(res);
+              this.loadUserData();
+              await Browser.open({ url: res.data.invoiceUrl });
+              this.modalOptions.dismiss();
+            },
+            error: (err: any) => {
+              console.log(err);
+              this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
+
+            }
+          })
+        },error: (response:any)=> {
+          console.log(response);
+        }
+      })
+    }else{
+      await Browser.open({ url: this.currentAtendimento.transaction_receipt_url });
+
+    }
 
   }
 

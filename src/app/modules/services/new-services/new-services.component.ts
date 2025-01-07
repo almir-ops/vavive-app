@@ -305,11 +305,14 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   async loadUserData() {
     try {
       const user = await this.getUserSecurely();
-      console.log(user);
 
       if (user) {
         this.currentClient = user;
         const cep = await this.storage.get('current_cep');
+        console.log(user);
+        console.log(cep);
+        console.log(this.currentClient);
+
 
         this.addressesFound = this.currentClient.enderecos.filter((endereco:any) => endereco.cep.replace("-", "") === cep);
         this.addressList = this.currentClient.enderecos;
@@ -385,7 +388,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
   loadNextFiveDays() {
     this.nextFiveDays = Array.from({ length: 3 }, (_, i) => {
-      const date = moment().add(i + 1, 'days');
+      const date = moment().add(i + 2, 'days');
       return {
         dayOfWeek: this.getAbbreviation(date.format('dddd')),
         dateNumber: date.format('DD'),
@@ -844,7 +847,9 @@ getWeekNumber(date: string): number {
       this.atendimentoService.saveListAtendimentos(atendimentos)
       .subscribe({
         next: (res: any) => {
-          this.primeiroAgendamento = res.item;
+          console.log(res);
+
+          this.primeiroAgendamento = res.item[0];
           this.modalConfirm.present();
           this.animation = true;
           const modal = this.modalConfirm;
@@ -1109,12 +1114,15 @@ handlePaymentNow(){
           value: entradas[0].valor,
           financa: entradas[0].ID,
           billingType: "UNDEFINED",
-          dueDate: '07-01-2025'
+          dueDate: moment().add(3, 'days').format('YYYY-MM-DD')
         }
         this.pagamentoService.criaPagamento(pagamento).subscribe({
           next: async (res: any) => {
             console.log(res);
-            await Browser.open({ url: res.item.invoiceUrl });
+            await Browser.open({ url: res.data.invoiceUrl });
+            this.modalConfirm.dismiss();
+            this.navegate('services/pagamentos');
+
           },
           error: (err: any) => {
             console.log(err);
