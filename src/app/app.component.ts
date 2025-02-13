@@ -53,7 +53,7 @@ export class AppComponent {
       this.router.navigate(['/']);
     }
 
-    this.checkPushNotificationPermission();
+    //this.checkPushNotificationPermission();
   }
 
   configureStatusBar() {

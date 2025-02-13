@@ -55,7 +55,7 @@
               inputmode="numeric"
               formControlName="cpf"
             ></ion-input>
-            <div *ngIf="formRegisterControl['celular'].value && formRegisterControl['celular'].errors">
+            <div *ngIf="formRegisterControl['cpf'].value && formRegisterControl['cpf'].errors">
               <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
             </div>
           </div>
@@ -123,8 +123,14 @@
           <div class="w-full flex justify-center mt-6">
             <span class="text-azulprincipal" (click)="logout()">Sair</span>
           </div>
-          <div class="flex justify-center mt-8 text-sm" (click)="openExternalLink('https://www.vavive.com.br/termos')">
-            Politica de privacidade
+          <div class="flex justify-center">
+            <div class="flex justify-center mt-8 text-sm" (click)="openExternalLink('https://www.vavive.com.br/termos')">
+              Politica de privacidade
+            </div>
+            <div class="flex justify-center ml-4 mt-8 text-sm text-red-600" (click)="modalDeletedAccount.present()">
+              Excluir conta
+            </div>
+
           </div>
         </form>
       </div>
@@ -495,6 +501,19 @@
         <ion-button expand="block" fill="clear" color="danger" (click)="modalFranquiaChange.dismiss()">
           Cancelar
         </ion-button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<ion-modal id="endereco-modal" #modalDeletedAccount>
+  <ng-template>
+    <div class="p-4">
+      <div class="text-azulprincipal">Atenção</div>
+      <span class="text-xs mb-5">Deseja mesmo deletar sua conta?</span>
+      <div class="flex justify-between mt-4">
+        <div (click)="deleteAccount()" class="text-red-600">Deletar</div>
+        <div class="bg-azulprincipal text-white rounded-md py-1 px-2 shadow-md">Voltar</div>
       </div>
     </div>
   </ng-template>

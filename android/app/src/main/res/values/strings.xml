@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Vavivê</string>
     <string name="title_activity_main">Vavivê</string>
-    <string name="package_name">io.ionic.starter</string>
-    <string name="custom_url_scheme">io.ionic.starter</string>
+    <string name="package_name">io.ionic.vavive</string>
+    <string name="custom_url_scheme">io.ionic.vavive</string>
 </resources>

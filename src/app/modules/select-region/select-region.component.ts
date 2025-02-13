@@ -139,16 +139,16 @@ export class SelectRegionComponent {
           }
 
           if (region) {
-            console.log('Franquia encontrada para a localidade:', region);
             await this.storage.set('endereco', endereco);
             await this.storage.set('front_url', region.url_front);
             await this.storage.set('api_url', region.url);
             await this.storage.set('franquia', region.nome);
-            await this.storage.set('current_cep', cep);
-            const apiUrl = await this.storage.get('api_url');
-            console.log('API URL:', apiUrl);
-            console.log('Endereço completo:', endereco);
+            await this.storage.set('email_franquia', region.email_contato);
+            await this.storage.set('contato_franquia', region.numero_contato);
 
+            await this.storage.set('current_cep', cep);
+
+            const apiUrl = await this.storage.get('api_url');
             this.router.navigate(['/start']);
           } else {
             console.log('Localidade não encontrada em nenhuma franquia.');

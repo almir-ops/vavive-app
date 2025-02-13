@@ -1146,4 +1146,28 @@ goToScheduling(){
   this.modalConfirm.dismiss();
   this.navegate('services');
 }
+
+async openWhatsApp() {
+  try {
+    // Obtém o número de contato do storage
+    const contato = await this.storage.get('contato_franquia');
+
+    if (!contato) {
+      alert('Número de contato não encontrado!');
+      return;
+    }
+
+    // Remove caracteres inválidos
+    const formattedNumber = contato.replace(/\D/g, '');
+
+    // Monta a URL para abrir o WhatsApp
+    const whatsappURL = `https://wa.me/${formattedNumber}`;
+
+    // Abre o WhatsApp em uma nova aba/janela
+    window.open(whatsappURL, '_blank');
+  } catch (error) {
+    console.error('Erro ao tentar abrir o WhatsApp:', error);
+    alert('Houve um erro ao processar a solicitação.');
+  }
+}
 }

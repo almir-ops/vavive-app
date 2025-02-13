@@ -37,6 +37,7 @@ export class ProfileComponent  implements OnInit {
   @ViewChild('modalDeleteEndereco') modalDeleteEndereco!: IonModal;
   @ViewChild('modalErroEndereco') modalErroEndereco!: IonModal;
   @ViewChild('modalFranquiaChange') modalFranquiaChange!: IonModal;
+  @ViewChild('modalDeletedAccount') modalDeletedAccount!: IonModal;
 
   isModalOpen = false;
   cep: string = '';
@@ -511,6 +512,20 @@ export class ProfileComponent  implements OnInit {
 
   openExternalLink(url: string): void {
     window.open(url, '_blank');
+  }
+
+  deleteAccount(){
+    const cliente: uCliente = this.formRegister.getRawValue();
+
+    this.clienteService.deleteClient(cliente).subscribe({
+      next: (data) => {
+        this.modalDeletedAccount.dismiss();
+        this.logout();
+      },
+      error: (err) => {
+        console.error('Erro ao deletar a conta:', err);
+      }
+    })
   }
 
 }

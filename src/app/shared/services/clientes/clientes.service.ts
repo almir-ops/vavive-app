@@ -26,4 +26,10 @@ export class ClientesService {
     );
   }
 
+  deleteClient(cliente: uCliente) {
+    return this.apiService.loadApiUrl().pipe(
+      switchMap(url => this.httpCliente.delete(`https://${url}/api/v1/clientes/${cliente.ID}`))
+    );
+  }
+
 }
