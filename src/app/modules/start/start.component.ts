@@ -70,7 +70,7 @@ export class StartComponent  implements OnInit {
             "ID": 2,
             "name": "Seja um franqueado",
             "slogan": "Não perca tempo e comece a faturar muito!",
-            "bannerApp": "./assets/images/RH.png",
+            "bannerApp": "./assets/images/seja-franqueado.jpeg",
             "link": "https://www.vavive.com.br/seja-um-franqueado-oficial"
           }
       ]
