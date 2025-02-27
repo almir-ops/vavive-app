@@ -93,7 +93,7 @@ export class StartComponent  implements OnInit {
       },
       {
         name: "CONFIANÇA",
-        slogan: "Sua confiança garantida em cada serviço, sempre no sia e horário combinados.",
+        slogan: "Sua confiança garantida em cada serviço, sempre no dia e horário combinados.",
         bannerApp: "./assets/images/banner-padrao.png"
       }
     ]
@@ -111,6 +111,7 @@ export class StartComponent  implements OnInit {
   ionViewWillEnter() {
     this.initializeUserData();
     const storedSlides = localStorage.getItem('slides');
+    console.log('filteredItems');
 
     if (storedSlides) {
       // Se o array já estiver salvo no localStorage, usa o valor armazenado
@@ -124,8 +125,11 @@ export class StartComponent  implements OnInit {
 
           // Filtra e ordena os itens
           const filteredItems = value.items.filter(
-            (item: any) => item.nome !== 'Limpeza pesada'
+            (item: any) => item.nome !== 'Limpeza pesada' && item.nome !== 'Recrutamento e seleção'
           );
+
+          console.log(filteredItems);
+
           const sortedItems = filteredItems.sort((a: any, b: any) => {
             if (a.nome === 'Limpeza residencial') return -1;
             if (b.nome === 'Limpeza residencial') return 1;

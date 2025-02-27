@@ -214,7 +214,7 @@
           <span class="text-azulprincipal font-semibold">Frequência dos atendimentos</span>
           <span class="text-sm">Selecione a frequência que deseja os atendimentos</span>
         </div>
-        <ion-radio-group [(ngModel)]="selectedPlano"  (ionChange)="this.calculatePreco(); updatePlano(selectedPlano); resetSelection()">
+        <div>
           <swiper-container
             #swiper
             [modules]="swiperModules"
@@ -223,24 +223,33 @@
             [pagination]="{ clickable: true }"
             style="--swiper-pagination-color: #FD4F04;">
 
-            <!-- Iterate over services and create each slide -->
+            <!-- Iterar sobre os planos e criar cada slide -->
             <swiper-slide *ngFor="let plano of planos">
               <div class="border border-gray-400 flex flex-col p-4 w-full text-center text-sm mt-5 mb-10 shadow-md">
-                <div class="h-[50%]">
-                  <ion-radio
+
+                <!-- Input radio padrão -->
+                <div class="h-[50%] flex items-center justify-center">
+                  <input
+                    type="radio"
                     [value]="plano"
-                    aria-label="Custom checkbox"
-                    alignment="start">
-                  </ion-radio>
+                    name="plano"
+                    [id]="'plano-' + plano.id"
+                    [(ngModel)]="selectedPlano"
+                    (change)="calculatePreco(); updatePlano(selectedPlano); resetSelection()"
+                    class="h-6 w-6 text-blue-600 border-gray-300 rounded-full"
+                  />
                 </div>
+
+                <!-- Nome do plano -->
                 <div class="h-[50%] flex items-center justify-center whitespace-nowrap">
-                  {{ plano.name }}
+                  <label [for]="'plano-' + plano.id" class="cursor-pointer">{{ plano.name }}</label>
                 </div>
               </div>
             </swiper-slide>
 
           </swiper-container>
-        </ion-radio-group>
+        </div>
+
 
       </div>
       <div class="mt-6" [ngClass]="{'hidden':selectedPlano.plano === 'avulso', 'block': selectedPlano.plano !== 'avulso'}">
@@ -317,7 +326,7 @@
           <swiper-slide *ngFor="let day of nextFiveDays">
             <div class="border border-gray-400 h-[80px] flex flex-col p-4 w-full text-center text-xs mb-1 shadow-md" (click)="onDaySelect(day)">
               <div class="h-[50%] font-semibold">{{ day.dayOfWeek }}</div>
-              <div class="h-[50%] flex items-center justify-center text-lg">{{ day.dateNumber }}</div>
+              <div class="h-[50%] flex items-center justify-center text-lg">{{ day.dateNumber }}/{{ day.dateMonth }}</div>
             </div>
           </swiper-slide>
 
@@ -535,54 +544,63 @@
 -->
 
 
-  <ion-modal id="example-modal" #modalDateInit trigger="open-custom-dialog-datainicio" backdropDismiss="false">
-    <ng-template>
-      <div class="flex">
-        <div class="w-[80%]">
-          <div class="flex flex-col px-3 pt-3">
-            <label class="text-azulprincipal">Data inicio</label>
-            <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione <span class="text-laranjaprincipal font-bold">{{maxSelectableDates}} dia(s)</span> de atendimento</label>
-            <label class="text-sm" *ngIf="selectedPlano.plano === 'avulso'">Selecione o dia do atendimento</label>
-          </div>
-        </div>
-        <div class="relative w-[20%] h-10 !text-sm" (click)="modalDateInit.dismiss()">
-          <ion-icon name="close-outline"size="small" class="!h-8 !text-sm absolute top-0 right-0"></ion-icon>
-        </div>
+<ion-modal
+  id="example-modal"
+  #modalDateInit
+  trigger="open-custom-dialog-datainicio"
+  backdropDismiss="false"
+  [ngStyle]="{
+    '--height': selectedPlano.plano === 'avulso' ? 'fit-content' : '600px',
+    '--border-radius': '6px',
+    '--box-shadow': '0 28px 48px rgba(0, 0, 0, 0.4)'
+  }">
 
+<ng-template>
+  <div class="flex">
+    <div class="w-[80%]">
+      <div class="flex flex-col px-3 pt-3">
+        <label class="text-azulprincipal">Data inicio</label>
+        <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione <span class="text-laranjaprincipal font-bold">{{maxSelectableDates}} dia(s)</span> de atendimento</label>
+        <label class="text-sm" *ngIf="selectedPlano.plano === 'avulso'">Selecione o dia do atendimento</label>
       </div>
+    </div>
+    <div class="relative w-[20%] h-10 !text-sm" (click)="modalDateInit.dismiss()">
+      <ion-icon name="close-outline" size="small" class="!h-8 !text-sm absolute top-0 right-0"></ion-icon>
+    </div>
+  </div>
 
-        <ion-datetime
-          id="datetime"
-          presentation="date"
-          [min]="minDate"
-          [multiple]="true"
-          [dayValues]="weekDays"
-          (ionChange)="onDateSelected($event)"
-          [monthValues]="monthNumber"
+  <ion-datetime
+    id="datetime"
+    presentation="date"
+    [min]="minDate"
+    [multiple]="true"
+    [dayValues]="weekDays"
+    (ionChange)="onDateSelected($event)"
+    [monthValues]="monthNumber"
+    [value]="selectedDates">
+  </ion-datetime>
 
-          [value]="selectedDates"
+  <div class="flex justify-between -mt-7 mb-4 px-4">
+    <div *ngIf="selectedPlano.plano !== 'avulso'" class="bg-azulsombreado border-[0.5px] border-azulprincipal rounded-md shadow-md px-2 py-1" (click)="resetSelection()">Resetar</div>
+    <div *ngIf="selectedPlano.plano === 'avulso'" class="bg-azulsombreado border-[0.5px] border-azulprincipal rounded-md shadow-md px-2 py-1" (click)="modalDateInit.dismiss()">Fechar</div>
+    <div class="bg-azulprincipal text-white rounded-md shadow-md px-2 py-1" (click)="confirmAtendimentoPlan()">Confirmar</div>
+  </div>
 
-        ></ion-datetime>
-        <div class="flex justify-between -mt-7 mb-4 px-4">
-          <div *ngIf="selectedPlano.plano !== 'avulso'" class="bg-azulsombreado border-[0.5px] border-azulprincipal rounded-md shadow-md px-2 py-1" (click)="resetSelection()">Resetar</div>
-          <div *ngIf="selectedPlano.plano === 'avulso'" class="bg-azulsombreado border-[0.5px] border-azulprincipal rounded-md shadow-md px-2 py-1" (click)="modalDateInit.dismiss()">Fechar</div>
-          <div class="bg-azulprincipal text-white rounded-md shadow-md px-2 py-1" (click)="confirmAtendimentoPlan()">Confirmar</div>
-        </div>
-          <div class=" mb-4 rounded-md mx-2 p-1 text-xs bg-azulsombreado border border-azulprincipal" *ngIf="selectedPlano.plano !== 'avulso'">
-        <b>OBS:</b> Selecione apenas a data de inicio, as demais datas serão agendadas automaticamente. Após o agendamento é possivel alterar a data do atendimento na aba de serviços.
-      </div>
-    </ng-template>
-  </ion-modal>
+  <div class="mb-4 rounded-md mx-2 p-1 text-xs bg-azulsombreado border border-azulprincipal" *ngIf="selectedPlano.plano !== 'avulso'">
+    <b>OBS:</b> Selecione apenas a data de inicio, as demais datas serão agendadas automaticamente. Após o agendamento é possivel alterar a data do atendimento na aba de serviços.
+  </div>
+</ng-template>
+</ion-modal>
 
 
-<ion-modal id="example-modal" #modalDateFim trigger="open-custom-dialog-3">
+<ion-modal id="modal-datafim" #modalDateFim trigger="open-custom-dialog-3">
   <ng-template>
     <div class="flex">
       <div class="flex flex-col px-3 pt-3">
         <label class="text-azulprincipal">Data fim</label>
         <label class="text-sm" *ngIf="selectedPlano.plano !== 'avulso'">Selecione o dia do encerramento dos atendimentos</label>
       </div>
-      <div class="relative w-[20%] h-10 !text-sm" (click)="modalDateFim.dismiss()">
+      <div class="relative w-[20%] h-12 !text-sm m-2" (click)="modalDateFim.dismiss()">
         <ion-icon name="close-outline"size="small" class="!h-8 !text-sm absolute top-0 right-0"></ion-icon>
       </div>
     </div>

@@ -314,7 +314,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
         console.log(this.currentClient);
 
 
-        this.addressesFound = this.currentClient.enderecos.filter((endereco:any) => endereco.cep.replace("-", "") === cep);
+        //this.addressesFound = this.currentClient.enderecos.filter((endereco:any) => endereco.cep.replace("-", "") === cep);
+        this.addressesFound = this.currentClient.enderecos;
         this.addressList = this.currentClient.enderecos;
         console.log(this.addressesFound);
 

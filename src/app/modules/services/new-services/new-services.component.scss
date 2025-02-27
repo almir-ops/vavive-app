@@ -35,6 +35,13 @@ ion-radio.radio-checked::part(mark) {
 ion-modal#example-modal {
   --width: fit-content;
   --width: 90%;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+}
+
+ion-modal#modal-datafim {
+  --width: fit-content;
+  --width: 90%;
   --height: fit-content;
   --border-radius: 6px;
   --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);

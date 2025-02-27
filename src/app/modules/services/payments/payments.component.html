@@ -21,7 +21,7 @@
         </div>
       </div>
       <!-- Contêiner com scroll flexível -->
-      <div class="overflow-y-auto flex-grow">
+      <div class="overflow-y-auto flex-grow pb-16">
         <div *ngFor="let pagamento of listPagamentosPendentes" (click)="openOptionsModal(pagamento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
           <div class="flex h-full">
             <div class="w-[78%] flex flex-col">
@@ -89,7 +89,7 @@
       </div>
 
       <!-- Contêiner com scroll flexível -->
-      <div class="overflow-y-auto flex-grow">
+      <div class="overflow-y-auto flex-grow pb-16">
         <div *ngFor="let pagamento of listPagamentosPagos" (click)="openOptionsModal(pagamento)" class="h-[85px] w-full rounded-md shadow-md px-2 py-3 text-gray-700 relative bg-azulsombreado mt-4">
           <div class="flex h-full">
             <div class="w-[78%] flex flex-col">
