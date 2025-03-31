@@ -409,14 +409,14 @@
         <div class="flex justify-between my-2">
           <div
             [ngClass]="{'border border-azulprincipal text-azulprincipal ': selectedTime !== '08:00', 'bg-azulprincipal text-white': selectedTime === '08:00'}"
-            class="w-[47%] py-2 rounded-md shadow-md duration-150" (click)="selectHour('08:00')">
+            class="w-[47%] py-2 rounded-md shadow-md duration-150" (click)="calculatePreco(); selectHour('08:00')">
             <div class="flex flex-col text-center" >
               <span class="text-sm font-semibold">08h - 10h</span>
             </div>
           </div>
           <div
           [ngClass]="{'border border-azulprincipal text-azulprincipal ': selectedTime !== '12:00', 'bg-azulprincipal text-white': selectedTime === '12:00'}"
-          class="w-[47%] py-2 rounded-md shadow-md duration-150" (click)="selectHour('12:00')">
+          class="w-[47%] py-2 rounded-md shadow-md duration-150" (click)="calculatePreco(); selectHour('12:00')">
             <div class="flex flex-col text-center" >
               <span class="text-sm font-semibold">12h - 14h</span>
             </div>
@@ -550,7 +550,7 @@
   trigger="open-custom-dialog-datainicio"
   backdropDismiss="false"
   [ngStyle]="{
-    '--height': selectedPlano.plano === 'avulso' ? 'fit-content' : '600px',
+    '--height': selectedPlano.plano === 'avulso' ? '500px' : '600px',
     '--border-radius': '6px',
     '--box-shadow': '0 28px 48px rgba(0, 0, 0, 0.4)'
   }">
@@ -570,11 +570,12 @@
   </div>
 
   <ion-datetime
+    class="w-[95%] mx-auto"
     id="datetime"
     presentation="date"
     [min]="minDate"
     [multiple]="true"
-    [dayValues]="weekDays"
+    [isDateEnabled]="isWeekday"
     (ionChange)="onDateSelected($event)"
     [monthValues]="monthNumber"
     [value]="selectedDates">
@@ -606,6 +607,8 @@
     </div>
 
     <ion-datetime
+    class="w-[95%] mx-auto"
+
       id="datetime"
       presentation="date"
       [min]="minDateFim"

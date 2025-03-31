@@ -21,6 +21,7 @@ import { Browser } from '@capacitor/browser';
 import { ProfissionalService } from 'src/app/shared/services/profissional/profissional.service';
 import { FinancasService } from 'src/app/shared/services/financas/financas.service';
 import { PagamentosService } from 'src/app/shared/services/pagamentos/pagamentos.service';
+import { EmailService } from 'src/app/shared/services/email/email.service';
 
 @Component({
   selector: 'app-new-services',
@@ -99,7 +100,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   type!:string;
   addressesFound:any[] = [];
   multipleAddresses = false;
-  expandInfoValue = false;
+  expandInfoValue = true;
   currentCupom:any;
   currentCupomName:any;
   cupomInvalid = false;
@@ -117,6 +118,9 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   weekDays: any[] = [];
   monthNumber: any;
   primeiroAgendamento:any;
+
+  allowedWeekDays: number[] = [1, 2, 3, 4, 5]; // Apenas segunda a sexta-feira
+
   constructor(
     private formBuilder: FormBuilder,
     private pickerCtrl: PickerController,
@@ -133,8 +137,18 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     private profissionalService: ProfissionalService,
     private financasService: FinancasService,
     private pagamentoService: PagamentosService,
-
+    private emailService: EmailService
   ) { }
+
+  isWeekday = (dateString: string) => {
+    const date = new Date(dateString);
+    const utcDay = date.getUTCDay();
+
+    // Lista de feriados (formato YYYY-MM-DD)
+    const feriados = ['2024-01-01', '2024-04-21', '2024-05-01', '2024-09-07', '2024-12-25'];
+
+    return utcDay !== 0 && utcDay !== 6 && !feriados.includes(dateString);
+  };
 
   ngOnInit() {
     moment.locale('pt-br');
@@ -849,7 +863,16 @@ getWeekNumber(date: string): number {
       .subscribe({
         next: (res: any) => {
           console.log(res);
+          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(atendimentos[0]),'almirkami@gmail.com').subscribe({
+            next:(value:any) =>{
+              console.log(value);
 
+            },
+            error:(err:any) => {
+              console.log(err);
+
+            },
+          })
           this.primeiroAgendamento = res.item[0];
           this.modalConfirm.present();
           this.animation = true;
@@ -974,6 +997,8 @@ getWeekNumber(date: string): number {
   }
 
   selectAdress(endereco:any){
+    console.log(endereco);
+
     this.currentEndereco = endereco;
     this.updateClientData();
     this.multipleAddresses = false;
@@ -1171,4 +1196,55 @@ async openWhatsApp() {
     alert('Houve um erro ao processar a solicitação.');
   }
 }
+
+generateEmail(atendimento: any): string {
+  if (!this.formAtendimento) return '';
+
+  const endereco = atendimento.endereco;
+  const cliente = atendimento.cliente;
+
+  return `
+    <p>Olá <strong>${atendimento.nome}</strong>,</p>
+
+    <p><strong>Detalhes do Atendimento:</strong></p>
+    <p><strong>CPF:</strong> ${atendimento.CPF} <br>
+    <strong>Telefone:</strong> ${atendimento.telefone} <br>
+    <strong>Email:</strong> ${cliente.email}</p>
+
+    <p><strong>Endereço:</strong></p>
+    <p><strong>Rua:</strong> ${endereco.rua}, Nº ${endereco.numero} <br>
+    <strong>Bairro:</strong> ${endereco.bairro} <br>
+    <strong>Cidade:</strong> ${endereco.cidade} - ${endereco.estado} <br>
+    <strong>CEP:</strong> ${endereco.cep}, <strong>País:</strong> ${endereco.pais} <br>
+    <strong>Complemento:</strong> ${endereco.complemento || 'N/A'}</p>
+
+    <p><strong>Serviços Selecionados:</strong></p>
+    <p>${atendimento.servicos.length > 0 ? atendimento.servicos.map((s: any) => `<strong>- ${s.nome}</strong>`).join('<br>') : 'Nenhum serviço informado'}</p>
+
+    <p><strong>Informações de Atendimento:</strong></p>
+    <p><strong>Data de Início:</strong> ${atendimento.data_inicio || 'Não informado'} <br>
+    <strong>Data de Fim:</strong> ${atendimento.data_fim || 'Não informado'} <br>
+    <strong>Hora de Entrada:</strong> ${atendimento.hora_de_entrada} <br>
+    <strong>Duração:</strong> ${atendimento.duracao} minutos <br>
+    <strong>Status:</strong> ${atendimento.status_atendimento} <br>
+    <strong>Forma de Pagamento:</strong> ${atendimento.forma_pagamento} <br>
+    <strong>Desconto:</strong> R$ ${atendimento.desconto || '0.00'} <br>
+    <strong>Acréscimo:</strong> R$ ${atendimento.acrestimo || '0.00'} <br>
+    <strong>Valor dos Serviços:</strong> R$ ${atendimento.valor_servicos.toFixed(2)} <br>
+    <strong>Valor Total:</strong> R$ ${atendimento.valor_total.toFixed(2)} <br>
+    <strong>Pagamento Antecipado:</strong> ${atendimento.pagamento_antecipado === 'S' ? 'Sim' : 'Não'}</p>
+
+    <p><strong>Observações:</strong></p>
+    <p><strong>Observações de Serviço:</strong> ${atendimento.observacoes_de_servicos || 'Nenhuma'} <br>
+    <strong>Observações do Prestador:</strong> ${atendimento.observacoes_de_prestador || 'Nenhuma'}</p>
+
+    <p><strong>Plano Selecionado:</strong> ${atendimento.plano} (ID: ${atendimento.plano_id})</p>
+
+    <p>Obrigado por utilizar nossos serviços.</p>
+
+    <p><strong>Atenciosamente,</strong><br>
+    Sua Empresa</p>
+  `;
+}
+
 }
