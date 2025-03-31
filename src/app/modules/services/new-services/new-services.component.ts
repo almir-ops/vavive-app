@@ -863,7 +863,7 @@ getWeekNumber(date: string): number {
       .subscribe({
         next: (res: any) => {
           console.log(res);
-          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(atendimentos[0]),'almirkami@gmail.com').subscribe({
+          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(atendimentos[0]),'franquias@vavive.com.br').subscribe({
             next:(value:any) =>{
               console.log(value);
 
