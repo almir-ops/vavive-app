@@ -539,6 +539,7 @@ export class ProfileComponent  implements OnInit {
     this.storage.set('franquia', region.nome);
     this.storage.set('email_franquia', region.email_contato);
     this.storage.set('contato_franquia', region.numero_contato);
+
     this.authService.logout();
     this.modalNovoEndereco.dismiss();
     this.modalFranquias.dismiss();
