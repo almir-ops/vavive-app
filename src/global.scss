@@ -131,12 +131,6 @@
 }
 
 
-:root {
-  --ion-color-scheme: light;
-}
-
-
-
 ion-input.custom {
   --color: #909090;
   --placeholder-color: #ddd;
@@ -226,6 +220,8 @@ ion-modal#example-modal .wrapper {
 /* Global SCSS */
 :root {
   --ion-color-scheme: light;
+  --ion-safe-area-top: env(safe-area-inset-top);
+
 }
 
 /* Forçar estilo claro para os inputs */
@@ -254,6 +250,10 @@ body {
   color-scheme: light;
   --ion-background-color: #ffffff;
   --ion-text-color: #000000;
+}
+
+ion-header {
+  padding-top: var(--ion-safe-area-top);
 }
 
 /* Ajuste global para o iOS */
