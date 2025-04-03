@@ -868,7 +868,60 @@ getWeekNumber(date: string): number {
 
   async saveAtendimentos(atendimentos: any[]) {
     console.log(this.generateEmail(atendimentos[0]));
+    try {
+      this.atendimentoService.saveListAtendimentos(atendimentos)
+      .subscribe({
+        next: (res: any) => {
+          console.log(res);
 
+          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(atendimentos[0]),'franquias@vavive.com.br').subscribe({
+            next:(value:any) =>{
+              console.log(value);
+            },
+            error:(err:any) => {
+              console.log(err);
+            },
+          })
+
+          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(atendimentos[0]),atendimentos[0].cliente.email).subscribe({
+            next:(value:any) =>{
+              console.log(value);
+            },
+            error:(err:any) => {
+              console.log(err);
+            },
+          })
+
+          this.primeiroAgendamento = res.item[0];
+          this.modalConfirm.present();
+          this.animation = true;
+          const modal = this.modalConfirm;
+          modal.onDidDismiss().then(() => {
+            this.navegate('services');
+          });
+          this.updateCupom();
+          },
+          error: (err: any) => {
+            console.log(err);
+            console.log(err.error);
+          },
+          complete: () => {
+
+          },
+      });
+      console.log(this.currentClient);
+      this.atualizaEndereco()
+      await this.storage.set('atendimentos', atendimentos);
+      await Preferences.set({
+        key: 'user_data',
+        value: JSON.stringify(this.currentClient),
+      });
+      const user = await this.getUserSecurely();
+      console.log(user);
+      //this.router.navigate(['services/confirm']);
+    } catch (error) {
+      console.error('Erro ao salvar os atendimentos:', error);
+    }
 
   }
 
@@ -1169,7 +1222,7 @@ generateEmail(atendimento: any): string {
 
   const endereco = atendimento.endereco;
   const cliente = atendimento.cliente;
-  const selectedService = this.services.find((service: any) => service.ID === this.selectedServiceId);
+  const selectedService = this.services.find((service:any) => service.ID === this.selectedServiceId);
 
   return `
     <p>Olá, <strong>${atendimento.nome}</strong>!</p>
@@ -1188,6 +1241,7 @@ generateEmail(atendimento: any): string {
     <p><strong>Valor dos Serviços:</strong> R$ ${atendimento.valor_servicos?.toFixed(2) || '0.00'}</p>
     <p><strong>Valor Total:</strong> R$ ${atendimento.valor_total?.toFixed(2) || '0.00'}</p>
 
+    <p><strong>Serviço Selecionado:</strong> ${selectedService?.nome}</p>
     <p><strong>Observações de Serviço:</strong> ${atendimento.observacoes_de_servicos || 'Nenhuma'}</p>
     <p><strong>Observações do Prestador:</strong> ${atendimento.observacoes_de_prestador || 'Nenhuma'}</p>
 
