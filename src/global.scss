@@ -247,6 +247,7 @@ ion-button {
 
 /* Adicionar classes específicas para garantir que os componentes estejam claros */
 body {
+  padding-top: env(safe-area-inset-top, 0);
   color-scheme: light;
   --ion-background-color: #ffffff;
   --ion-text-color: #000000;

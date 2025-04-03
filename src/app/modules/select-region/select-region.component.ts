@@ -22,12 +22,17 @@ export class SelectRegionComponent {
   };
 
   @ViewChild('modalSejaFranqueado', { static: false }) modalSejaFranqueado!: IonModal;
+  @ViewChild('modalFranquias', { static: false }) modalFranquias!: IonModal;
+
 
   public readonly predicate: MaskitoElementPredicate = (element) =>
     (element as HTMLIonInputElement).getInputElement();
 
   franquiaNotFound = false;
   hideModal = false;
+
+  regionsCurrent: any[] = [];
+
   constructor(
     private storage: Storage,
     private router: Router,
@@ -129,13 +134,16 @@ export class SelectRegionComponent {
           }
 
           // Se não encontrou uma franquia e o estado é SP ou RJ, usa a franquia "Matriz"
-          if (!region && (endereco.uf === 'SP' || endereco.uf === 'RJ')) {
-            region = this.regions.find((r: any) => r.nome.toLowerCase() === 'matriz');
-            if (region) {
-              console.log('Franquia "Matriz" encontrada:', region);
-            } else {
-              console.log('Franquia "Matriz" não encontrada.');
-            }
+          if (!region && (endereco.uf === 'SP')) {
+            //region = this.regions.find((r: any) => r.nome.toLowerCase() === 'matriz');
+            console.log(this.regions)
+            this.modalFranquias.present();
+            this.regionsCurrent = this.regions.reduce((unique: any[], region: any) => {
+              if (!unique.some((item) => item.nome === region.nome)) {
+                unique.push(region);
+              }
+              return unique;
+            }, []);
           }
 
           if (region) {
@@ -177,10 +185,23 @@ export class SelectRegionComponent {
   }
 
   changeHideModal(){
-    console.log(this.hideModal);
     if(this.hideModal){
       localStorage.setItem('hideModalFranqueado', 'true');
     }
+  }
+
+  selectFranquia(region: any){
+
+    this.storage.set('endereco', region);
+    this.storage.set('front_url', region.url_front);
+    this.storage.set('api_url', region.url);
+    this.storage.set('franquia', region.nome);
+    this.storage.set('email_franquia', region.email_contato);
+    this.storage.set('contato_franquia', region.numero_contato);
+
+    this.modalFranquias.dismiss();
+
+    this.router.navigate(['/start']);
   }
 
 }

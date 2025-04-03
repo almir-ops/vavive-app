@@ -524,3 +524,26 @@
     </div>
   </ng-template>
 </ion-modal>
+
+<ion-modal [keepContentsMounted]="true" #modalFranquias class="modal-franquiado p-5">
+  <ng-template>
+    <div (click)="openExternalLink('https://www.vavive.com.br/seja-um-franqueado-app')" class="bg-verdepaleta rounded-md shadow-md px-3 py-2 inline-block mx-6 mt-4 text-center font-medium">
+      SEJA UM FRANQUEADO
+    </div>
+    <div class="p-4 text-white font-medium text-sm text-center">
+      <span class="text-verdepaleta">Seja um franqueado</span> ou selecione a unidade mais próxima. Confira as opções:
+    </div>
+
+    <div class="p-4 space-y-3 overflow-y-auto">
+      <button
+        *ngFor="let region of regionsCurrent"
+        (click)="selectFranquia(region)"
+        class="w-full bg-white text-gray-700 font-semibold text-center py-3 rounded-xl shadow-md border border-gray-200 hover:bg-gray-100 transition duration-300">
+        {{ region.nome }}
+      </button>
+    </div>
+    <div (click)="modalFranquias.dismiss()" class="my-3 pr-4 text-end text-verdepaleta">
+      Fechar
+    </div>
+  </ng-template>
+</ion-modal>

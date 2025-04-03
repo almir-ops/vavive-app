@@ -403,15 +403,25 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   }
 
   loadNextFiveDays() {
-    this.nextFiveDays = Array.from({ length: 3 }, (_, i) => {
-      const date = moment().add(i + 2, 'days');
-      return {
-        dayOfWeek: this.getAbbreviation(date.format('dddd')),
-        dateNumber: date.format('DD'),
-        dateMonth: date.format('MM'),
-        fullDate: date.format('YYYY-MM-DD')
-      };
-    });
+    this.nextFiveDays = [];
+    let daysAdded = 0;
+    let i = 2;
+
+    while (daysAdded < 3) {
+      const date = moment().add(i, 'days');
+
+      if (date.isoWeekday() !== 6 && date.isoWeekday() !== 7) {
+        this.nextFiveDays.push({
+          dayOfWeek: this.getAbbreviation(date.format('dddd')),
+          dateNumber: date.format('DD'),
+          dateMonth: date.format('MM'),
+          fullDate: date.format('YYYY-MM-DD')
+        });
+        daysAdded++;
+      }
+
+      i++;
+    }
   }
 
   loadNextFiveDaysFinal() {
@@ -1155,58 +1165,50 @@ async openWhatsApp() {
 }
 
 generateEmail(atendimento: any): string {
-  console.log(atendimento);
-  this.selectedServiceId
-  this.services
   if (!this.formAtendimento) return '';
 
   const endereco = atendimento.endereco;
   const cliente = atendimento.cliente;
-  const selectedService = this.services.find((service:any) => service.ID === this.selectedServiceId);
+  const selectedService = this.services.find((service: any) => service.ID === this.selectedServiceId);
 
   return `
-    <p>Olá <strong>${atendimento.nome}</strong>,</p>
-
-    <p><strong>Detalhes do Atendimento:</strong></p>
-    <p><strong>CPF:</strong> ${atendimento.CPF} <br>
-    <strong>Telefone:</strong> ${atendimento.celular} <br>
-    <strong>Email:</strong> ${cliente.email}</p>
-
-    <p><strong>Endereço:</strong></p>
-    <p><strong>Rua:</strong> ${endereco.rua}, Nº ${endereco.numero} <br>
-    <strong>Bairro:</strong> ${endereco.bairro} <br>
-    <strong>Cidade:</strong> ${endereco.cidade} - ${endereco.estado} <br>
-    <strong>CEP:</strong> ${endereco.cep}, <strong>País:</strong> ${endereco.pais} <br>
-    <strong>Complemento:</strong> ${endereco.complemento || 'N/A'}</p>
-
-    <p><strong>Serviços Selecionados:</strong></p>
-    <p>${selectedService?.nome}</p>
+    <p>Olá, <strong>${atendimento.nome}</strong>!</p>
+    <p>Ficamos muito felizes em poder ajudar o seu dia!</p>
 
     <p><strong>Informações de Atendimento:</strong></p>
-    <p><strong>Data de Início:</strong> ${atendimento.data_inicio || 'Não informado'} <br>
-    <strong>Data de Fim:</strong> ${atendimento.data_fim || 'Não informado'} <br>
-    <strong>Hora de Entrada:</strong> ${atendimento.hora_de_entrada} <br>
-    <strong>Duração:</strong> ${atendimento.duracao} minutos <br>
-    <strong>Status:</strong> ${atendimento.status_atendimento} <br>
-    <strong>Forma de Pagamento:</strong> ${atendimento.forma_pagamento} <br>
-    <strong>Desconto:</strong> R$ ${atendimento.desconto || '0.00'} <br>
-    <strong>Acréscimo:</strong> R$ ${atendimento.acrestimo || '0.00'} <br>
-    <strong>Valor dos Serviços:</strong> R$ ${atendimento.valor_servicos.toFixed(2)} <br>
-    <strong>Valor Total:</strong> R$ ${atendimento.valor_total.toFixed(2)} <br>
-    <strong>Pagamento Antecipado:</strong> ${atendimento.pagamento_antecipado === 'S' ? 'Sim' : 'Não'}</p>
+    <p><strong>Franquia Responsável:</strong> ${this.currentFranquia || 'Não informado'}</p>
+    <p><strong>Plano Selecionado:</strong> ${atendimento.plano}</p>
+    <p><strong>Data de Início:</strong> ${atendimento.data_inicio || 'Não informado'}</p>
+    <p><strong>Data de Fim:</strong> ${atendimento.data_fim || 'Não informado'}</p>
+    <p><strong>Hora de Entrada:</strong> Entre ${atendimento.hora_de_entrada}</p>
+    <p><strong>Duração:</strong> ${Math.floor(atendimento.duracao / 60)}:${(atendimento.duracao % 60).toString().padStart(2, '0')} HORAS</p>
+    <p><strong>Status do Pagamento:</strong> ${atendimento.status_pagamento || 'Aguardando confirmação'}</p>
+    <p><strong>Desconto:</strong> R$ ${atendimento.desconto?.toFixed(2) || '0.00'}</p>
+    <p><strong>Acréscimo:</strong> R$ ${atendimento.acrestimo?.toFixed(2) || '0.00'}</p>
+    <p><strong>Valor dos Serviços:</strong> R$ ${atendimento.valor_servicos?.toFixed(2) || '0.00'}</p>
+    <p><strong>Valor Total:</strong> R$ ${atendimento.valor_total?.toFixed(2) || '0.00'}</p>
 
-    <p><strong>Observações:</strong></p>
-    <p><strong>Observações de Serviço:</strong> ${atendimento.observacoes_de_servicos || 'Nenhuma'} <br>
-    <strong>Observações do Prestador:</strong> ${atendimento.observacoes_de_prestador || 'Nenhuma'}</p>
+    <p><strong>Observações de Serviço:</strong> ${atendimento.observacoes_de_servicos || 'Nenhuma'}</p>
+    <p><strong>Observações do Prestador:</strong> ${atendimento.observacoes_de_prestador || 'Nenhuma'}</p>
 
-    <p><strong>Plano Selecionado:</strong> ${atendimento.plano} (ID: ${atendimento.plano_id})</p>
+    <p><strong>Suas Informações:</strong></p>
+    <p><strong>CPF:</strong> ${atendimento.CPF}</p>
+    <p><strong>Telefone:</strong> ${atendimento.celular}</p>
+    <p><strong>Email:</strong> ${cliente.email}</p>
 
-    <p><strong>Franquia:</strong> ${this.currentFranquia} </p>
+    <p><strong>Endereço:</strong></p>
+    <p><strong>Rua:</strong> ${endereco.rua}, Nº ${endereco.numero}</p>
+    <p><strong>Bairro:</strong> ${endereco.bairro}</p>
+    <p><strong>Cidade:</strong> ${endereco.cidade} - ${endereco.estado}</p>
+    <p><strong>CEP:</strong> ${endereco.cep}, <strong>País:</strong> ${endereco.pais || ''}</p>
+    <p><strong>Complemento:</strong> ${endereco.complemento || 'Nenhum'}</p>
 
-    <p><strong>Atenciosamente,</strong><br>
-    <p><strong>Aplicativo Vavivê</p>
+    <p>Qualquer dúvida, <a href="https://wa.me/5521991514398" target="_blank">clique aqui</a> para falar conosco no WhatsApp.</p>
+
+    <p>Deixe com a gente e <strong>VAVIVÊ!</strong></p>
   `;
 }
+
 
 async getFranquiaInfo(){
   const franquia = await this.storage.get('franquia');
