@@ -891,9 +891,9 @@ getWeekNumber(date: string): number {
               console.log(err);
             },
           })
-
           this.primeiroAgendamento = res.item[0];
-          this.modalConfirm.present();
+          this.handlePaymentNow();
+          //this.modalConfirm.present();
           this.animation = true;
           const modal = this.modalConfirm;
           modal.onDidDismiss().then(() => {
