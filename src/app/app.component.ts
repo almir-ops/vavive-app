@@ -25,7 +25,7 @@ export class AppComponent {
   ) {
     this.initializeApp();
     this.disableDarkMode();
-    //this.configureStatusBar();
+    this.configureStatusBar();
 
   }
 

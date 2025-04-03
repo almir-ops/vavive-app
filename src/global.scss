@@ -275,3 +275,13 @@ ion-header {
     --background: #ffffff; /* Cor de fundo do conteúdo */
   }
 }
+
+.main-content{
+  --background: #ffffff; /* Cor de fundo do conteúdo */
+
+}
+ion-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
