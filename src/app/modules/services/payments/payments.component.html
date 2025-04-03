@@ -1,21 +1,27 @@
 <div class="h-screen pb-10">
-  <ion-segment [(ngModel)]="screen" class="top-0 z-10 text-sm" (ionChange)="segmentChanged($event)">
-    <ion-segment-button value="pendentes">
-      <ion-label class="text-xs">Pendentes</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="pagos">
-      <ion-label class="text-xs">Pagos</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+  <div class="flex border-b border-gray-300">
+    <div
+      class="flex-1 text-center py-2 cursor-pointer transition-all"
+      [ngClass]="screen === 'pendentes' ? 'bg-azulprincipal text-white' : 'bg-gray-100 text-gray-600'"
+      (click)="screen = 'pendentes'">
+      Pendentes
+    </div>
+    <div
+      class="flex-1 text-center py-2 cursor-pointer transition-all"
+      [ngClass]="screen === 'pagos' ? 'bg-azulprincipal text-white' : 'bg-gray-100 text-gray-600'"
+      (click)="screen = 'pagos'">
+      Pagos
+    </div>
+  </div>
 
-  <div *ngIf="screen === 'pendentes'" class="w-full flex justify-center px-4 h-full ">
+  <div *ngIf="screen === 'pendentes'" class="w-full flex justify-center px-4 h-full pb-20">
     <div class="px-2 pb-8 rounded-sm w-full text-[11px] flex flex-col">
       <div class="flex justify-between items-center mt-4">
         <div class="pr-2">
           <div class="font-semibold text-azulprincipal uppercase">Pagamentos Pendentes</div>
           <div class="text-gray-700">Todos os seus pagamentos pendentes aparecerão aqui</div>
         </div>
-        <div (click)="modalFilterPagamentos.present()" class="flex text-white bg-azulprincipal py-1 px-2 -mt-6 rounded-md cursor-pointer shadow-sm hover:scale-105">
+        <div (click)="modalFilterPagamentos.present()" class="flex text-white bg-azulprincipal py-1 px-2 rounded-md cursor-pointer shadow-sm hover:scale-105">
           Filtros
           <ion-icon class="mt-0.5 ml-1" name="filter-outline"></ion-icon>
         </div>
@@ -75,14 +81,14 @@
     </div>
   </div>
 
-  <div *ngIf="screen === 'pagos'" class="w-full flex justify-center px-4 h-full ">
+  <div *ngIf="screen === 'pagos'" class="w-full flex justify-center px-4 h-full pb-20">
     <div class="px-2 pb-8 rounded-sm w-full text-[11px] flex flex-col">
       <div class="flex justify-between items-center mt-4">
         <div class="pr-2">
           <div class="font-semibold text-azulprincipal uppercase">Pagamentos Pagos</div>
           <div class="text-gray-700">Todos os seus pagamentos realizados aparecerão aqui</div>
         </div>
-        <div (click)="modalFilterPagamentos.present()" class="flex text-white bg-azulprincipal py-1 px-2 -mt-6 rounded-md cursor-pointer shadow-sm hover:scale-105">
+        <div (click)="modalFilterPagamentos.present()" class="flex text-white bg-azulprincipal py-1 px-2 rounded-md cursor-pointer shadow-sm hover:scale-105">
           Filtros
           <ion-icon class="mt-0.5 ml-1" name="filter-outline"></ion-icon>
         </div>

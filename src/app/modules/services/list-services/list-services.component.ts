@@ -217,20 +217,35 @@ export class ListServicesComponent  implements OnInit {
 
   }
 
-  async criaPagamento(){
-    if(!this.currentAtendimento.transaction_receipt_url){
+  async criaPagamento() {
+    if (!this.currentAtendimento.transaction_receipt_url) {
       this.financasService.getFinancasByFilter('?atendimento_id=' + this.currentAtendimento.ID).subscribe({
-        next: (response:any) => {
+        next: (response: any) => {
           console.log(response);
 
           const entradas = response.items.filter((item: any) => item.tipo === 'Entrada');
           console.log(entradas);
+
+          if (entradas.length === 0) {
+            this.alertService.presentAlert('Erro', 'Nenhuma entrada encontrada para este atendimento.');
+            return;
+          }
+
+          let dueDate = moment().add(3, 'days').format('YYYY-MM-DD');
+          const today = moment().format('YYYY-MM-DD');
+
+          // Se a dueDate for menor que hoje, define como hoje
+          if (moment(dueDate).isBefore(today)) {
+            dueDate = today;
+          }
+
           const pagamento = {
             value: entradas[0].valor,
             financa: entradas[0].ID,
             billingType: "UNDEFINED",
-            dueDate: moment().add(3, 'days').format('YYYY-MM-DD')
-          }
+            dueDate
+          };
+
           this.pagamentoService.criaPagamento(pagamento).subscribe({
             next: async (res: any) => {
               console.log(res);
@@ -240,20 +255,19 @@ export class ListServicesComponent  implements OnInit {
             },
             error: (err: any) => {
               console.log(err);
-              this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
-
+              this.alertService.presentAlert('Erro', 'Erro ao gerar cobrança');
             }
-          })
-        },error: (response:any)=> {
+          });
+        },
+        error: (response: any) => {
           console.log(response);
         }
-      })
-    }else{
+      });
+    } else {
       await Browser.open({ url: this.currentAtendimento.transaction_receipt_url });
-
     }
-
   }
+
 
   openModalEvaluation(){
 
@@ -412,20 +426,18 @@ export class ListServicesComponent  implements OnInit {
 
     // Função para enviar a avaliação
     submitReview() {
-      console.log(this.currentAtendimento);
 
       // Obter o valor do textarea e a nota para envio
       const reviewText = (document.getElementById('evaluation-textarea') as HTMLTextAreaElement).value;
-      console.log('Avaliação: ', reviewText, 'Nota: ', this.rating);
 
       this.currentAtendimento.nota = this.rating;
       this.currentAtendimento.avaliacao = reviewText;
 
       this.updateAtendimento(this.currentAtendimento);
       this.currentAtendimento.profissional[0].atendimentos_feitos =+ 1;
-      const valorMedia = this.calcularMediaNota(this.currentAtendimento.profissional[0].atendimentos_feitos, this.currentAtendimento.nota)
-      console.log(valorMedia);
-      this.currentAtendimento.profissional[0].rating = valorMedia;
+      //const valorMedia = this.calcularMediaNota(this.currentAtendimento.profissional[0].atendimentos_feitos, this.currentAtendimento.nota)
+      //console.log(valorMedia);
+      //this.currentAtendimento.profissional[0].rating = valorMedia;
       this.updateProfissional(this.currentAtendimento.profissional[0]);
       this.modalEvaluation.dismiss();
     }

@@ -120,6 +120,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   primeiroAgendamento:any;
 
   allowedWeekDays: number[] = [1, 2, 3, 4, 5]; // Apenas segunda a sexta-feira
+  currentFranquia: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -856,53 +857,9 @@ getWeekNumber(date: string): number {
 
 
   async saveAtendimentos(atendimentos: any[]) {
-    console.log(atendimentos);
+    console.log(this.generateEmail(atendimentos[0]));
 
-    try {
-      this.atendimentoService.saveListAtendimentos(atendimentos)
-      .subscribe({
-        next: (res: any) => {
-          console.log(res);
-          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(atendimentos[0]),'franquias@vavive.com.br').subscribe({
-            next:(value:any) =>{
-              console.log(value);
 
-            },
-            error:(err:any) => {
-              console.log(err);
-
-            },
-          })
-          this.primeiroAgendamento = res.item[0];
-          this.modalConfirm.present();
-          this.animation = true;
-          const modal = this.modalConfirm;
-          modal.onDidDismiss().then(() => {
-            this.navegate('services');
-          });
-          this.updateCupom();
-          },
-          error: (err: any) => {
-            console.log(err);
-            console.log(err.error);
-          },
-          complete: () => {
-
-          },
-      });
-      console.log(this.currentClient);
-      this.atualizaEndereco()
-      await this.storage.set('atendimentos', atendimentos);
-      await Preferences.set({
-        key: 'user_data',
-        value: JSON.stringify(this.currentClient),
-      });
-      const user = await this.getUserSecurely();
-      console.log(user);
-      //this.router.navigate(['services/confirm']);
-    } catch (error) {
-      console.error('Erro ao salvar os atendimentos:', error);
-    }
   }
 
   getPrice(serviceId: number, duration: number, planType: string):any{
@@ -1198,17 +1155,21 @@ async openWhatsApp() {
 }
 
 generateEmail(atendimento: any): string {
+  console.log(atendimento);
+  this.selectedServiceId
+  this.services
   if (!this.formAtendimento) return '';
 
   const endereco = atendimento.endereco;
   const cliente = atendimento.cliente;
+  const selectedService = this.services.find((service:any) => service.ID === this.selectedServiceId);
 
   return `
     <p>Olá <strong>${atendimento.nome}</strong>,</p>
 
     <p><strong>Detalhes do Atendimento:</strong></p>
     <p><strong>CPF:</strong> ${atendimento.CPF} <br>
-    <strong>Telefone:</strong> ${atendimento.telefone} <br>
+    <strong>Telefone:</strong> ${atendimento.celular} <br>
     <strong>Email:</strong> ${cliente.email}</p>
 
     <p><strong>Endereço:</strong></p>
@@ -1219,7 +1180,7 @@ generateEmail(atendimento: any): string {
     <strong>Complemento:</strong> ${endereco.complemento || 'N/A'}</p>
 
     <p><strong>Serviços Selecionados:</strong></p>
-    <p>${atendimento.servicos.length > 0 ? atendimento.servicos.map((s: any) => `<strong>- ${s.nome}</strong>`).join('<br>') : 'Nenhum serviço informado'}</p>
+    <p>${selectedService?.nome}</p>
 
     <p><strong>Informações de Atendimento:</strong></p>
     <p><strong>Data de Início:</strong> ${atendimento.data_inicio || 'Não informado'} <br>
@@ -1240,11 +1201,18 @@ generateEmail(atendimento: any): string {
 
     <p><strong>Plano Selecionado:</strong> ${atendimento.plano} (ID: ${atendimento.plano_id})</p>
 
-    <p>Obrigado por utilizar nossos serviços.</p>
+    <p><strong>Franquia:</strong> ${this.currentFranquia} </p>
 
     <p><strong>Atenciosamente,</strong><br>
-    Sua Empresa</p>
+    <p><strong>Aplicativo Vavivê</p>
   `;
+}
+
+async getFranquiaInfo(){
+  const franquia = await this.storage.get('franquia');
+  this.currentFranquia = franquia
+  console.log(franquia);
+
 }
 
 }

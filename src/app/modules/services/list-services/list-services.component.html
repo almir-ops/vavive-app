@@ -1,13 +1,20 @@
 <div class="h-screen flex flex-col overflow-auto relative bg-white pb-24">
 
-  <ion-segment [(ngModel)]="screen" class="top-0 z-10 text-sm" (ionChange)="segmentChanged($event)">
-    <ion-segment-button value="profile">
-      <ion-label class="text-xs">Agendados</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="payments">
-      <ion-label class="text-xs">Histórico</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+  <div class="flex border-b border-gray-300">
+    <div
+      class="flex-1 text-center py-2 cursor-pointer transition-all"
+      [ngClass]="screen === 'profile' ? 'bg-laranjaprincipal text-white' : 'bg-gray-100 text-gray-600'"
+      (click)="screen = 'profile'">
+      Agendados
+    </div>
+    <div
+      class="flex-1 text-center py-2 cursor-pointer transition-all"
+      [ngClass]="screen === 'payments' ? 'bg-laranjaprincipal text-white' : 'bg-gray-100 text-gray-600'"
+      (click)="screen = 'payments'">
+      Histórico
+    </div>
+  </div>
+
 
   <div *ngIf="screen==='profile'" class="overflow-auto pb-20" >
 
@@ -207,10 +214,12 @@
           <img class="h-4" src="./assets/icons/data.svg">
           <label class="ml-3 text-xs uppercase">Alterar data</label>
         </div>
-        <div *ngIf="isConfirmarAtendimentoDisponivel()" (click)="confirmedAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
-          <img class="h-4" src="./assets/icons/check.svg">
-          <label class="ml-3 text-xs uppercase">Confirmar atendimento</label>
-        </div>
+        <!--
+          <div *ngIf="isConfirmarAtendimentoDisponivel()" (click)="confirmedAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
+            <img class="h-4" src="./assets/icons/check.svg">
+            <label class="ml-3 text-xs uppercase">Confirmar atendimento</label>
+          </div>
+        -->
         <div *ngIf="canCancelAtendimento()" (click)="openModalCancelAtendimento()" class="p-2 bg-azulsombreado rounded-md shadow-md flex items-center mt-3.5">
           <img class="h-4" src="./assets/icons/x-mark.svg">
           <label class="ml-3 text-xs uppercase">Cancelar atendimento</label>
