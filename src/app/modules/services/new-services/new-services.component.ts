@@ -22,6 +22,7 @@ import { ProfissionalService } from 'src/app/shared/services/profissional/profis
 import { FinancasService } from 'src/app/shared/services/financas/financas.service';
 import { PagamentosService } from 'src/app/shared/services/pagamentos/pagamentos.service';
 import { EmailService } from 'src/app/shared/services/email/email.service';
+import { CalculadoraServico } from 'src/app/shared/services/calculadora/calculadora.service';
 
 @Component({
   selector: 'app-new-services',
@@ -138,7 +139,8 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
     private profissionalService: ProfissionalService,
     private financasService: FinancasService,
     private pagamentoService: PagamentosService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private calculadoraServico: CalculadoraServico,
   ) { }
 
   isWeekday = (dateString: string) => {
@@ -623,7 +625,6 @@ calculateSubsequentDates(startDate: string, endDate: string): string[] {
 updatePlano(uPlano: any) {
   this.selectedDates = []; // Reseta as datas selecionadas
   const plano = uPlano.plano;
-  console.log(uPlano);
 
   if (plano === '2x') {
     this.maxSelectableDates = 2;
@@ -744,7 +745,7 @@ getWeekNumber(date: string): number {
   }
 
   submitNext() {
-    console.log(this.isPrecoValid());
+    console.log(this.formAtendimento.value);
     const dataInicio = moment(this.selectedDate, 'YYYY-MM-DD'); // A data de início do primeiro atendimento
     const dataFim = moment(this.selectedDateFim, 'YYYY-MM-DD'); // A data de fim do atendimento
 
@@ -853,7 +854,12 @@ getWeekNumber(date: string): number {
 
 
   calculatePreco() {
+    console.log('calculatePreco');
+
     const plano = this.selectedPlano;
+    console.log(plano);
+    console.log(this.selectedServiceId);
+
     if (plano && this.selectedServiceId) {
       if (this.selectedServiceId) {
         this.preco = this.getPrice(this.selectedServiceId, this.hourSelected, plano.plano);
@@ -862,7 +868,10 @@ getWeekNumber(date: string): number {
       }
     } else {
       this.preco = null;
+      console.log(this.preco);
+
     }
+    console.log(this.preco);
   }
 
 
@@ -925,19 +934,32 @@ getWeekNumber(date: string): number {
 
   }
 
-  getPrice(serviceId: number, duration: number, planType: string):any{
+  getPrice(serviceId: number, duration: number, planType: string): any {
     const service = this.services.find(s => s.ID === serviceId);
+    console.log(service);
+
     if (!service) {
-      return null
+      return null;
     }
-    const matchingPrice = service!.Precos.find((price: any) =>
+
+    const matchingPrice = service.Precos.find((price: any) =>
       price.horas === duration && price.tipo === planType
     );
-    if (!matchingPrice) {
-      return null
+
+    if (matchingPrice) {
+      return matchingPrice;
     }
-    return matchingPrice
+
+    // fallback: tenta calcular o valor usando a calculadora
+    const valorCalculado = this.calculadoraServico.calcularValor(planType.toLowerCase(), duration, 'sp');
+    console.log(valorCalculado);
+
+    return {
+      valor: valorCalculado,
+      origem: 'calculado'
+    };
   }
+
 
   getTimeFromNumber(hours: number): string {
     const formattedHours = hours < 10 ? `0${hours}` : `${hours}`;
@@ -1222,44 +1244,40 @@ generateEmail(atendimento: any): string {
 
   const endereco = atendimento.endereco;
   const cliente = atendimento.cliente;
-  const selectedService = this.services.find((service:any) => service.ID === this.selectedServiceId);
-
+  const selectedService = this.services.find((service: any) => service.ID === this.selectedServiceId);
+  this.getFranquiaInfo();
   return `
-    <p>Olá, <strong>${atendimento.nome}</strong>!</p>
-    <p>Ficamos muito felizes em poder ajudar o seu dia!</p>
-
-    <p><strong>Informações de Atendimento:</strong></p>
-    <p><strong>Franquia Responsável:</strong> ${this.currentFranquia || 'Não informado'}</p>
-    <p><strong>Plano Selecionado:</strong> ${atendimento.plano}</p>
-    <p><strong>Data de Início:</strong> ${atendimento.data_inicio || 'Não informado'}</p>
-    <p><strong>Data de Fim:</strong> ${atendimento.data_fim || 'Não informado'}</p>
-    <p><strong>Hora de Entrada:</strong> Entre ${atendimento.hora_de_entrada}</p>
-    <p><strong>Duração:</strong> ${Math.floor(atendimento.duracao / 60)}:${(atendimento.duracao % 60).toString().padStart(2, '0')} HORAS</p>
-    <p><strong>Status do Pagamento:</strong> ${atendimento.status_pagamento || 'Aguardando confirmação'}</p>
-    <p><strong>Desconto:</strong> R$ ${atendimento.desconto?.toFixed(2) || '0.00'}</p>
-    <p><strong>Acréscimo:</strong> R$ ${atendimento.acrestimo?.toFixed(2) || '0.00'}</p>
-    <p><strong>Valor dos Serviços:</strong> R$ ${atendimento.valor_servicos?.toFixed(2) || '0.00'}</p>
-    <p><strong>Valor Total:</strong> R$ ${atendimento.valor_total?.toFixed(2) || '0.00'}</p>
-
-    <p><strong>Serviço Selecionado:</strong> ${selectedService?.nome}</p>
-    <p><strong>Observações de Serviço:</strong> ${atendimento.observacoes_de_servicos || 'Nenhuma'}</p>
-    <p><strong>Observações do Prestador:</strong> ${atendimento.observacoes_de_prestador || 'Nenhuma'}</p>
-
-    <p><strong>Suas Informações:</strong></p>
-    <p><strong>CPF:</strong> ${atendimento.CPF}</p>
-    <p><strong>Telefone:</strong> ${atendimento.celular}</p>
-    <p><strong>Email:</strong> ${cliente.email}</p>
-
-    <p><strong>Endereço:</strong></p>
-    <p><strong>Rua:</strong> ${endereco.rua}, Nº ${endereco.numero}</p>
-    <p><strong>Bairro:</strong> ${endereco.bairro}</p>
-    <p><strong>Cidade:</strong> ${endereco.cidade} - ${endereco.estado}</p>
-    <p><strong>CEP:</strong> ${endereco.cep}, <strong>País:</strong> ${endereco.pais || ''}</p>
-    <p><strong>Complemento:</strong> ${endereco.complemento || 'Nenhum'}</p>
-
-    <p>Qualquer dúvida, <a href="https://wa.me/5521991514398" target="_blank">clique aqui</a> para falar conosco no WhatsApp.</p>
-
-    <p>Deixe com a gente e <strong>VAVIVÊ!</strong></p>
+    Olá, <strong>${atendimento.nome}</strong>!<br>
+    Ficamos muito felizes em poder ajudar o seu dia!<br>
+    ____________________________________________________________<br><br>
+    <strong>Informações de Atendimento:</strong><br>
+    Franquia Responsável: ${this.currentFranquia}<br>
+    Serviço Selecionado: ${selectedService?.nome || ''}<br>
+    Plano Selecionado: ${atendimento.plano}<br>
+    Data de Início: ${atendimento.data_inicio ? moment(atendimento.data_inicio).format('DD/MM/YYYY') : ''}<br>
+    Data de Fim: ${atendimento.data_fim ? moment(atendimento.data_fim).format('DD/MM/YYYY') : ''}<br>
+    Hora de Entrada: A partir de ${atendimento.hora_de_entrada}<br>
+    Duração: ${this.selectedTime} HORAS<br>
+    Status do Pagamento: ${atendimento.status_pagamento}<br>
+    Desconto: R$ ${atendimento.desconto?.toFixed(2) || '0.00'}<br>
+    Acréscimo: R$ ${atendimento.acrestimo?.toFixed(2) || '0.00'}<br>
+    Valor dos Serviços: R$ ${atendimento.valor_servicos?.toFixed(2) || '0.00'}<br>
+    Valor Total: R$ ${atendimento.valor_total?.toFixed(2) || '0.00'}<br>
+    Observações de Serviço: ${atendimento.observacoes_de_servicos || ''}<br>
+    Observações do Prestador: ${atendimento.observacoes_de_prestador || ''}<br>
+    ____________________________________________________________<br><br>
+    <strong>Suas Informações:</strong><br>
+    CPF: ${cliente?.cpf || ''}<br>
+    Telefone: ${cliente?.telefone || ''}<br>
+    Email: ${cliente?.email || ''}<br>
+    Rua: ${endereco?.logradouro}, Nº ${endereco?.numero}<br>
+    Bairro: ${endereco?.bairro}<br>
+    Cidade: ${endereco?.cidade} - ${endereco?.estado}<br>
+    CEP: ${endereco?.cep}, País: ${endereco?.pais || ''}<br>
+    Complemento: ${endereco?.complemento || ''}<br>
+    ____________________________________________________________<br>
+    Qualquer dúvida, <a href="https://wa.me/5521991514398" target="_blank">clique aqui</a><br>
+    Deixe com a gente e VAVIVÊ!<br>
   `;
 }
 
@@ -1267,8 +1285,6 @@ generateEmail(atendimento: any): string {
 async getFranquiaInfo(){
   const franquia = await this.storage.get('franquia');
   this.currentFranquia = franquia
-  console.log(franquia);
-
 }
 
 }
