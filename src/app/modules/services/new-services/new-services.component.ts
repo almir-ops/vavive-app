@@ -1220,13 +1220,13 @@ async openWhatsApp() {
     // Obtém o número de contato do storage
     const contato = await this.storage.get('contato_franquia');
 
-    if (!contato) {
-      alert('Número de contato não encontrado!');
-      return;
-    }
+    // Usa número padrão se o contato não existir ou for inválido
+    const numeroPadrao = '5521991514398';
 
-    // Remove caracteres inválidos
-    const formattedNumber = contato.replace(/\D/g, '');
+    // Verifica se o contato existe e tem números válidos
+    const formattedNumber = contato && contato.replace(/\D/g, '').length > 0
+      ? contato.replace(/\D/g, '')
+      : numeroPadrao;
 
     // Monta a URL para abrir o WhatsApp
     const whatsappURL = `https://wa.me/${formattedNumber}`;
@@ -1268,7 +1268,7 @@ generateEmail(atendimento: any): string {
     ____________________________________________________________<br><br>
     <strong>Suas Informações:</strong><br>
     CPF: ${cliente?.cpf || ''}<br>
-    Telefone: ${cliente?.telefone || ''}<br>
+    Telefone: ${cliente?.celular || ''}<br>
     Email: ${cliente?.email || ''}<br>
     Rua: ${endereco?.logradouro}, Nº ${endereco?.numero}<br>
     Bairro: ${endereco?.bairro}<br>

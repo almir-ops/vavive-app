@@ -108,12 +108,17 @@ export class AppComponent {
     console.log('Plataforma:', platform);
     console.log('Versão atual do app:', currentVersion);
 
-    // Simule sua lógica para buscar a versão mais recente do app no seu backend
-    const latestVersion = '1.0.5';
+    try {
+      const response = await fetch('https://matriz.vavive.com.br/versao.json');
+      const data = await response.json();
 
-    if (currentVersion !== latestVersion) {
-      // Aqui você pode exibir um modal ou alert informando que há uma nova versão
-      this.showUpdateModal(platform);
+      const latestVersion = data[platform];
+
+      if (this.compararVersao(currentVersion, latestVersion)) {
+        this.showUpdateModal(platform);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar versão:', error);
     }
   }
 
