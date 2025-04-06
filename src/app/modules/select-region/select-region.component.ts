@@ -96,25 +96,25 @@ export class SelectRegionComponent {
             }
           }
 
-        // Verificar se o CEP está dentro da faixa de valores
-        if (!region) {
-          const cepNumber = parseInt(cep.replace('-', ''), 10); // Remove o hífen e converte para número
-          console.log('Verificando faixa de CEP:', cepNumber);
+            // Verificar se o CEP está dentro da faixa de valores
+            if (!region) {
+              const cepNumber = parseInt(cep.replace('-', ''), 10); // Remove o hífen e converte para número
+              console.log('Verificando faixa de CEP:', cepNumber);
 
-          region = this.regions.find((r: any) => {
-            const startCep = parseInt(r.latitude.replace('-', ''), 10); // Remove o hífen e converte
-            const endCep = parseInt(r.longitude.replace('-', ''), 10);  // Remove o hífen e converte
+              region = this.regions.find((r: any) => {
+                const startCep = parseInt(r.latitude.replace('-', ''), 10); // Remove o hífen e converte
+                const endCep = parseInt(r.longitude.replace('-', ''), 10);  // Remove o hífen e converte
 
-            console.log(`Comparando CEP ${cepNumber} com faixa: ${startCep} - ${endCep}`);
-            return cepNumber >= startCep && cepNumber <= endCep;
-          });
+                console.log(`Comparando CEP ${cepNumber} com faixa: ${startCep} - ${endCep}`);
+                return cepNumber >= startCep && cepNumber <= endCep;
+              });
 
-          if (region) {
-            console.log('CEP encontrado na faixa da franquia:', region);
-          } else {
-            console.log('CEP não encontrado na faixa. Comparando:', cepNumber);
-          }
-        }
+              if (region) {
+                console.log('CEP encontrado na faixa da franquia:', region);
+              } else {
+                console.log('CEP não encontrado na faixa. Comparando:', cepNumber);
+              }
+            }
 
 
           // Se ainda não encontrou, verificar se o CEP está dentro da faixa de valores
@@ -133,12 +133,22 @@ export class SelectRegionComponent {
             }
           }
 
-          // Se não encontrou uma franquia e o estado é SP ou RJ, usa a franquia "Matriz"
-          if (!region && (endereco.uf === 'SP')) {
-            //region = this.regions.find((r: any) => r.nome.toLowerCase() === 'matriz');
-            console.log(this.regions)
+          const cidadeComFranquiaEncontrada = this.regions.some((r: any) =>
+            r.embed_cidade.toLowerCase() === endereco.localidade.toLowerCase()
+          );
+
+          // Se não encontrou uma franquia mas a cidade tem franquia, mostra o modal
+          if (!region && cidadeComFranquiaEncontrada) {
+            console.log(this.regions);
             this.modalFranquias.present();
-            this.regionsCurrent = this.regions.reduce((unique: any[], region: any) => {
+
+            // Filtra apenas as franquias da mesma cidade
+            const franquiasDaCidade = this.regions.filter((r: any) =>
+              r.embed_cidade.toLowerCase() === endereco.localidade.toLowerCase()
+            );
+
+            // Remove duplicadas (se tiver com mesmo nome)
+            this.regionsCurrent = franquiasDaCidade.reduce((unique: any[], region: any) => {
               if (!unique.some((item) => item.nome === region.nome)) {
                 unique.push(region);
               }
