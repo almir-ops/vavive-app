@@ -8,6 +8,8 @@ import { PushNotifications, Token, PermissionStatus } from '@capacitor/push-noti
 import { ClientesService } from './shared/services/clientes/clientes.service';
 import { Preferences } from '@capacitor/preferences';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
+import { App } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 
 register();
 
@@ -95,5 +97,53 @@ export class AppComponent {
     PushNotifications.addListener('registrationError', (error) => {
       console.error('Erro no registro de notificações push:', error);
     });
+  }
+
+  async checkForUpdate() {
+    const info = await App.getInfo(); // Pega nome, id, versão etc.
+
+    const platform = Capacitor.getPlatform(); // 'android', 'ios', 'web'
+    const currentVersion = info.version;
+
+    console.log('Plataforma:', platform);
+    console.log('Versão atual do app:', currentVersion);
+
+    // Simule sua lógica para buscar a versão mais recente do app no seu backend
+    const latestVersion = '1.0.5';
+
+    if (currentVersion !== latestVersion) {
+      // Aqui você pode exibir um modal ou alert informando que há uma nova versão
+      this.showUpdateModal(platform);
+    }
+  }
+
+  async showUpdateModal(platform: string) {
+    const alert = document.createElement('ion-alert');
+    alert.header = 'Atualização disponível';
+    alert.message = 'Uma nova versão do app está disponível. Deseja atualizar agora?';
+    alert.buttons = [
+      {
+        text: 'Cancelar',
+        role: 'cancel'
+      },
+      {
+        text: 'Atualizar',
+        handler: () => {
+          if (platform === 'android') {
+            window.open('https://play.google.com/store/apps/details?id=io.ionic.vavive', '_system');
+          } else if (platform === 'ios') {
+            window.open('https://apps.apple.com/app/id6740406088', '_system');
+          }
+        }
+      }
+    ];
+    document.body.appendChild(alert);
+    await alert.present();
+  }
+
+
+
+  compararVersao(versaoAtual: string, versaoNova: string): boolean {
+    return versaoAtual !== versaoNova;
   }
 }
