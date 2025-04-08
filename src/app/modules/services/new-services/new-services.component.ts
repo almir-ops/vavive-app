@@ -1241,12 +1241,13 @@ async openWhatsApp() {
 
 generateEmail(atendimento: any): string {
   if (!this.formAtendimento) return '';
-
+  const logoUrl = 'https://lirp.cdn-website.com/6d9e534c/dms3rep/multi/opt/vavive21-1920w.png';
   const endereco = atendimento.endereco;
   const cliente = atendimento.cliente;
   const selectedService = this.services.find((service: any) => service.ID === this.selectedServiceId);
   this.getFranquiaInfo();
   return `
+    <img src="${logoUrl}" alt="Logo" style="max-width: 150px; margin-bottom: 20px;" /><br>
     Olá, <strong>${atendimento.nome}</strong>!<br>
     Ficamos muito felizes em poder ajudar o seu dia!<br>
     ____________________________________________________________<br><br>
@@ -1270,7 +1271,7 @@ generateEmail(atendimento: any): string {
     CPF: ${cliente?.cpf || ''}<br>
     Telefone: ${cliente?.celular || ''}<br>
     Email: ${cliente?.email || ''}<br>
-    Rua: ${endereco?.logradouro}, Nº ${endereco?.numero}<br>
+    Rua: ${endereco?.rua}, Nº ${endereco?.numero}<br>
     Bairro: ${endereco?.bairro}<br>
     Cidade: ${endereco?.cidade} - ${endereco?.estado}<br>
     CEP: ${endereco?.cep}, País: ${endereco?.pais || ''}<br>
@@ -1278,6 +1279,8 @@ generateEmail(atendimento: any): string {
     ____________________________________________________________<br>
     Qualquer dúvida, <a href="https://wa.me/5521991514398" target="_blank">clique aqui</a><br>
     Deixe com a gente e VAVIVÊ!<br>
+    <img src="${logoUrl}" alt="Logo" style="max-width: 150px; margin-top: 20px;" />
+
   `;
 }
 

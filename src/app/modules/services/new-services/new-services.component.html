@@ -207,7 +207,16 @@
                 </svg>
               </div>
             </div>
-        </div>
+          </div>
+          <div *ngIf="hourSelected === 4" class="text-center text-azulprincipal">
+            Tempo indicado para imóveis até 60m²
+          </div>
+          <div *ngIf="hourSelected === 6" class="text-center text-azulprincipal">
+            Tempo indicado para imóveis até 80m²
+          </div>
+          <div *ngIf="hourSelected === 8" class="text-center text-azulprincipal">
+            Tempo indicado para imóveis até 100m²
+          </div>
       </div>
       <div class="mt-6">
         <div class="flex flex-col">

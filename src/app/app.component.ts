@@ -28,7 +28,7 @@ export class AppComponent {
     this.initializeApp();
     this.disableDarkMode();
     this.configureStatusBar();
-
+    this.checkForUpdate();
   }
 
 
@@ -100,9 +100,14 @@ export class AppComponent {
   }
 
   async checkForUpdate() {
+    console.log('checkForUpdate');
+
     const info = await App.getInfo(); // Pega nome, id, versão etc.
+    console.log('checkForUpdate');
 
     const platform = Capacitor.getPlatform(); // 'android', 'ios', 'web'
+        console.log('checkForUpdate');
+
     const currentVersion = info.version;
 
     console.log('Plataforma:', platform);
