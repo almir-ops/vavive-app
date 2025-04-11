@@ -13,6 +13,9 @@
             placeholder="Email"
             formControlName="username"
             autocomplete="true"
+            autocomplete="true"
+            autocapitalize="none"
+            autocorrect="off"
           />
           <div *ngIf="formLoginControl['username'].value && formLoginControl['username'].errors">
             <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
