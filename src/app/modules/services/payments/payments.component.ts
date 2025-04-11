@@ -120,6 +120,8 @@ export class PaymentsComponent  implements OnInit {
   }
 
   openModalDetails(){
+    console.log(this.currentPagamento);
+
     if(this.currentPagamento.atendimento){
       this.modalOptions.dismiss();
       this.modalDetails.present();

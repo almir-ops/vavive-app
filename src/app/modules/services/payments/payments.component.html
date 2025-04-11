@@ -270,22 +270,7 @@
         <img class="mr-2 h-4" src="./assets/icons/document-text.svg">
         <span>Plano: {{capitalizeFirstLetter(currentPagamento.atendimento.plano)}}</span>
       </div>
-      <div class="flex mt-2.5">
-        <img class="mr-2 h-4" src="./assets/icons/home-modern.svg">
-        <span>Endereço: {{currentPagamento.atendimento.endereco.rua}}, nº {{currentPagamento.atendimento.endereco.numero}} - {{currentPagamento.endereco.bairro}} </span>
-      </div>
-      <div class="flex mt-2.5">
-        <img class="mr-2 h-4" src="./assets/icons/user-circle.svg">
-        <span>Cliente: {{currentPagamento.atendimento.cliente.nome}}</span>
-      </div>
-      <div *ngIf="currentPagamento.atendimento.profissional.length > 0" class="flex mt-2.5">
-        <img class="mr-2 h-4" src="./assets/icons/information-circle.svg">
-        <span>Profissional: {{currentPagamento.atendimento.profissional[0].nome}}</span>
-      </div>
-      <div *ngIf="currentPagamento.atendimento.observacoes_de_prestador" class="flex mt-2.5">
-        <img class="mr-2 h-4" src="./assets/icons/information-circle.svg">
-        <span>Observações: {{currentPagamento.atendimento.observacoes_de_prestador}}</span>
-      </div>
+
     </div>
   </ng-template>
 </ion-modal>
