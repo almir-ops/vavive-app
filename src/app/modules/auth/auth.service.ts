@@ -42,8 +42,6 @@ export class AuthService {
    login(user: IUser, paramUser: any): Observable<Token> {
     return this.apiService.loadApiUrl().pipe(
       switchMap((apiUrl: string) => {
-        console.log(apiUrl);
-
         return this.httpClient.post<Token>(`https://${apiUrl}/api/v1/${paramUser}/sign`, user).pipe(
           tap((token: Token) => this.registerCredentials(token)),
           take(1)
@@ -73,10 +71,7 @@ export class AuthService {
   }
 
   private registerCredentials(token: Token): void {
-    console.log(token);
-
     if(token !== null){
-      console.log(token);
       this.token = new LoginToken(token);
       localStorage.setItem('token', token['access_token']);
       this.router.navigate(['/start']);
@@ -104,7 +99,6 @@ export class AuthService {
 
   get obterUsuarioLogado(): IUser {
     const usuario = localStorage.getItem('user')
-    console.log(usuario);
 
     return localStorage.getItem('user')
       ? JSON.parse(atob(usuario!))
@@ -149,10 +143,10 @@ export class AuthService {
     );
   }
 
-  forgotPassword(url: any, email: any, paramUser: any): Observable<Token> {
+  forgotPassword(data: any, route: any): Observable<Token> {
     return this.apiService.loadApiUrl().pipe(
       switchMap(apiUrl =>
-        this.httpClient.post<Token>(`https://${apiUrl}/api/v1/${paramUser}/forgot?email=${email}&url=${url}`, { "encoded": "" })
+        this.httpClient.post<Token>(`https://${apiUrl}/api/v1/${route}/forgot`, data)
       ),
       take(1)
     );
