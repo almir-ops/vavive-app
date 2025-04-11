@@ -1179,7 +1179,7 @@ handlePaymentNow(){
         const entradas = response.items.filter((item: any) => item.tipo === 'Entrada');
         console.log(entradas);
         const pagamento = {
-          value: 5,
+          value: entradas[0].valor,
           financa: entradas[0].ID,
           billingType: "UNDEFINED",
           dueDate: moment().add(3, 'days').format('YYYY-MM-DD')
