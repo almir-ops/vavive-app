@@ -7,6 +7,7 @@ import { LoginToken } from './login-token';
 import { Token } from './token';
 import { IUser } from 'src/app/shared/interfaces/uUser';
 import { ApiService } from 'src/app/shared/services/api.service';
+import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class AuthService {
     private httpClient: HttpClient,
     private router: Router,
     private ngZone: NgZone,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private storage: Storage,
 
     ) {
 
@@ -54,7 +56,8 @@ export class AuthService {
 
   logout(){
     localStorage.clear();
-    this.router.navigate(['account/sign']);
+    this.storage.clear();
+    this.router.navigate(['select-region']);
     this.unRegisterCredentials();
   }
 
