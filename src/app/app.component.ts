@@ -59,8 +59,8 @@ export class AppComponent {
   }
 
   configureStatusBar() {
-    StatusBar.setBackgroundColor({ color: '#ffffff' });
-    StatusBar.setStyle({ style: Style.Dark });
+    //StatusBar.setBackgroundColor({ color: '#ffffff' });
+    //StatusBar.setStyle({ style: Style.Dark });
   }
 
   async checkPushNotificationPermission() {

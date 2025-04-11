@@ -252,6 +252,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
       }
     });
 
+    this.getFranquiaInfo();
 
   }
 
@@ -876,14 +877,13 @@ getWeekNumber(date: string): number {
 
 
   async saveAtendimentos(atendimentos: any[]) {
-    console.log(this.generateEmail(atendimentos[0]));
     try {
       this.atendimentoService.saveListAtendimentos(atendimentos)
       .subscribe({
         next: (res: any) => {
           console.log(res);
 
-          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(atendimentos[0]),'franquias@vavive.com.br').subscribe({
+          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(res.item[0].ID, atendimentos[0]),'franquias@vavive.com.br').subscribe({
             next:(value:any) =>{
               console.log(value);
             },
@@ -892,7 +892,7 @@ getWeekNumber(date: string): number {
             },
           })
 
-          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(atendimentos[0]),atendimentos[0].cliente.email).subscribe({
+          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(res.item[0].ID, atendimentos[0]),atendimentos[0].cliente.email).subscribe({
             next:(value:any) =>{
               console.log(value);
             },
@@ -1179,7 +1179,7 @@ handlePaymentNow(){
         const entradas = response.items.filter((item: any) => item.tipo === 'Entrada');
         console.log(entradas);
         const pagamento = {
-          value: entradas[0].valor,
+          value: 5,
           financa: entradas[0].ID,
           billingType: "UNDEFINED",
           dueDate: moment().add(3, 'days').format('YYYY-MM-DD')
@@ -1195,7 +1195,14 @@ handlePaymentNow(){
           error: (err: any) => {
             console.log(err);
             this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
-
+            this.emailService.sendEmail('Erro ao gerar cobrança, atendimento OS: '+ this.primeiroAgendamento.ID ,this.generateErroEmail(this.primeiroAgendamento, err),'almir_jesus2@hotmail.comng ').subscribe({
+              next:(value:any) =>{
+                console.log(value);
+              },
+              error:(err:any) => {
+                console.log(err);
+              },
+            })
           }
         })
       },error: (response:any)=> {
@@ -1239,13 +1246,12 @@ async openWhatsApp() {
   }
 }
 
-generateEmail(atendimento: any): string {
+generateEmail(id: any, atendimento: any): string {
   if (!this.formAtendimento) return '';
   const logoUrl = 'https://lirp.cdn-website.com/6d9e534c/dms3rep/multi/opt/vavive21-1920w.png';
   const endereco = atendimento.endereco;
   const cliente = atendimento.cliente;
   const selectedService = this.services.find((service: any) => service.ID === this.selectedServiceId);
-  this.getFranquiaInfo();
   return `
     <img src="${logoUrl}" alt="Logo" style="max-width: 150px; margin-bottom: 20px;" /><br>
     Olá, <strong>${atendimento.nome}</strong>!<br>
@@ -1254,11 +1260,12 @@ generateEmail(atendimento: any): string {
     <strong>Informações de Atendimento:</strong><br>
     Franquia Responsável: ${this.currentFranquia}<br>
     Serviço Selecionado: ${selectedService?.nome || ''}<br>
+    OS: ${id}<br>
     Plano Selecionado: ${atendimento.plano}<br>
     Data de Início: ${atendimento.data_inicio ? moment(atendimento.data_inicio).format('DD/MM/YYYY') : ''}<br>
     Data de Fim: ${atendimento.data_fim ? moment(atendimento.data_fim).format('DD/MM/YYYY') : ''}<br>
     Hora de Entrada: A partir de ${atendimento.hora_de_entrada}<br>
-    Duração: ${this.selectedTime} HORAS<br>
+    Duração: ${this.hourSelected} HORAS<br>
     Status do Pagamento: ${atendimento.status_pagamento}<br>
     Desconto: R$ ${atendimento.desconto?.toFixed(2) || '0.00'}<br>
     Acréscimo: R$ ${atendimento.acrestimo?.toFixed(2) || '0.00'}<br>
@@ -1284,10 +1291,28 @@ generateEmail(atendimento: any): string {
   `;
 }
 
+generateErroEmail(atendimento: any, erro:any): string {
+  if (!this.formAtendimento) return '';
+  const selectedService = this.services.find((service: any) => service.ID === this.selectedServiceId);
+  return `
+    Olá, <strong>${atendimento.nome}</strong>!<br>
+    Ouve um erro ao gerar cobrança <br>
+    ____________________________________________________________<br><br>
+    <strong>Informações de Atendimento:</strong><br>
+    Franquia Responsável: ${this.currentFranquia}<br>
+    ____________________________________________________________<br><br>
+    <strong>Erro:</strong><br>
+     ${erro}<br>
+
+
+  `;
+}
+
 
 async getFranquiaInfo(){
   const franquia = await this.storage.get('franquia');
-  this.currentFranquia = franquia
+  this.currentFranquia = franquia;
+  console.log(this.currentFranquia);
 }
 
 }
