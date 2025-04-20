@@ -122,6 +122,7 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
 
   allowedWeekDays: number[] = [1, 2, 3, 4, 5]; // Apenas segunda a sexta-feira
   currentFranquia: any;
+  serviceNameSelected = '';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -144,13 +145,24 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
   ) { }
 
   isWeekday = (dateString: string) => {
-    const date = new Date(dateString);
-    const utcDay = date.getUTCDay();
+    const date = moment(dateString);
+    const today = moment().startOf('day');
+    const currentYear = today.year();
 
-    // Lista de feriados (formato YYYY-MM-DD)
-    const feriados = ['2024-01-01', '2024-04-21', '2024-05-01', '2024-09-07', '2024-12-25'];
+    // Lista de feriados fixos com ano dinâmico
+    const feriados = [
+      `${currentYear}-01-01`, // Confraternização Universal
+      `${currentYear}-04-21`, // Tiradentes
+      `${currentYear}-05-01`, // Dia do Trabalhador
+      `${currentYear}-09-07`, // Independência
+      `${currentYear}-12-25`, // Natal
+    ];
 
-    return utcDay !== 0 && utcDay !== 6 && !feriados.includes(dateString);
+    const isWeekend = date.isoWeekday() === 6 || date.isoWeekday() === 7;
+    const isHoliday = feriados.includes(date.format('YYYY-MM-DD'));
+    const isWithinNextTwoDays = date.diff(today, 'days') <= 1;
+
+    return !isWeekend && !isHoliday && !isWithinNextTwoDays;
   };
 
   ngOnInit() {
@@ -204,6 +216,11 @@ export class NewServicesComponent  implements OnInit,AfterViewInit {
             this.indexServiceSelected = filteredItems.findIndex(
               (service: any) => service.ID === this.selectedServiceId
             );
+
+            // Armazena o nome do serviço na variável
+            if (this.indexServiceSelected !== -1) {
+              this.serviceNameSelected = filteredItems[this.indexServiceSelected].nome;
+            }
 
             console.log('Índice do serviço selecionado:', this.indexServiceSelected);
 
@@ -564,7 +581,6 @@ onDateSelected(event: any) {
 
     // Calcula as datas subsequentes
     const calculatedDates = this.calculateSubsequentDates(selectedDate, this.selectedDateFim);
-    console.log("Datas calculadas:", calculatedDates);
 
     // Atualiza o array de datas selecionadas com as novas datas
     const selectedCustomDates = [...this.selectedDates, ...calculatedDates];
@@ -572,8 +588,6 @@ onDateSelected(event: any) {
     this.selectedDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
     this.dayValues();
-    console.log("Última data selecionada:", this.selectedDate);
-    console.log("Datas selecionadas automaticamente:", this.selectedDates);
 
     // Atualiza o estado do componente datetime
     const datetimeElement = document.querySelector('#datetime') as HTMLIonDatetimeElement;
@@ -596,10 +610,9 @@ calculateSubsequentDates(startDate: string, endDate: string): string[] {
   const resultDates: string[] = [];
   const start = new Date(startDate);
   const end = new Date(endDate);
-  const dayOfWeek = start.getDay(); // Dia da semana da data inicial
+  const dayOfWeek = start.getDay();
 
   if (start > end) {
-    console.error("A data inicial não pode ser maior que a data final.");
     return [];
   }
 
@@ -640,7 +653,7 @@ updatePlano(uPlano: any) {
   } else if (plano === '7x') {
     this.maxSelectableDates = 7;
   }  else {
-    this.maxSelectableDates = 1; // Valor padrão para outros planos
+    this.maxSelectableDates = 1;
   }
 }
 
@@ -649,7 +662,7 @@ getWeekNumber(date: string): number {
   const dt = new Date(date);
 
   if (isNaN(dt.getTime())) {
-    return NaN; // Retorna NaN se a data não for válida
+    return NaN;
   }
 
   const startOfYear = new Date(dt.getFullYear(), 0, 1);
@@ -666,15 +679,14 @@ getWeekNumber(date: string): number {
 
     const selectedDate = new Date(this.selectedDate);
 
-    // Extrai o mês no formato MM e converte para inteiro
-    const monthNumber = selectedDate.getMonth() + 1; // getMonth() retorna 0 para janeiro, +1 ajusta para o formato MM
+    const monthNumber = selectedDate.getMonth() + 1;
 
     this.monthNumber = monthNumber
-    const startOfWeek = Math.floor((selectedDate.getDate()) / 7) * 7 + 1; // Primeiro dia da semana
+    const startOfWeek = Math.floor((selectedDate.getDate()) / 7) * 7 + 1;
     const endOfWeek = Math.min(
       startOfWeek + 6,
       new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate()
-    ); // Último dia da semana ou fim do mês
+    );
 
     const weekDays = [];
     for (let day = startOfWeek; day <= endOfWeek; day++) {
@@ -791,7 +803,7 @@ getWeekNumber(date: string): number {
         plano: plano.plano, // Atualiza o plano para 'avulso'
         cliente: this.currentClient, // Adiciona o cliente
         endereco: this.currentEndereco, // Adiciona o endereço
-        servicos: [{ ID: this.selectedServiceId }],
+        servicos: [{ ID: this.selectedServiceId, nome:this.serviceNameSelected }],
         duracao: this.getTimeFromNumber(this.hourSelected),
         valor_servicos: this.preco.valor,
         valor_total: this.preco.valor,
@@ -827,7 +839,7 @@ getWeekNumber(date: string): number {
         plano: plano.plano, // Atualiza o plano de cada atendimento
         cliente: this.currentClient, // Adiciona o cliente
         endereco: this.currentEndereco, // Adiciona o endereço
-        servicos: [{ ID: this.selectedServiceId }],
+        servicos: [{ ID: this.selectedServiceId, nome:this.serviceNameSelected}],
         duracao: this.getTimeFromNumber(this.hourSelected),
         valor_servicos: this.preco.valor,
         valor_total: this.preco.valor,
@@ -858,8 +870,6 @@ getWeekNumber(date: string): number {
     console.log('calculatePreco');
 
     const plano = this.selectedPlano;
-    console.log(plano);
-    console.log(this.selectedServiceId);
 
     if (plano && this.selectedServiceId) {
       if (this.selectedServiceId) {

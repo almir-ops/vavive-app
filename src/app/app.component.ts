@@ -10,6 +10,9 @@ import { Preferences } from '@capacitor/preferences';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { App } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
+import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { version } from 'moment';
 
 register();
 
@@ -23,12 +26,14 @@ export class AppComponent {
     private platform: Platform,
     private storage: Storage,
     private router: Router,
-    private clienteService: ClientesService
+    private clienteService: ClientesService,
+    private http: HttpClient
   ) {
     this.initializeApp();
     this.disableDarkMode();
     this.configureStatusBar();
-    this.checkForUpdate();
+    //this.checkForUpdate();
+  this.checkAppVersion();
   }
 
 
@@ -99,6 +104,36 @@ export class AppComponent {
     });
   }
 
+  checkAppVersion() {
+    const platform = Capacitor.getPlatform(); // 'android', 'ios', 'web'
+    const currentVersion = environment.appVersion;
+
+    this.http.get<{ version: string }>(`${environment.baseUrl}franquias/version`).subscribe((res:any) => {
+      const latestVersion = res[0];
+      console.log(latestVersion );
+      console.log(currentVersion );
+      console.log(currentVersion === latestVersion);
+
+      if (currentVersion === latestVersion) {
+        return
+      }else{
+        this.showUpdateModal(platform);
+      }
+    });
+  }
+
+  isOutdated(current: string, latest: string): boolean {
+    const cur = current.split('.').map(Number);
+    const lat = latest.split('.').map(Number);
+
+    for (let i = 0; i < Math.max(cur.length, lat.length); i++) {
+      if ((cur[i] || 0) < (lat[i] || 0)) return true;
+      if ((cur[i] || 0) > (lat[i] || 0)) return false;
+    }
+    return false;
+  }
+
+
   async checkForUpdate() {
     console.log('checkForUpdate');
 
@@ -130,12 +165,8 @@ export class AppComponent {
   async showUpdateModal(platform: string) {
     const alert = document.createElement('ion-alert');
     alert.header = 'Atualização disponível';
-    alert.message = 'Uma nova versão do app está disponível. Deseja atualizar agora?';
+    alert.message = 'Uma nova versão do app está disponível. Por favor atualize.';
     alert.buttons = [
-      {
-        text: 'Cancelar',
-        role: 'cancel'
-      },
       {
         text: 'Atualizar',
         handler: () => {
