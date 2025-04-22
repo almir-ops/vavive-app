@@ -8,6 +8,7 @@ import { Token } from './token';
 import { IUser } from 'src/app/shared/interfaces/uUser';
 import { ApiService } from 'src/app/shared/services/api.service';
 import { Storage } from '@ionic/storage-angular';
+import { Preferences } from '@capacitor/preferences';
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,7 @@ export class AuthService {
   logout(){
     localStorage.clear();
     this.storage.clear();
+    Preferences.clear();
     this.router.navigate(['select-region']);
     this.unRegisterCredentials();
   }
@@ -97,13 +99,14 @@ export class AuthService {
     return loaded;
   }
 
-  get obterUsuarioLogado(): IUser {
-    const usuario = localStorage.getItem('user')
+  get obterUsuarioLogado(): IUser | null {
+    const usuario = localStorage.getItem('user');
 
-    return localStorage.getItem('user')
-      ? JSON.parse(atob(usuario!))
+    return usuario
+      ? JSON.parse(atob(usuario))
       : null;
   }
+
 
   private unRegisterCredentials(): void {
     this.token = undefined;

@@ -892,24 +892,6 @@ getWeekNumber(date: string): number {
       .subscribe({
         next: (res: any) => {
           console.log(res);
-
-          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(res.item[0].ID, atendimentos[0]),'franquias@vavive.com.br').subscribe({
-            next:(value:any) =>{
-              console.log(value);
-            },
-            error:(err:any) => {
-              console.log(err);
-            },
-          })
-
-          this.emailService.sendEmail('Confirmação de Agendamento - '+ atendimentos[0].nome,this.generateEmail(res.item[0].ID, atendimentos[0]),atendimentos[0].cliente.email).subscribe({
-            next:(value:any) =>{
-              console.log(value);
-            },
-            error:(err:any) => {
-              console.log(err);
-            },
-          })
           this.primeiroAgendamento = res.item[0];
           this.handlePaymentNow();
           //this.modalConfirm.present();
