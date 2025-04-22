@@ -153,7 +153,7 @@ export class RegisterComponent  implements OnInit {
       bairro: [''],
       referencia: [''],
       cidade: [''],
-      estado: ['', Validators.required],
+      estado: [''],
       pais: [''],
       zona: [''],
       complemento: [''],
