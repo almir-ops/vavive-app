@@ -3,7 +3,7 @@
 </div>
 
 <div class="overflow-auto bg-radial-blue-radial z-20" *ngIf="slides.length > 0">
-  <div *ngIf="!userLoggedOut"  class="px-8 text-[18px] py-3 ">
+  <div *ngIf="!userLoggedOut"  class="px-8 text-[18px] py-3 flex justify-end">
     <h2>
       <span *ngIf="user" class="text-white">
         Olá, {{getFirstWord(user.nome)}}
@@ -12,7 +12,7 @@
   </div>
   <div *ngIf="userLoggedOut"  class="px-8 text-[14px] py-3 bg-amarelosecundario border-b-[0.3px] border-white">
     <h2>
-      <span class="text-white font-semibold flex justify-between">
+      <span class="text-white font-semibold flex justify-end">
         <span class="text-azulprincipal" (click)="navegate('account/sign')">Entre aqui</span>
       </span>
     </h2>
