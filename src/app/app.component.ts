@@ -4,7 +4,11 @@ import { Platform } from '@ionic/angular';
 import { register } from 'swiper/element/bundle';
 import { Storage } from '@ionic/storage-angular';
 import { StatusBar, Style } from '@capacitor/status-bar';
-import { PushNotifications, Token, PermissionStatus } from '@capacitor/push-notifications';
+import {
+  PushNotifications,
+  Token,
+  PermissionStatus,
+} from '@capacitor/push-notifications';
 import { ClientesService } from './shared/services/clientes/clientes.service';
 import { Preferences } from '@capacitor/preferences';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
@@ -33,10 +37,8 @@ export class AppComponent {
     this.disableDarkMode();
     this.configureStatusBar();
     //this.checkForUpdate();
-  this.checkAppVersion();
+    this.checkAppVersion();
   }
-
-
 
   disableDarkMode() {
     document.body.classList.add('light');
@@ -70,7 +72,8 @@ export class AppComponent {
 
   async checkPushNotificationPermission() {
     // Verificar status da permissão
-    const permissionStatus: PermissionStatus = await PushNotifications.checkPermissions();
+    const permissionStatus: PermissionStatus =
+      await PushNotifications.checkPermissions();
 
     if (permissionStatus.receive === 'granted') {
       // Já tem permissão, registra o dispositivo
@@ -94,8 +97,8 @@ export class AppComponent {
       console.log('Token de notificação gerado:', token.value);
       Preferences.set({
         key: 'token_notification',
-        value: JSON.stringify(token.value)
-      })
+        value: JSON.stringify(token.value),
+      });
     });
 
     // Evento disparado se o registro falhar
@@ -108,18 +111,20 @@ export class AppComponent {
     const platform = Capacitor.getPlatform(); // 'android', 'ios', 'web'
     const currentVersion = environment.appVersion;
 
-    this.http.get<{ version: string }>(`${environment.baseUrl}franquias/version`).subscribe((res:any) => {
-      const latestVersion = res[0];
-      console.log(latestVersion );
-      console.log(currentVersion );
-      console.log(currentVersion === latestVersion);
+    this.http
+      .get<{ version: string }>(`${environment.baseUrl}franquias/version`)
+      .subscribe((res: any) => {
+        const latestVersion = res[0];
+        console.log(latestVersion);
+        console.log(currentVersion);
+        console.log(currentVersion === latestVersion);
 
-      if (currentVersion === latestVersion) {
-        return
-      }else{
-        this.showUpdateModal(platform);
-      }
-    });
+        if (currentVersion === latestVersion) {
+          return;
+        } else {
+          this.showUpdateModal(platform);
+        }
+      });
   }
 
   isOutdated(current: string, latest: string): boolean {
@@ -133,7 +138,6 @@ export class AppComponent {
     return false;
   }
 
-
   async checkForUpdate() {
     console.log('checkForUpdate');
 
@@ -141,7 +145,7 @@ export class AppComponent {
     console.log('checkForUpdate');
 
     const platform = Capacitor.getPlatform(); // 'android', 'ios', 'web'
-        console.log('checkForUpdate');
+    console.log('checkForUpdate');
 
     const currentVersion = info.version;
 
@@ -165,24 +169,29 @@ export class AppComponent {
   async showUpdateModal(platform: string) {
     const alert = document.createElement('ion-alert');
     alert.header = 'Atualização disponível';
-    alert.message = 'Uma nova versão do app está disponível. Por favor atualize.';
+    alert.message =
+      'Uma nova versão do app está disponível. Por favor atualize.';
+    alert.backdropDismiss = false; // <== impede fechar tocando fora
+
     alert.buttons = [
       {
         text: 'Atualizar',
         handler: () => {
           if (platform === 'android') {
-            window.open('https://play.google.com/store/apps/details?id=io.ionic.vavive', '_system');
+            window.open(
+              'https://play.google.com/store/apps/details?id=io.ionic.vavive',
+              '_system'
+            );
           } else if (platform === 'ios') {
             window.open('https://apps.apple.com/app/id6740406088', '_system');
           }
-        }
-      }
+        },
+      },
     ];
+
     document.body.appendChild(alert);
     await alert.present();
   }
-
-
 
   compararVersao(versaoAtual: string, versaoNova: string): boolean {
     return versaoAtual !== versaoNova;
