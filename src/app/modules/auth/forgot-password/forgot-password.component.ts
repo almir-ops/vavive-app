@@ -72,7 +72,7 @@ export class ForgotPasswordComponent extends BaseComponent implements OnInit {
     };
 
     this.authService
-      .forgotPassword({ url: user.url, email: user.email }, 'clientes')
+      .forgotPassword({ url: user.url, email: user.email })
       .subscribe({
         next: (response: any) => {
           this.notify(
@@ -81,10 +81,7 @@ export class ForgotPasswordComponent extends BaseComponent implements OnInit {
           );
         },
         error: (err) => {
-          this.notify(
-            'Erro ao enviar email ',
-            err.error.detail
-          );
+          this.notify('Erro ao enviar email ', err.error.detail);
         },
       });
   }

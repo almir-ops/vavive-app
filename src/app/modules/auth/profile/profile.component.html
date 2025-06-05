@@ -1,14 +1,12 @@
 <div class="h-screen flex flex-col overflow-hidden relative bg-white">
   <div class="flex justify-end">
     <div class="flex justify-end w-[60%] rounded-full border border-gray-200 mt-2 mr-6">
-      <div
-        class="flex-1 text-center py-2 cursor-pointer transition-all rounded-l-full"
+      <div class="flex-1 text-center py-2 cursor-pointer transition-all rounded-l-full"
         [ngClass]="screen === 'profile' ? 'bg-azulprincipal text-white' : 'bg-gray-100 text-gray-600'"
         (click)="screen = 'profile'">
         Conta
       </div>
-      <div
-        class="flex-1 text-center py-2 cursor-pointer transition-all rounded-r-full"
+      <div class="flex-1 text-center py-2 cursor-pointer transition-all rounded-r-full"
         [ngClass]="screen === 'payments' ? 'bg-azulprincipal text-white' : 'bg-gray-100 text-gray-600'"
         (click)="screen = 'payments'">
         Endereço
@@ -16,116 +14,63 @@
     </div>
   </div>
 
-  <div *ngIf="screen==='profile'" >
+  <div *ngIf="screen==='profile'">
 
     <div class="w-full flex justify-center px-4">
       <div class="px-4 py-8 rounded-sm w-full">
         <form [formGroup]="formRegister">
           <div class="flex flex-col">
-            <ion-input
-              label="Nome completo"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-6"
-              autocomplete="true"
-              type="tel"
-              inputmode="numeric"
-              formControlName="nome"
-            ></ion-input>
+            <ion-input label="Nome completo" label-placement="floating" fill="outline" class="custom mt-6"
+              autocomplete="true" type="tel" inputmode="numeric" formControlName="nome"></ion-input>
             <div *ngIf="formRegisterControl['nome'].value && formRegisterControl['nome'].errors">
               <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
             </div>
           </div>
           <div class="flex flex-col">
-            <ion-input
-              label="Telefone"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-6"
-              autocomplete="true"
-              type="tel"
-              inputmode="numeric"
-              formControlName="celular"
-            ></ion-input>
+            <ion-input label="Telefone" label-placement="floating" fill="outline" class="custom mt-6"
+              autocomplete="true" type="tel" inputmode="numeric" formControlName="celular"></ion-input>
             <div *ngIf="formRegisterControl['celular'].value && formRegisterControl['celular'].errors">
               <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
             </div>
           </div>
           <div class="flex flex-col">
-            <ion-input
-              label="CPF"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-6"
-              autocomplete="true"
-              type="tel"
-              inputmode="numeric"
-              formControlName="cpf"
-            ></ion-input>
+            <ion-input label="CPF" label-placement="floating" fill="outline" class="custom mt-6" autocomplete="true"
+              type="tel" inputmode="numeric" formControlName="cpf"></ion-input>
             <div *ngIf="formRegisterControl['cpf'].value && formRegisterControl['cpf'].errors">
               <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
             </div>
           </div>
           <div class="flex flex-col">
-            <ion-input
-              label="Email"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-6"
-              autocomplete="true"
-              type="tel"
-              inputmode="numeric"
-              formControlName="email"
-              autocapitalize="none"
-              autocorrect="off"
-            ></ion-input>
+            <ion-input label="Email" label-placement="floating" fill="outline" class="custom mt-6" autocomplete="true"
+              type="tel" inputmode="numeric" formControlName="email" autocapitalize="none"
+              autocorrect="off"></ion-input>
             <div *ngIf="formRegisterControl['email'].value && formRegisterControl['email'].errors">
               <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
             </div>
           </div>
-          <div *ngIf="type === 'Cliente'"  class="flex flex-col">
-            <ion-input
-              label="CPF"
-              label-placement="floating"
-              fill="outline"
-              placeholder="999.999.999-99"
-              class="custom mt-6"
-              autocomplete="true"
-              type="tel"
-              formControlName="cpf"
-              inputmode="numeric"
-              (keyup)="verificationCPF($event)"
-            ></ion-input>
+          <div *ngIf="type === 'Cliente'" class="flex flex-col">
+            <ion-input label="CPF" label-placement="floating" fill="outline" placeholder="999.999.999-99"
+              class="custom mt-6" autocomplete="true" type="tel" formControlName="cpf" inputmode="numeric"
+              (keyup)="verificationCPF($event)"></ion-input>
             <div *ngIf="formRegisterControl['cpf'].value && formRegisterControl['cpf'].errors">
               <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
             </div>
-            <div *ngIf="cpfInvalido" >
+            <div *ngIf="cpfInvalido">
               <div class="h-auto w-full text-red-600 my-1">
-              * Digite um cpf valido
+                * Digite um cpf valido
               </div>
             </div>
           </div>
-          <div *ngIf="type === 'Empresa'"  class="flex flex-col">
-            <ion-input
-              label="CNPJ"
-              label-placement="floating"
-              fill="outline"
-              placeholder="99.999.999/9999-99"
-              class="custom mt-6"
-              autocomplete="true"
-              type="tel"
-              formControlName="cpf"
-              inputmode="numeric"
-            ></ion-input>
+          <div *ngIf="type === 'Empresa'" class="flex flex-col">
+            <ion-input label="CNPJ" label-placement="floating" fill="outline" placeholder="99.999.999/9999-99"
+              class="custom mt-6" autocomplete="true" type="tel" formControlName="cpf" inputmode="numeric"></ion-input>
             <div *ngIf="formRegisterControl['cpf'].value && formRegisterControl['cpf'].errors">
               <span class="text-red-500 text-[10px]">* Campo obrigatório</span>
             </div>
           </div>
-          <button
-            [ngClass]="{'bg-azulprincipal':formRegister.valid,'bg-gray-300':!formRegister.valid}"
-            class="text-center text-white rounded py-2 w-full mt-8 duration-150 " (click)="updateClient()" >
-            <div
-              class="font-bold">
+          <button [ngClass]="{'bg-azulprincipal':formRegister.valid,'bg-gray-300':!formRegister.valid}"
+            class="text-center text-white rounded py-2 w-full mt-8 duration-150 " (click)="updateClient()">
+            <div class="font-bold">
               Salvar
             </div>
           </button>
@@ -133,7 +78,8 @@
             <span class="text-azulprincipal" (click)="logout()">Sair</span>
           </div>
           <div class="flex justify-center">
-            <div class="flex justify-center mt-8 text-sm" (click)="openExternalLink('https://www.vavive.com.br/termos')">
+            <div class="flex justify-center mt-8 text-sm"
+              (click)="openExternalLink('https://www.vavive.com.br/termos')">
               Politica de privacidade
             </div>
             <div class="flex justify-center ml-4 mt-8 text-sm text-red-600" (click)="modalDeletedAccount.present()">
@@ -146,10 +92,10 @@
     </div>
   </div>
 
-  <div *ngIf="screen==='payments'" >
+  <div *ngIf="screen==='payments'">
     <div class="p-4">
-      <div (click)="openModalEndereco()" class="py-2 bg-azulprincipal text-white rounded-md shadow-md mt-6 mb-2" >
-        <div class="flex justify-center" >
+      <div (click)="openModalEndereco()" class="py-2 bg-azulprincipal text-white rounded-md shadow-md mt-6 mb-2">
+        <div class="flex justify-center">
           <img class="h-[18px] mr-2" src="./assets/icons/plus.svg">
           <span class="text-sm uppercase font-semibold">Novo endereço</span>
         </div>
@@ -180,11 +126,13 @@
             </div>
           </div>
           <div class="flex w-full">
-            <div (click)="openModalEditEndereco(endereco)" class="bg-laranjasombreado flex items-center py-1 justify-center w-[50%]">
+            <div (click)="openModalEditEndereco(endereco)"
+              class="bg-laranjasombreado flex items-center py-1 justify-center w-[50%]">
               Editar
               <img class="h-4 ml-2" src="./assets/icons/pencil.svg">
             </div>
-            <div (click)="openModalDeleteEndereco(endereco,i )"class="bg-gray-200 flex items-center py-1 justify-center w-[50%]">
+            <div (click)="openModalDeleteEndereco(endereco,i )"
+              class="bg-gray-200 flex items-center py-1 justify-center w-[50%]">
               Excluir
               <img class="h-4 ml-2" src="./assets/icons/lixeira.svg">
             </div>
@@ -204,83 +152,40 @@
       <span class="text-xs mb-5">Digite o cep e o numero do endereço:</span>
 
       <div>
-        <ion-input
-          label="CEP"
-          label-placement="floating"
-          fill="outline"
-          class="custom mt-6"
-          autocomplete="true"
-          type="tel"
-          inputmode="numeric"
-          [(ngModel)]="cep"
-          (keyup)="searchCep()"
-          maxlength="9"
-          placeholder="00000-000"
-          [maskito]="cepMask"
-          [maskitoElement]="predicate"
-        ></ion-input>
+        <ion-input label="CEP" label-placement="floating" fill="outline" class="custom mt-6" autocomplete="true"
+          type="tel" inputmode="numeric" [(ngModel)]="cep" (keyup)="searchCep()" maxlength="9" placeholder="00000-000"
+          [maskito]="cepMask" [maskitoElement]="predicate"></ion-input>
 
         <!-- Exibir o restante do formulário apenas se o CEP for encontrado -->
         <div>
           <div class="w-full flex ">
-            <ion-input
-              label="Rua"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 w-[75%]"
-              [(ngModel)]="endereco.rua"
-              disabled
-            ></ion-input>
+            <ion-input label="Rua" label-placement="floating" fill="outline" class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.rua" disabled></ion-input>
 
-            <ion-input
-              label="N°"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 ml-2 w-[25%]"
-              [(ngModel)]="endereco.numero"
-            ></ion-input>
+            <ion-input label="N°" label-placement="floating" fill="outline" class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.numero"></ion-input>
           </div>
 
-          <ion-input
-            label="Bairro"
-            label-placement="floating"
-            fill="outline"
-            class="custom mt-4"
-            [(ngModel)]="endereco.bairro"
-            disabled
-          ></ion-input>
+          <ion-input label="Bairro" label-placement="floating" fill="outline" class="custom mt-4"
+            [(ngModel)]="endereco.bairro" disabled></ion-input>
           <div class="w-full flex ">
-            <ion-input
-              label="Cidade"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 w-[75%]"
-              [(ngModel)]="endereco.cidade"
-              disabled
-            ></ion-input>
+            <ion-input label="Cidade" label-placement="floating" fill="outline" class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.cidade" disabled></ion-input>
 
-            <ion-input
-              label="UF"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 ml-2 w-[25%]"
-              [(ngModel)]="endereco.estado"
-              disabled
-            ></ion-input>
+            <ion-input label="UF" label-placement="floating" fill="outline" class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.estado" disabled></ion-input>
           </div>
 
-          <ion-input
-            label="Complemento"
-            label-placement="floating"
-            fill="outline"
-            class="custom mt-4"
-            [(ngModel)]="endereco.complemento"
-          ></ion-input>
+          <ion-input label="Complemento" label-placement="floating" fill="outline" class="custom mt-4"
+            [(ngModel)]="endereco.complemento"></ion-input>
         </div>
 
         <div class="flex justify-between">
-          <button class="mt-4 bg-gray-300 rounded-md py-1.5 px-4 shadow-md" (click)="modalNovoEndereco.dismiss()">Fechar</button>
-          <button class="mt-4 rounded-md py-1.5 px-4 text-white shadow-md duration-150" (click)="salvarEndereco()" [ngClass]="{'bg-azulprincipal': isFormValid(),'bg-gray-200': !isFormValid()}" [disabled]="!isFormValid()">Salvar</button>
+          <button class="mt-4 bg-gray-300 rounded-md py-1.5 px-4 shadow-md"
+            (click)="modalNovoEndereco.dismiss()">Fechar</button>
+          <button class="mt-4 rounded-md py-1.5 px-4 text-white shadow-md duration-150" (click)="salvarEndereco()"
+            [ngClass]="{'bg-azulprincipal': isFormValid(),'bg-gray-200': !isFormValid()}"
+            [disabled]="!isFormValid()">Salvar</button>
         </div>
 
       </div>
@@ -296,83 +201,40 @@
       <span class="text-xs mb-5">Digite o cep e o numero do endereço:</span>
 
       <div>
-        <ion-input
-          label="CEP"
-          label-placement="floating"
-          fill="outline"
-          class="custom mt-6"
-          autocomplete="true"
-          type="tel"
-          inputmode="numeric"
-          [(ngModel)]="cep"
-          (keyup)="searchCep()"
-          maxlength="9"
-          placeholder="00000-000"
-          [maskito]="cepMask"
-          [maskitoElement]="predicate"
-        ></ion-input>
+        <ion-input label="CEP" label-placement="floating" fill="outline" class="custom mt-6" autocomplete="true"
+          type="tel" inputmode="numeric" [(ngModel)]="cep" (keyup)="searchCep()" maxlength="9" placeholder="00000-000"
+          [maskito]="cepMask" [maskitoElement]="predicate"></ion-input>
 
         <!-- Exibir o restante do formulário apenas se o CEP for encontrado -->
         <div>
           <div class="w-full flex ">
-            <ion-input
-              label="Rua"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 w-[75%]"
-              [(ngModel)]="endereco.rua"
-              disabled
-            ></ion-input>
+            <ion-input label="Rua" label-placement="floating" fill="outline" class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.rua" disabled></ion-input>
 
-            <ion-input
-              label="N°"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 ml-2 w-[25%]"
-              [(ngModel)]="endereco.numero"
-            ></ion-input>
+            <ion-input label="N°" label-placement="floating" fill="outline" class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.numero"></ion-input>
           </div>
 
-          <ion-input
-            label="Bairro"
-            label-placement="floating"
-            fill="outline"
-            class="custom mt-4"
-            [(ngModel)]="endereco.bairro"
-            disabled
-          ></ion-input>
+          <ion-input label="Bairro" label-placement="floating" fill="outline" class="custom mt-4"
+            [(ngModel)]="endereco.bairro" disabled></ion-input>
           <div class="w-full flex ">
-            <ion-input
-              label="Cidade"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 w-[75%]"
-              [(ngModel)]="endereco.cidade"
-              disabled
-            ></ion-input>
+            <ion-input label="Cidade" label-placement="floating" fill="outline" class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.cidade" disabled></ion-input>
 
-            <ion-input
-              label="UF"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 ml-2 w-[25%]"
-              [(ngModel)]="endereco.estado"
-              disabled
-            ></ion-input>
+            <ion-input label="UF" label-placement="floating" fill="outline" class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.estado" disabled></ion-input>
           </div>
 
-          <ion-input
-            label="Complemento"
-            label-placement="floating"
-            fill="outline"
-            class="custom mt-4"
-            [(ngModel)]="endereco.complemento"
-          ></ion-input>
+          <ion-input label="Complemento" label-placement="floating" fill="outline" class="custom mt-4"
+            [(ngModel)]="endereco.complemento"></ion-input>
         </div>
 
         <div class="flex justify-between">
-          <button class="mt-4 bg-gray-300 rounded-md py-1.5 px-4 shadow-md" (click)="modalEditEndereco.dismiss()">Fechar</button>
-          <button class="mt-4 rounded-md py-1.5 px-4 text-white shadow-md duration-150" (click)="updateEndereco()" [ngClass]="{'bg-azulprincipal': isFormValid(),'bg-gray-200': !isFormValid()}" [disabled]="!isFormValid()">Salvar</button>
+          <button class="mt-4 bg-gray-300 rounded-md py-1.5 px-4 shadow-md"
+            (click)="modalEditEndereco.dismiss()">Fechar</button>
+          <button class="mt-4 rounded-md py-1.5 px-4 text-white shadow-md duration-150" (click)="updateEndereco()"
+            [ngClass]="{'bg-azulprincipal': isFormValid(),'bg-gray-200': !isFormValid()}"
+            [disabled]="!isFormValid()">Salvar</button>
         </div>
 
       </div>
@@ -388,86 +250,40 @@
       <span class="text-xs mb-5">Deseja realmente deletar esse endereço?</span>
 
       <div>
-        <ion-input
-          label="CEP"
-          label-placement="floating"
-          fill="outline"
-          class="custom mt-6"
-          autocomplete="true"
-          type="tel"
-          inputmode="numeric"
-          [(ngModel)]="cep"
-          (keyup)="searchCep()"
-          maxlength="9"
-          placeholder="00000-000"
-          [maskito]="cepMask"
-          [maskitoElement]="predicate"
-          disabled
-        ></ion-input>
+        <ion-input label="CEP" label-placement="floating" fill="outline" class="custom mt-6" autocomplete="true"
+          type="tel" inputmode="numeric" [(ngModel)]="cep" (keyup)="searchCep()" maxlength="9" placeholder="00000-000"
+          [maskito]="cepMask" [maskitoElement]="predicate" disabled></ion-input>
 
         <!-- Exibir o restante do formulário apenas se o CEP for encontrado -->
         <div>
           <div class="w-full flex ">
-            <ion-input
-              label="Rua"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 w-[75%]"
-              [(ngModel)]="endereco.rua"
-              disabled
-            ></ion-input>
+            <ion-input label="Rua" label-placement="floating" fill="outline" class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.rua" disabled></ion-input>
 
-            <ion-input
-              label="N°"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 ml-2 w-[25%]"
-              [(ngModel)]="endereco.numero"
-              disabled
-            ></ion-input>
+            <ion-input label="N°" label-placement="floating" fill="outline" class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.numero" disabled></ion-input>
           </div>
 
-          <ion-input
-            label="Bairro"
-            label-placement="floating"
-            fill="outline"
-            class="custom mt-4"
-            [(ngModel)]="endereco.bairro"
-            disabled
-          ></ion-input>
+          <ion-input label="Bairro" label-placement="floating" fill="outline" class="custom mt-4"
+            [(ngModel)]="endereco.bairro" disabled></ion-input>
           <div class="w-full flex ">
-            <ion-input
-              label="Cidade"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 w-[75%]"
-              [(ngModel)]="endereco.cidade"
-              disabled
-            ></ion-input>
+            <ion-input label="Cidade" label-placement="floating" fill="outline" class="custom mt-4 w-[75%]"
+              [(ngModel)]="endereco.cidade" disabled></ion-input>
 
-            <ion-input
-              label="UF"
-              label-placement="floating"
-              fill="outline"
-              class="custom mt-4 ml-2 w-[25%]"
-              [(ngModel)]="endereco.estado"
-              disabled
-            ></ion-input>
+            <ion-input label="UF" label-placement="floating" fill="outline" class="custom mt-4 ml-2 w-[25%]"
+              [(ngModel)]="endereco.estado" disabled></ion-input>
           </div>
 
-          <ion-input
-            label="Complemento"
-            label-placement="floating"
-            fill="outline"
-            class="custom mt-4"
-            [(ngModel)]="endereco.complemento"
-            disabled
-          ></ion-input>
+          <ion-input label="Complemento" label-placement="floating" fill="outline" class="custom mt-4"
+            [(ngModel)]="endereco.complemento" disabled></ion-input>
         </div>
 
         <div class="flex justify-between">
-          <button class="mt-4 bg-gray-300 rounded-md py-1.5 px-4 shadow-md" (click)="modalDeleteEndereco.dismiss()">Fechar</button>
-          <button class="mt-4 rounded-md py-1.5 px-4 text-white shadow-md duration-150" (click)="deleteEndereco()" [ngClass]="{'bg-azulprincipal': isFormValid(),'bg-gray-200': !isFormValid()}" [disabled]="!isFormValid()">Deletar</button>
+          <button class="mt-4 bg-gray-300 rounded-md py-1.5 px-4 shadow-md"
+            (click)="modalDeleteEndereco.dismiss()">Fechar</button>
+          <button class="mt-4 rounded-md py-1.5 px-4 text-white shadow-md duration-150" (click)="deleteEndereco()"
+            [ngClass]="{'bg-azulprincipal': isFormValid(),'bg-gray-200': !isFormValid()}"
+            [disabled]="!isFormValid()">Deletar</button>
         </div>
 
       </div>
@@ -491,12 +307,8 @@
       <div class="text-azulprincipal text-center text-lg font-bold mb-3">Atenção</div>
       <span class="text-xs mb-5 block text-center">
         Identificamos que o endereço selecionado pertence à franquia <strong>{{ franquiaEncontrada.nome }}</strong>.
-        Para prosseguir com o atendimento nessa região, será necessário criar uma nova conta.
+        Para prosseguir com o atendimento nessa região, será necessário fazer login novamete.
       </span>
-
-      <div class="text-xs mb-4 block text-center">
-        Você pode criar a conta com os dados da sua conta atual.
-      </div>
 
       <div class="flex flex-col space-y-3 mt-5">
         <!--
@@ -530,7 +342,8 @@
 
 <ion-modal [keepContentsMounted]="true" #modalFranquias class="modal-franquiado p-5">
   <ng-template>
-    <div (click)="openExternalLink('https://www.vavive.com.br/seja-um-franqueado-app')" class="bg-verdepaleta rounded-md shadow-md px-3 py-2 inline-block mx-6 mt-4 text-center font-medium">
+    <div (click)="openExternalLink('https://www.vavive.com.br/seja-um-franqueado-app')"
+      class="bg-verdepaleta rounded-md shadow-md px-3 py-2 inline-block mx-6 mt-4 text-center font-medium">
       SEJA UM FRANQUEADO
     </div>
     <div class="p-4 text-white font-medium text-sm text-center">
@@ -538,9 +351,7 @@
     </div>
 
     <div class="p-4 space-y-3 overflow-y-auto">
-      <button
-        *ngFor="let region of regionsCurrent"
-        (click)="selectFranquia(region)"
+      <button *ngFor="let region of regionsCurrent" (click)="selectFranquia(region)"
         class="w-full bg-white text-gray-700 font-semibold text-center py-3 rounded-xl shadow-md border border-gray-200 hover:bg-gray-100 transition duration-300">
         {{ region.nome }}
       </button>

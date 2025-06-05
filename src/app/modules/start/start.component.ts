@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  CUSTOM_ELEMENTS_SCHEMA,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { IonicSlides } from '@ionic/angular';
 import { register } from 'swiper/element/bundle';
 import { AuthService } from '../auth/auth.service';
@@ -15,10 +22,9 @@ register();
 @Component({
   selector: 'app-start',
   templateUrl: './start.component.html',
-  styleUrls: ['./start.component.scss']
+  styleUrls: ['./start.component.scss'],
 })
-export class StartComponent  implements OnInit {
-
+export class StartComponent implements OnInit {
   @Input() slides: any[] = [];
   @Input() slidesUtils: any[] = [];
   @Input() slidesUtils2: any[] = [];
@@ -31,76 +37,76 @@ export class StartComponent  implements OnInit {
   appendNumber = 4;
   prependNumber = 1;
 
-  user: any
+  user: any;
   @ViewChild('loadingComponent') loadingComponent!: LoadingComponent;
   loaded = true;
-  images = ['./assets/images/VA.png', './assets/images/VI.png', './assets/images/Ve.png'];
+  images = [
+    './assets/images/VA.png',
+    './assets/images/VI.png',
+    './assets/images/Ve.png',
+  ];
   customStyles = [
     'h-24 -top-4 -left-6', // Estilo para VA.png
     'h-24 -top-4 -left-4', // Estilo para VA.png
     'h-24 -top-4 -left-6', // Estilo para VI.png
   ];
   currentImageIndex = 0;
-  frontUrl = ''
+  frontUrl = '';
   constructor(
     private authService: AuthService,
     private storage: Storage,
-    private router:Router,
-    private servicosServices:ServicosService,
-    private clienteService:ClientesService
-
-  ) { }
+    private router: Router,
+    private servicosServices: ServicosService,
+    private clienteService: ClientesService
+  ) {}
 
   ngOnInit() {
-    this.getFrontUrl().then(url => {
+    this.getFrontUrl().then((url) => {
       if (url) {
-        console.log('URL recuperada:', url);
         // Use a URL como necessário
         this.frontUrl = url;
         this.slidesUtils = [
           {
-            "ID": 1,
-            "name": "Cadastre-se como parceiro",
-            "slogan": "Faça parte de nossa equipe",
-            "bannerApp": "./assets/images/quero-trabalhar.jpeg",
-            "link":`https://${this.frontUrl}/pre-cadastro-profissional`
+            ID: 1,
+            name: 'Cadastre-se como parceiro',
+            slogan: 'Faça parte de nossa equipe',
+            bannerApp: './assets/images/quero-trabalhar.jpeg',
+            link: `https://${this.frontUrl}/pre-cadastro-profissional`,
           },
 
           {
-            "ID": 2,
-            "name": "Seja um franqueado",
-            "slogan": "Não perca tempo e comece a faturar muito!",
-            "bannerApp": "./assets/images/seja-franqueado.jpeg",
-            "link": "https://www.vavive.com.br/seja-um-franqueado-oficial"
-          }
-      ]
+            ID: 2,
+            name: 'Seja um franqueado',
+            slogan: 'Não perca tempo e comece a faturar muito!',
+            bannerApp: './assets/images/seja-franqueado.jpeg',
+            link: 'https://www.vavive.com.br/seja-um-franqueado-oficial',
+          },
+        ];
       } else {
-        console.log('Nenhuma URL armazenada');
       }
     });
 
-
-    this.slidesUtils2= [
+    this.slidesUtils2 = [
       {
-        name: "GARANTIA",
-        slogan: "Profissionais qualificados, sempre no dia e horário combinados.",
-        bannerApp: "./assets/images/banner-padrao.png"
+        name: 'GARANTIA',
+        slogan:
+          'Profissionais qualificados, sempre no dia e horário combinados.',
+        bannerApp: './assets/images/banner-padrao.png',
       },
       {
-        name: "FLEXIBILIDADE",
-        slogan: "Com a VAVIVÊ, você agenda, reagenda e relaxa. Nós cuidamos do resto!",
-        bannerApp: "./assets/images/banner-padrao.png"
+        name: 'FLEXIBILIDADE',
+        slogan:
+          'Com a VAVIVÊ, você agenda, reagenda e relaxa. Nós cuidamos do resto!',
+        bannerApp: './assets/images/banner-padrao.png',
       },
       {
-        name: "CONFIANÇA",
-        slogan: "Sua confiança garantida em cada serviço, sempre no dia e horário combinados.",
-        bannerApp: "./assets/images/banner-padrao.png"
-      }
-    ]
+        name: 'CONFIANÇA',
+        slogan:
+          'Sua confiança garantida em cada serviço, sempre no dia e horário combinados.',
+        bannerApp: './assets/images/banner-padrao.png',
+      },
+    ];
     this.startImageLoop();
-
-
-
   }
 
   async getFrontUrl(): Promise<string | null> {
@@ -111,7 +117,6 @@ export class StartComponent  implements OnInit {
   ionViewWillEnter() {
     this.initializeUserData();
     const storedSlides = localStorage.getItem('slides');
-    console.log('filteredItems');
 
     if (storedSlides) {
       // Se o array já estiver salvo no localStorage, usa o valor armazenado
@@ -125,7 +130,9 @@ export class StartComponent  implements OnInit {
 
           // Filtra e ordena os itens
           const filteredItems = value.items.filter(
-            (item: any) => item.nome !== 'Limpeza pesada' && item.nome !== 'Recrutamento e seleção'
+            (item: any) =>
+              item.nome !== 'Limpeza pesada' &&
+              item.nome !== 'Recrutamento e seleção'
           );
 
           console.log(filteredItems);
@@ -155,15 +162,12 @@ export class StartComponent  implements OnInit {
   }
 
   async loadUserFromStorage() {
-
     try {
       const userData = await Preferences.get({ key: 'user_data' });
       if (userData.value) {
         // Usuário já está salvo localmente
-        this.user = JSON.parse(userData.value);
+        this.user = JSON.parse(userData.value).cliente;
         this.userLoggedOut = false;
-
-        console.log('User loaded from local storage:', this.user);
       } else {
         // Nenhum usuário salvo, chamando API para obter informações do usuário
         await this.getInfoUser();
@@ -172,7 +176,6 @@ export class StartComponent  implements OnInit {
       console.error('Error loading user from storage:', error);
     }
   }
-
 
   ngAfterViewInit() {
     // Acesso direto ao Swiper após a inicialização
@@ -195,25 +198,29 @@ export class StartComponent  implements OnInit {
         this.authService.getInfoUser(paramUser).subscribe({
           next: async (response) => {
             console.log(response);
-            const token_notification = await Preferences.get({ key: 'token_notification' });
+            const token_notification = await Preferences.get({
+              key: 'token_notification',
+            });
             this.userLoggedOut = false;
-            this.user = response;
+            this.user = response.cliente;
             this.user.token_notification = token_notification.value;
-            this.clienteService.updateClient(this.user).subscribe({
-              next:(value:any)=> {
-                console.log('User atualizado: ', value);
-              },
-              error:(err:any) => {
-                console.log(err);
-              },
-            })
+            this.clienteService
+              .updateClient(this.user, this.user.source_api)
+              .subscribe({
+                next: (value: any) => {
+                  console.log('User atualizado: ', value);
+                },
+                error: (err: any) => {
+                  console.log(err);
+                },
+              });
             // Armazenar o usuário de forma segura para chamadas futuras
             await this.saveUserSecurely(response);
           },
           error: (err: any) => {
             console.log(err);
             this.userLoggedOut = true;
-          }
+          },
         });
       } else {
         console.log('param_user is null or undefined, skipping API call.');
@@ -224,7 +231,6 @@ export class StartComponent  implements OnInit {
     }
   }
 
-
   nextSlide() {
     console.log(this.swiperContainer);
 
@@ -233,7 +239,7 @@ export class StartComponent  implements OnInit {
     }
   }
 
-  navegate(rota:string){
+  navegate(rota: string) {
     this.router.navigate([rota]);
   }
 
@@ -268,10 +274,12 @@ export class StartComponent  implements OnInit {
     }
   }
 
-  navegateByparam(rota: string, IDservice: string,index:any) {
+  navegateByparam(rota: string, IDservice: string, index: any) {
     console.log(IDservice);
 
-    this.router.navigate([rota], { queryParams: { tipo: IDservice, i: index  } });
+    this.router.navigate([rota], {
+      queryParams: { tipo: IDservice, i: index },
+    });
   }
 
   navegateExternalLink(link: string) {
@@ -280,7 +288,8 @@ export class StartComponent  implements OnInit {
 
   startImageLoop() {
     setInterval(() => {
-      this.currentImageIndex = (this.currentImageIndex + 1) % this.images.length;
+      this.currentImageIndex =
+        (this.currentImageIndex + 1) % this.images.length;
     }, 5000); // Troca a cada 3 segundos
   }
 }

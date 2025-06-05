@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   baseUrl: 'https://vavive-go-production.up.railway.app/api/v1/',
-  appVersion: '1.0.2'
+  apiAuth: 'https://login-unificado-novo-vavive.up.railway.app/api/v1/',
+  appVersion: '1.0.3',
 };
 
 /*
@@ -16,4 +17,3 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
-

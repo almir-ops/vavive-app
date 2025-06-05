@@ -1,5 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MaskitoOptions, MaskitoElementPredicate } from '@maskito/core';
 import { LoadingComponent } from 'src/app/shared/components/loading/loading.component';
@@ -15,57 +23,76 @@ import { AlertService } from 'src/app/shared/services/alert.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent  implements OnInit {
-
+export class RegisterComponent implements OnInit {
   styleBorderUser: any = '';
   formRegister!: FormGroup;
   hiddenPassword: boolean = false;
-  type!:string;
+  type!: string;
   cpfMaskOptions: MaskitoOptions = {
     mask: [
-      /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '-', /\d/, /\d/
+      /\d/,
+      /\d/,
+      /\d/,
+      '.',
+      /\d/,
+      /\d/,
+      /\d/,
+      '.',
+      /\d/,
+      /\d/,
+      /\d/,
+      '-',
+      /\d/,
+      /\d/,
     ],
   };
 
   phoneMaskOptions: MaskitoOptions = {
     mask: [
       '(',
-      /\d/, /\d/,
+      /\d/,
+      /\d/,
       ')',
       ' ',
       /[1-9]/, // O primeiro dígito deve ser de 1 a 9 (para telefone móvel)
       ' ',
-      /\d/, /\d/, /\d/, /\d/,
+      /\d/,
+      /\d/,
+      /\d/,
+      /\d/,
       '-',
-      /\d/, /\d/, /\d/, /\d/
+      /\d/,
+      /\d/,
+      /\d/,
+      /\d/,
     ],
   };
 
   cepMask: MaskitoOptions = {
-    mask: [
-      /\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/
-    ]
+    mask: [/\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/],
   };
   cpfInvalido = false;
   cnpjInvalido = false;
   frontUrl: any;
-  endereco:any;
+  endereco: any;
+  schemaFranquia: any;
+
   public readonly predicate: MaskitoElementPredicate = (element) =>
     (element as HTMLIonInputElement).getInputElement();
 
   @ViewChild('loadingComponent') loadingComponent!: LoadingComponent;
   setups: uSetups[] = [
     {
-      label:'APP-vavive-matriz',
-      url:'https://vavive-go-production.up.railway.app/api/v1/',
-      cidade:'SP'
-    }
+      label: 'APP-vavive-matriz',
+      url: 'https://vavive-go-production.up.railway.app/api/v1/',
+      cidade: 'SP',
+    },
   ];
   passwordErrors: any = {
     minLength: false,
     specialChar: false,
     number: false,
-    upperLower: false
+    upperLower: false,
   };
 
   constructor(
@@ -76,39 +103,53 @@ export class RegisterComponent  implements OnInit {
     private authService: AuthService,
     private storage: Storage,
     private alertService: AlertService
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.getFrontUrlFromStorage()
-    this.route.queryParams.subscribe(params => {
+    this.getFrontUrlFromStorage();
+    this.route.queryParams.subscribe((params) => {
       this.type = params['tipo'];
       console.log(this.type); // 'Cliente', 'Empresa' ou 'Profissional'
     });
     this.createForm();
-    this.addEndereco()
+    this.addEndereco();
   }
 
-  createForm(){
-
+  createForm() {
     this.formRegister = this.formBuilder.group({
       username: [''],
       password: ['', [Validators.required, this.passwordValidator.bind(this)]],
       nome: ['', Validators.required],
       celular: ['', [Validators.required, Validators.minLength(16)]],
-      cpf: ['', [Validators.required, Validators.minLength(14), this.cpfCnpjValidator(this.type)]],
+      cpf: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(14),
+          this.cpfCnpjValidator(this.type),
+        ],
+      ],
       cnpj: ['', [Validators.minLength(18), this.cpfCnpjValidator(this.type)]],
       email: ['', [Validators.required, Validators.email]],
       enderecos: this.formBuilder.array([]),
       cep: [''],
-      source: [{ value: this.frontUrl }]
+      source: [{ value: this.frontUrl }],
     });
-    this.formRegister.get('password')?.setValidators([Validators.required, this.passwordValidator.bind(this)]);
+    this.formRegister
+      .get('password')
+      ?.setValidators([Validators.required, this.passwordValidator.bind(this)]);
 
-    this.formRegister.get('cpf')?.setValidators(this.cpfCnpjValidator(this.type));
-    this.formRegister.get('cnpj')?.setValidators(this.cpfCnpjValidator(this.type));
+    this.formRegister
+      .get('cpf')
+      ?.setValidators(this.cpfCnpjValidator(this.type));
+    this.formRegister
+      .get('cnpj')
+      ?.setValidators(this.cpfCnpjValidator(this.type));
   }
 
-  passwordValidator(control: AbstractControl): { [key: string]: boolean } | null {
+  passwordValidator(
+    control: AbstractControl
+  ): { [key: string]: boolean } | null {
     const value = control.value || '';
 
     // Validações
@@ -118,12 +159,15 @@ export class RegisterComponent  implements OnInit {
     this.passwordErrors.upperLower = /[a-z]/.test(value) && /[A-Z]/.test(value);
 
     // Verifica se é válido
-    const isValid = this.passwordErrors.minLength && this.passwordErrors.specialChar && this.passwordErrors.number && this.passwordErrors.upperLower;
+    const isValid =
+      this.passwordErrors.minLength &&
+      this.passwordErrors.specialChar &&
+      this.passwordErrors.number &&
+      this.passwordErrors.upperLower;
 
     // Retorna null se for válido, ou um objeto com o erro se não for
     return isValid ? null : { passwordInvalid: true };
   }
-
 
   get formRegisterControl(): { [key: string]: AbstractControl } {
     return this.formRegister.controls;
@@ -135,12 +179,13 @@ export class RegisterComponent  implements OnInit {
   async getFrontUrlFromStorage() {
     this.frontUrl = await this.storage.get('front_url');
     this.endereco = await this.storage.get('endereco');
-    console.log(this.endereco);
-    console.log(this.frontUrl);
+    this.schemaFranquia = await this.storage.get('schema');
+    console.log(this.schemaFranquia);
+
     if (this.frontUrl && this.endereco) {
       this.enderecos.at(0).get('estado')?.patchValue(this.endereco.uf);
       this.formRegister.patchValue({
-        source: this.frontUrl
+        source: this.frontUrl,
       });
     }
   }
@@ -158,19 +203,16 @@ export class RegisterComponent  implements OnInit {
       zona: [''],
       complemento: [''],
       latitude: [''],
-      longitude: ['']
+      longitude: [''],
     });
 
     this.enderecos.push(enderecoForm);
   }
   showAlertUser() {
     const { username } = this.formRegister.getRawValue();
-
   }
 
-  enableBtnLogin(){
-
-  }
+  enableBtnLogin() {}
 
   viewPassword() {
     this.hiddenPassword = !this.hiddenPassword;
@@ -185,29 +227,34 @@ export class RegisterComponent  implements OnInit {
 
     // Se o tipo for 'Empresa', atribui o CNPJ ao campo de CPF
     if (this.type === 'Empresa') {
-      this.formRegister.controls['cpf'].setValue(this.formRegister.controls['cnpj'].value);
+      this.formRegister.controls['cpf'].setValue(
+        this.formRegister.controls['cnpj'].value
+      );
     }
 
-    // Cria um objeto com base nos valores do formulário, mas que pode ser editado separadamente
     const request = {
       username: this.formRegister.controls['username'].value,
       password: this.formRegister.controls['password'].value,
       nome: this.formRegister.controls['nome'].value,
-      celular: celular, // Já com o valor formatado
-      cpf: this.formRegister.controls['cpf'].value, // Pode ser o CPF ou CNPJ, dependendo do tipo
+      celular: celular,
+      telefone: celular,
+      cpf_cnpj: this.formRegister.controls['cpf'].value
+        ? this.formRegister.controls['cpf'].value
+        : this.formRegister.controls['cnpj'].value,
       cnpj: this.formRegister.controls['cnpj'].value,
       email: this.formRegister.controls['email'].value,
-      enderecos: this.enderecos.value, // Caso você tenha múltiplos endereços no formulário
+      enderecos: this.enderecos.value,
       cep: this.formRegister.controls['cep'].value,
-      source: source, // Valor da source capturado diretamente
-      origem_cliente:'APP'
+      source: source,
+      origem_cliente: 'APP',
+      franquia: this.schemaFranquia,
+      role: 3,
     };
 
-    console.log("Request object:", request); // Exibe o objeto para verificação
+    console.log('Request object:', request); // Exibe o objeto para verificação
 
     // Verificação de validação
     if (this.formRegister.valid) {
-
       // Chama o serviço de registro utilizando o objeto `request` criado acima
       this.authService.registerNewUser(request, 'clientes').subscribe({
         next: (value: any) => {
@@ -223,11 +270,11 @@ export class RegisterComponent  implements OnInit {
         error: (err: any) => {
           console.log(err);
           this.alertService.presentAlert('Atenção', `${err.error.detail}`);
-        }
+        },
       });
     } else {
       // Exibe no console quais campos estão inválidos
-      Object.keys(this.formRegister.controls).forEach(field => {
+      Object.keys(this.formRegister.controls).forEach((field) => {
         const control = this.formRegister.get(field);
         if (control && control.invalid) {
           console.log(`Campo inválido: ${field}, Erros:`, control.errors);
@@ -235,58 +282,62 @@ export class RegisterComponent  implements OnInit {
       });
 
       // Mensagem de alerta para o usuário
-      this.alertService.presentAlert('Erro', 'Preencha todos os campos corretamente.');
+      this.alertService.presentAlert(
+        'Erro',
+        'Preencha todos os campos corretamente.'
+      );
     }
   }
 
-
-
-  navegate(rota:string){
+  navegate(rota: string) {
     this.router.navigate([rota]);
   }
 
   cpfCnpjValidator(type: string): ValidatorFn {
-    return (control: AbstractControl): {[key: string]: any} | null => {
+    return (control: AbstractControl): { [key: string]: any } | null => {
       const value = control.value;
       if (type === 'Cliente') {
         // Validação de CPF
         if (value && value.replace(/\.|-/g, '').length >= 11) {
-          return this.verification.validateCPF(value.replace(/\.|-/g, '')) ? null : { invalidCPF: true };
+          return this.verification.validateCPF(value.replace(/\.|-/g, ''))
+            ? null
+            : { invalidCPF: true };
         }
       } else if (type === 'Empresa') {
         // Validação de CNPJ
         if (value && value.replace(/\.|-/g, '').length >= 14) {
-          return this.verification.validateCNPJ(value.replace(/\.|-/g, '')) ? null : { invalidCNPJ: true };
+          return this.verification.validateCNPJ(value.replace(/\.|-/g, ''))
+            ? null
+            : { invalidCNPJ: true };
         }
       }
       return null;
     };
   }
 
-  verificationCPF(cpf:any){
+  verificationCPF(cpf: any) {
     const CPF = (cpf.target as HTMLInputElement).value;
-    if(CPF.replace(/\.|-/g, '').length >= 11){
-      if(!this.verification.validateCPF(CPF.replace(/\.|-/g, ''))){
+    if (CPF.replace(/\.|-/g, '').length >= 11) {
+      if (!this.verification.validateCPF(CPF.replace(/\.|-/g, ''))) {
         this.cpfInvalido = true;
-      }else{
+      } else {
         this.cpfInvalido = false;
       }
     }
   }
 
-   verificationCNPJ(cnpj:any){
+  verificationCNPJ(cnpj: any) {
     const CNPJ = (cnpj.target as HTMLInputElement).value;
-    if(CNPJ.replace(/\.|-/g, '').length >= 14){
-      if(!this.verification.validateCNPJ(CNPJ.replace(/\.|-/g, ''))){
+    if (CNPJ.replace(/\.|-/g, '').length >= 14) {
+      if (!this.verification.validateCNPJ(CNPJ.replace(/\.|-/g, ''))) {
         this.cnpjInvalido = true;
-      }else{
+      } else {
         this.cnpjInvalido = false;
       }
     }
-   }
+  }
 
-   showLoading() {
-
+  showLoading() {
     this.loadingComponent.createLoading();
   }
 

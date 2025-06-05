@@ -6,30 +6,48 @@ import { switchMap } from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ClientesService {
-
   private endpoint = `${environment.baseUrl}clientes`;
 
-  constructor(private httpCliente: HttpClient, private apiService: ApiService) { }
+  constructor(
+    private httpCliente: HttpClient,
+    private apiService: ApiService
+  ) {}
 
   createClient(cliente: uCliente) {
-    return this.apiService.loadApiUrl().pipe(
-      switchMap(url => this.httpCliente.post(`https://${url}/api/v1/signup`, cliente))
-    );
+    return this.apiService
+      .loadApiUrl()
+      .pipe(
+        switchMap((url) =>
+          this.httpCliente.post(`https://${url}/api/v1/signup`, cliente)
+        )
+      );
   }
 
-  updateClient(cliente: uCliente) {
-    return this.apiService.loadApiUrl().pipe(
-      switchMap(url => this.httpCliente.put(`https://${url}/api/v1/clientes/${cliente.ID}`, cliente))
-    );
+  updateClient(cliente: uCliente, url_api: any) {
+    return this.apiService
+      .loadApiUrl()
+      .pipe(
+        switchMap((url) =>
+          this.httpCliente.put(
+            `https://${url_api}/api/v1/clientes/${cliente.ID}`,
+            cliente
+          )
+        )
+      );
   }
 
   deleteClient(cliente: uCliente) {
-    return this.apiService.loadApiUrl().pipe(
-      switchMap(url => this.httpCliente.delete(`https://${url}/api/v1/clientes/${cliente.ID}`))
-    );
+    return this.apiService
+      .loadApiUrl()
+      .pipe(
+        switchMap((url) =>
+          this.httpCliente.delete(
+            `https://${url}/api/v1/clientes/${cliente.ID}`
+          )
+        )
+      );
   }
-
 }

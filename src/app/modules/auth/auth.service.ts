@@ -11,11 +11,10 @@ import { Storage } from '@ionic/storage-angular';
 import { Preferences } from '@capacitor/preferences';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
-  private endpoint = `${environment.baseUrl}`;
+  private endpoint = `${environment.apiAuth}auth`;
 
   private token?: LoginToken;
 
@@ -26,46 +25,36 @@ export class AuthService {
     private router: Router,
     private ngZone: NgZone,
     private apiService: ApiService,
-    private storage: Storage,
-
-    ) {
-
+    private storage: Storage
+  ) {
     this.lastUrl = btoa('/');
-    this.router.events.subscribe(e => {
+    this.router.events.subscribe((e) => {
       if (e instanceof NavigationEnd) {
         this.lastUrl = btoa(e.url);
       }
     });
     this.loadCredentials();
+  }
 
-   }
-
-   login(user: IUser, paramUser: any): Observable<Token> {
-    return this.apiService.loadApiUrl().pipe(
-      switchMap((apiUrl: string) => {
-        return this.httpClient.post<Token>(`https://${apiUrl}/api/v1/${paramUser}/sign`, user).pipe(
-          tap((token: Token) => this.registerCredentials(token)),
-          take(1)
-        );
-      })
+  login(user: IUser, paramUser: any): Observable<Token> {
+    return this.httpClient.post<Token>(`${this.endpoint}/sign`, user).pipe(
+      tap((token: Token) => this.registerCredentials(token)),
+      take(1)
     );
   }
 
-
-
-  logout(){
+  logout() {
     localStorage.clear();
     this.storage.clear();
+
     Preferences.clear();
     this.router.navigate(['select-region']);
     this.unRegisterCredentials();
   }
 
-
   isLoggedIn(): boolean {
     return this.loadCredentials();
   }
-
 
   handleLoggin(path: string = this.lastUrl): void {
     //this.router.navigate(['/login', atob(path)]);
@@ -73,7 +62,7 @@ export class AuthService {
   }
 
   private registerCredentials(token: Token): void {
-    if(token !== null){
+    if (token !== null) {
       this.token = new LoginToken(token);
       localStorage.setItem('token', token['access_token']);
       this.router.navigate(['/start']);
@@ -81,12 +70,10 @@ export class AuthService {
   }
 
   private loadCredentials(): boolean {
-
     if (this.token === undefined) {
       const token = localStorage.getItem('token');
 
       if (token) {
-
         this.token = new LoginToken({ access_token: token });
       }
     }
@@ -102,11 +89,8 @@ export class AuthService {
   get obterUsuarioLogado(): IUser | null {
     const usuario = localStorage.getItem('user');
 
-    return usuario
-      ? JSON.parse(atob(usuario))
-      : null;
+    return usuario ? JSON.parse(atob(usuario)) : null;
   }
-
 
   private unRegisterCredentials(): void {
     this.token = undefined;
@@ -114,12 +98,11 @@ export class AuthService {
   }
 
   get obterTokenUsuario(): any {
-    const token = localStorage.getItem('token')
-    if(token != null || undefined){
-      return token!
-      }
-    else{
-      return null
+    const token = localStorage.getItem('token');
+    if (token != null || undefined) {
+      return token!;
+    } else {
+      return null;
     }
   }
 
@@ -135,43 +118,15 @@ export class AuthService {
     return this.token?.jwtToken;
   }
 
-  saveNewPassword(pass: any, paramUser: any): Observable<Token> {
-    const cpf = localStorage.getItem('cpfUser');
-    const encoded = btoa(cpf + ':' + pass);
-    return this.apiService.loadApiUrl().pipe(
-      switchMap(url =>
-        this.httpClient.post<Token>(`https://${url}/api/v1/${paramUser}/updatepass`, encoded)
-      ),
-      take(1)
-    );
-  }
-
-  forgotPassword(data: any, route: any): Observable<Token> {
-    return this.apiService.loadApiUrl().pipe(
-      switchMap(apiUrl =>
-        this.httpClient.post<Token>(`https://${apiUrl}/api/v1/${route}/forgot`, data)
-      ),
-      take(1)
-    );
+  forgotPassword(body: any) {
+    return this.httpClient.post(`${this.endpoint}/forgot`, body).pipe(take(1));
   }
 
   getInfoUser(paramUser: any): Observable<any> {
-    return this.apiService.loadApiUrl().pipe(
-      switchMap(url =>
-        this.httpClient.get<any>(`https://${url}/api/v1/${paramUser}/me`)
-      ),
-      take(1)
-    );
+    return this.httpClient.get(`${this.endpoint}/me`).pipe(take(1));
   }
 
-  registerNewUser(user: any, paramUser: any): Observable<Token> {
-    return this.apiService.loadApiUrl().pipe(
-      switchMap(url =>
-        this.httpClient.post<Token>(`https://${url}/api/v1/${paramUser}/signup`, user)
-      ),
-      take(1)
-    );
+  registerNewUser(user: any, paramUser: any) {
+    return this.httpClient.post(`${this.endpoint}/signup`, user).pipe(take(1));
   }
-
 }
-
