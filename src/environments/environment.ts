@@ -4,8 +4,10 @@
 
 export const environment = {
   production: false,
-  baseUrl: 'https://vavive-go-production.up.railway.app/api/v1/',
-  apiAuth: 'https://login-unificado-novo-vavive.up.railway.app/api/v1/',
+  baseUrl: 'http://127.0.0.1:3000/api/v1/',
+  apiAuth: 'http://127.0.0.1:3000/api/v1/',
+  //baseUrl: 'https://vavive-go-production.up.railway.app/api/v1/',
+  //apiAuth: 'https://login-unificado-novo-vavive.up.railway.app/api/v1/',
   appVersion: '1.0.3',
 };
 

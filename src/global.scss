@@ -257,24 +257,6 @@ ion-header {
   padding-top: var(--ion-safe-area-top);
 }
 
-/* Ajuste global para o iOS */
-.ios {
-  ion-header {
-    padding-top: constant(safe-area-inset-top); /* Para iOS 11.0 */
-    padding-top: env(safe-area-inset-top); /* Para iOS 11.2+ */
-    background-color: #ffffff; /* Cor desejada */
-  }
-
-  ion-toolbar {
-    background-color: #ffffff; /* Cor desejada */
-  }
-
-  ion-content {
-    --padding-top: constant(safe-area-inset-top); /* Para iOS 11.0 */
-    --padding-top: env(safe-area-inset-top); /* Para iOS 11.2+ */
-    --background: #ffffff; /* Cor de fundo do conteúdo */
-  }
-}
 
 .main-content{
   --background: #ffffff; /* Cor de fundo do conteúdo */

@@ -12,7 +12,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { SharedModule } from './shared/shared.module';
 import { HomeComponent } from './modules/home/home.component';
 import { StartComponent } from './modules/start/start.component';
-import {MaskitoDirective} from '@maskito/angular';
+import { MaskitoDirective } from '@maskito/angular';
 import { TokenProviderInterceptor } from './core/interceptors/token-provider.interceptor';
 import { SelectRegionComponent } from './modules/select-region/select-region.component';
 import { IonicStorageModule } from '@ionic/storage-angular';
@@ -35,7 +35,7 @@ import { PaymentsComponent } from './modules/services/payments/payments.componen
     NewServicesComponent,
     ConfirmServicesComponent,
     ListServicesComponent,
-    PaymentsComponent
+    PaymentsComponent,
   ],
   imports: [
     BrowserModule,
@@ -48,8 +48,7 @@ import { PaymentsComponent } from './modules/services/payments/payments.componen
     IonicStorageModule.forRoot(),
     ReactiveFormsModule,
     FormsModule,
-    LottieComponent
-
+    LottieComponent,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
@@ -61,11 +60,9 @@ import { PaymentsComponent } from './modules/services/payments/payments.componen
     provideLottieOptions({
       player: () => player,
     }),
-    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
-
+    //{ provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
-
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}

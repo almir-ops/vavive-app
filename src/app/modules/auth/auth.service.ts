@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Observable, tap, take, switchMap } from 'rxjs';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import { LoginToken } from './login-token';
 import { Token } from './token';
 import { IUser } from 'src/app/shared/interfaces/uUser';
@@ -37,6 +37,8 @@ export class AuthService {
   }
 
   login(user: IUser, paramUser: any): Observable<Token> {
+    console.log(this.endpoint);
+
     return this.httpClient.post<Token>(`${this.endpoint}/sign`, user).pipe(
       tap((token: Token) => this.registerCredentials(token)),
       take(1)
