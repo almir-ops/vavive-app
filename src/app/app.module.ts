@@ -60,7 +60,7 @@ import { PaymentsComponent } from './modules/services/payments/payments.componen
     provideLottieOptions({
       player: () => player,
     }),
-    //{ provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -961,7 +961,7 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
         next: (res: any) => {
           console.log(res);
           this.primeiroAgendamento = res.item[0];
-          //this.handlePaymentNow();
+          this.handlePaymentNow();
           //this.modalConfirm.present();
           this.animation = true;
           const modal = this.modalConfirm;

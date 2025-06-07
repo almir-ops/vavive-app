@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "874870191992",
+    "project_id": "vavive-32284",
+    "storage_bucket": "vavive-32284.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874870191992:android:dc4ea9a77155f13e46fa8d",
+        "android_client_info": {
+          "package_name": "io.ionic.vavive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_c54Otn4Js6JFh9-BwdIRfmnOJgde84Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -17,6 +17,8 @@ import { Preferences } from '@capacitor/preferences';
 import { ServicosService } from 'src/app/shared/services/servicos/servicos.service';
 import { LoadingComponent } from 'src/app/shared/components/loading/loading.component';
 import { ClientesService } from 'src/app/shared/services/clientes/clientes.service';
+import { StorageService } from 'src/app/shared/services/storage/storage.service';
+import { FcmService } from 'src/app/shared/services/fcm/fcm.service';
 register();
 
 @Component({
@@ -55,9 +57,11 @@ export class StartComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private storage: Storage,
+    private storageService: StorageService,
     private router: Router,
     private servicosServices: ServicosService,
-    private clienteService: ClientesService
+    private clienteService: ClientesService,
+    private fcmService: FcmService
   ) {}
 
   ngOnInit() {
@@ -109,127 +113,162 @@ export class StartComponent implements OnInit {
     this.startImageLoop();
   }
 
-  async getFrontUrl(): Promise<string | null> {
-    const url = await this.storage.get('front_url');
-    return url ? url : null;
-  }
-
-  ionViewWillEnter() {
-    this.initializeUserData();
-    const storedSlides = localStorage.getItem('slides');
-
-    if (storedSlides) {
-      // Se o array já estiver salvo no localStorage, usa o valor armazenado
-      this.slides = JSON.parse(storedSlides);
-      console.log('Loaded slides from localStorage:', this.slides);
-    } else {
-      // Faz a chamada ao serviço se não houver slides no localStorage
-      this.servicosServices.getServicos().subscribe({
-        next: (value: any) => {
-          console.log('API response:', value.items);
-
-          // Filtra e ordena os itens
-          const filteredItems = value.items.filter(
-            (item: any) =>
-              item.nome !== 'Limpeza pesada' &&
-              item.nome !== 'Recrutamento e seleção'
-          );
-
-          console.log(filteredItems);
-
-          const sortedItems = filteredItems.sort((a: any, b: any) => {
-            if (a.nome === 'Limpeza residencial') return -1;
-            if (b.nome === 'Limpeza residencial') return 1;
-            if (a.nome === 'Limpeza empresarial') return -1;
-            if (b.nome === 'Limpeza empresarial') return 1;
-            return 0;
-          });
-
-          // Armazena os itens processados no localStorage
-          localStorage.setItem('slides', JSON.stringify(sortedItems));
-          this.slides = sortedItems;
-          console.log('Slides saved to localStorage:', this.slides);
-        },
-        error: (err: any) => {
-          console.error('Error fetching servicos:', err);
-        },
-      });
+    async getFrontUrl(): Promise<string | null> {
+      const url = await this.storage.get('front_url');
+      return url ? url : null;
     }
-  }
 
-  async initializeUserData() {
-    await this.loadUserFromStorage();
-  }
+    ionViewWillEnter() {
+      this.initializeUserData();
+      const storedSlides = localStorage.getItem('slides');
 
-  async loadUserFromStorage() {
-    try {
-      const userData = await Preferences.get({ key: 'user_data' });
-      if (userData.value) {
-        // Usuário já está salvo localmente
-        this.user = JSON.parse(userData.value).cliente;
-        this.userLoggedOut = false;
+      if (storedSlides) {
+        // Se o array já estiver salvo no localStorage, usa o valor armazenado
+        this.slides = JSON.parse(storedSlides);
+        console.log('Loaded slides from localStorage:', this.slides);
       } else {
-        // Nenhum usuário salvo, chamando API para obter informações do usuário
-        await this.getInfoUser();
-      }
-    } catch (error) {
-      console.error('Error loading user from storage:', error);
-    }
-  }
+        // Faz a chamada ao serviço se não houver slides no localStorage
+        this.servicosServices.getServicos().subscribe({
+          next: (value: any) => {
+            console.log('API response:', value.items);
 
-  ngAfterViewInit() {
-    // Acesso direto ao Swiper após a inicialização
-    if (this.swiperContainer) {
-      const swiper = (this.swiperContainer as any).swiper;
-      if (swiper) {
-        swiper.on('init', () => {
-          console.log('Swiper initialized');
-        });
-      }
-    }
-  }
+            // Filtra e ordena os itens
+            const filteredItems = value.items.filter(
+              (item: any) =>
+                item.nome !== 'Limpeza pesada' &&
+                item.nome !== 'Recrutamento e seleção'
+            );
 
-  async getInfoUser() {
-    try {
-      const paramUser = await this.storage.get('param_user');
-      console.log(paramUser);
+            console.log(filteredItems);
 
-      if (paramUser) {
-        this.authService.getInfoUser(paramUser).subscribe({
-          next: async (response) => {
-            console.log(response);
-            const token_notification = await Preferences.get({
-              key: 'token_notification',
+            const sortedItems = filteredItems.sort((a: any, b: any) => {
+              if (a.nome === 'Limpeza residencial') return -1;
+              if (b.nome === 'Limpeza residencial') return 1;
+              if (a.nome === 'Limpeza empresarial') return -1;
+              if (b.nome === 'Limpeza empresarial') return 1;
+              return 0;
             });
-            this.userLoggedOut = false;
-            this.user = response.cliente;
-            this.user.token_notification = token_notification.value;
-            this.clienteService
-              .updateClient(this.user, this.user.source_api)
-              .subscribe({
-                next: (value: any) => {
-                  console.log('User atualizado: ', value);
-                },
-                error: (err: any) => {
-                  console.log(err);
-                },
-              });
-            // Armazenar o usuário de forma segura para chamadas futuras
-            await this.saveUserSecurely(response);
+
+            // Armazena os itens processados no localStorage
+            localStorage.setItem('slides', JSON.stringify(sortedItems));
+            this.slides = sortedItems;
+            console.log('Slides saved to localStorage:', this.slides);
           },
           error: (err: any) => {
-            console.log(err);
-            this.userLoggedOut = true;
+            console.error('Error fetching servicos:', err);
           },
         });
-      } else {
-        console.log('param_user is null or undefined, skipping API call.');
-        this.userLoggedOut = true;
       }
-    } catch (error) {
-      console.error('Error retrieving param_user:', error);
     }
-  }
+
+    async initializeUserData() {
+      await this.loadUserFromStorage();
+    }
+
+    async loadUserFromStorage() {
+      try {
+        const userData = await Preferences.get({ key: 'user_data' });
+        if (userData.value) {
+          // Usuário já está salvo localmente
+          this.user = JSON.parse(userData.value).cliente;
+          this.userLoggedOut = false;
+          await this.getInfoUser();
+
+        } else {
+          // Nenhum usuário salvo, chamando API para obter informações do usuário
+          await this.getInfoUser();
+        }
+      } catch (error) {
+        console.error('Error loading user from storage:', error);
+      }
+    }
+
+    ngAfterViewInit() {
+      // Acesso direto ao Swiper após a inicialização
+      if (this.swiperContainer) {
+        const swiper = (this.swiperContainer as any).swiper;
+        if (swiper) {
+          swiper.on('init', () => {
+            console.log('Swiper initialized');
+          });
+        }
+      }
+    }
+
+    async getInfoUser() {
+      try {
+        console.log('[INFO] Iniciando getInfoUser()');
+
+        const paramUser = 'clientes';
+        console.log('[INFO] param_user obtido do storage:', paramUser);
+
+        if (paramUser) {
+          console.log('[INFO] Chamando authService.getInfoUser()');
+
+          this.authService.getInfoUser(paramUser).subscribe({
+            next: async (response) => {
+              console.log('[INFO] Resposta da API getInfoUser:', response);
+
+              let fcmTokenData = await this.storageService.getStorage('push_notification_token');
+              let fcmToken = fcmTokenData?.value || null;
+
+              if (!fcmToken) {
+                console.warn('[AVISO] Token FCM não encontrado no storage. Registrando agora...');
+                await this.fcmService.initPush();
+
+                // Recarrega o token após o registro
+                fcmTokenData = await this.storageService.getStorage('push_notification_token');
+                fcmToken = fcmTokenData?.value || null;
+
+                if (!fcmToken) {
+                  console.warn('[AVISO] Ainda sem token FCM após tentativa de registro.');
+                } else {
+                  console.log('[INFO] Novo token FCM obtido:', fcmToken);
+                }
+              } else {
+                console.log('[INFO] Token FCM recuperado do storage:', fcmToken);
+              }
+
+              this.user = response.cliente;
+              this.userLoggedOut = false;
+              console.log('[INFO] Cliente carregado:', this.user);
+              console.log('[INFO] Token FCM:', fcmToken);
+              console.log('[INFO] Token notification salvo no cliente:', this.user.token_notification);
+
+              if (!this.user.token_notification && fcmToken) {
+                console.log('[INFO] Atualizando token_notification do cliente.');
+
+                this.user.token_notification = fcmToken;
+
+                this.clienteService.updateClient(this.user, this.user.source_api).subscribe({
+                  next: (value: any) => {
+                    console.log('[SUCESSO] Cliente atualizado com novo token_notification:', value);
+                  },
+                  error: (err: any) => {
+                    console.error('[ERRO] Falha ao atualizar cliente com token_notification:', err);
+                  },
+                });
+              }
+
+              await this.saveUserSecurely(response);
+            },
+            error: (err: any) => {
+              console.error('[ERRO] Erro ao obter info do usuário via API:', err);
+              this.userLoggedOut = true;
+            },
+          });
+        } else {
+          console.warn('[AVISO] param_user é null ou undefined.');
+          this.userLoggedOut = true;
+        }
+      } catch (error) {
+        console.error('[ERRO] Erro inesperado ao executar getInfoUser():', error);
+      }
+    }
+
+
+
+
 
   nextSlide() {
     console.log(this.swiperContainer);
