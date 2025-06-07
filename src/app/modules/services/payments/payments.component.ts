@@ -12,12 +12,11 @@ import { AlertService } from 'src/app/shared/services/alert.service';
   templateUrl: './payments.component.html',
   styleUrls: ['./payments.component.scss'],
 })
-export class PaymentsComponent  implements OnInit {
-
-  currentPagamento:any;
+export class PaymentsComponent implements OnInit {
+  currentPagamento: any;
   @ViewChild('modalOptions', { static: false }) modalOptions!: IonModal;
-  listPagamentosPendentes:any[] = [];
-  listPagamentosPagos:any[] = [];
+  listPagamentosPendentes: any[] = [];
+  listPagamentosPagos: any[] = [];
   screen = 'pendentes';
   currentClient: any;
   filterDataVencimento: string = '';
@@ -26,21 +25,20 @@ export class PaymentsComponent  implements OnInit {
   situacoesPagamento = [
     { label: 'Pago', valor: 'Pago' },
     { label: 'Pendente', valor: 'Pendente' },
-    { label: 'Vencido', valor: 'Vencido' }
+    { label: 'Vencido', valor: 'Vencido' },
   ];
-  @ViewChild('modalFilterPagamentos', { static: false }) modalFilterPagamentos!: IonModal;
+  @ViewChild('modalFilterPagamentos', { static: false })
+  modalFilterPagamentos!: IonModal;
   @ViewChild('modalDetails', { static: false }) modalDetails!: IonModal;
 
   constructor(
     private finacasService: FinancasService,
     private pagamentoService: PagamentosService,
-    private alertService: AlertService,
-
-  ) { }
+    private alertService: AlertService
+  ) {}
 
   ngOnInit() {
     this.loadUserData();
-
   }
 
   async loadUserData() {
@@ -48,7 +46,7 @@ export class PaymentsComponent  implements OnInit {
       const user = await this.getUserSecurely();
 
       if (user) {
-        this.currentClient = user;
+        this.currentClient = user.cliente;
         this.getFinancas();
       } else {
         console.log('Nenhum usuário encontrado.');
@@ -67,18 +65,20 @@ export class PaymentsComponent  implements OnInit {
       return null;
     }
   }
-  getFinancas(){
-    console.log(this.currentClient);
+  getFinancas() {
     const query = '?tipo=Entrada&cliente_cpf=' + this.currentClient.cpf;
-    this.finacasService.getFinancasByFilter(query).subscribe((data:any) => {
-      console.log(data);
-      this.listPagamentosPendentes = data.items.filter((pagamento:any) => pagamento.situacao !== 'Pago');
-      this.listPagamentosPagos = data.items.filter((pagamento:any) => pagamento.situacao === 'Pago');
+    this.finacasService.getFinancasByFilter(query).subscribe((data: any) => {
+      this.listPagamentosPendentes = data.items.filter(
+        (pagamento: any) => pagamento.situacao !== 'Pago'
+      );
+      this.listPagamentosPagos = data.items.filter(
+        (pagamento: any) => pagamento.situacao === 'Pago'
+      );
     });
   }
 
-  openOptionsModal(pagamento:any){
-    console.log(pagamento)
+  openOptionsModal(pagamento: any) {
+    console.log(pagamento);
     this.currentPagamento = pagamento;
     this.modalOptions.present();
   }
@@ -92,17 +92,21 @@ export class PaymentsComponent  implements OnInit {
   }
 
   getMesComAno(data: string): string {
-    const mesAbreviado = moment(data, 'YYYY-MM-DD').locale('pt-br').format('MMM');
+    const mesAbreviado = moment(data, 'YYYY-MM-DD')
+      .locale('pt-br')
+      .format('MMM');
     const ano = moment(data, 'YYYY-MM-DD').format('YYYY');
-    return mesAbreviado.charAt(0).toUpperCase() + mesAbreviado.slice(1) + '/' + ano;
+    return (
+      mesAbreviado.charAt(0).toUpperCase() + mesAbreviado.slice(1) + '/' + ano
+    );
   }
 
   segmentChanged(event: any) {
     this.screen = event.detail.value;
   }
 
-  formatDate(date:string){
-    return moment(date).format('DD/MM/YYYY')
+  formatDate(date: string) {
+    return moment(date).format('DD/MM/YYYY');
   }
 
   closeModal() {
@@ -114,58 +118,64 @@ export class PaymentsComponent  implements OnInit {
     console.log('Filtros aplicados:', {
       dataVencimento: this.filterDataVencimento,
       osAtendimento: this.filterOsAtendimento,
-      statusPagamento: this.filterStatusPagamento
+      statusPagamento: this.filterStatusPagamento,
     });
     this.closeModal();
   }
 
-  openModalDetails(){
+  openModalDetails() {
     console.log(this.currentPagamento);
 
-    if(this.currentPagamento.atendimento){
+    if (this.currentPagamento.atendimento) {
       this.modalOptions.dismiss();
       this.modalDetails.present();
-    }else{
+    } else {
       this.alertService.presentAlert('Erro ', `Erro ao encontrar atendimento`);
     }
   }
 
-  async criaPagamento(){
+  async criaPagamento() {
+    if (!this.currentPagamento.transaction_receipt_url) {
+      this.finacasService
+        .getFinancasByFilter('?atendimento_id=' + this.currentPagamento.ID)
+        .subscribe({
+          next: (response: any) => {
+            console.log(response);
 
-    if(!this.currentPagamento.transaction_receipt_url){
-      this.finacasService.getFinancasByFilter('?atendimento_id=' + this.currentPagamento.ID).subscribe({
-        next: (response:any) => {
-          console.log(response);
-
-          const entradas = response.items.filter((item: any) => item.tipo === 'Entrada');
-          console.log(entradas);
-          const pagamento = {
-            value: entradas[0].valor,
-            financa: entradas[0].ID,
-            billingType: "UNDEFINED",
-            dueDate: moment().add(3, 'days').format('YYYY-MM-DD')
-          }
-          this.pagamentoService.criaPagamento(pagamento).subscribe({
-            next: async (res: any) => {
-              console.log(res);
-              this.loadUserData();
-              await Browser.open({ url: res.data.invoiceUrl });
-              this.modalOptions.dismiss();
-            },
-            error: (err: any) => {
-              console.log(err);
-              this.alertService.presentAlert('Erro ', `Erro ao gerar cobrança`);
-
-            }
-          })
-        },error: (response:any)=> {
-          console.log(response);
-        }
-      })
-    }else{
-      await Browser.open({ url: this.currentPagamento.transaction_receipt_url });
-
+            const entradas = response.items.filter(
+              (item: any) => item.tipo === 'Entrada'
+            );
+            console.log(entradas);
+            const pagamento = {
+              value: entradas[0].valor,
+              financa: entradas[0].ID,
+              billingType: 'UNDEFINED',
+              dueDate: moment().add(3, 'days').format('YYYY-MM-DD'),
+            };
+            this.pagamentoService.criaPagamento(pagamento).subscribe({
+              next: async (res: any) => {
+                console.log(res);
+                this.loadUserData();
+                await Browser.open({ url: res.data.invoiceUrl });
+                this.modalOptions.dismiss();
+              },
+              error: (err: any) => {
+                console.log(err);
+                this.alertService.presentAlert(
+                  'Erro ',
+                  `Erro ao gerar cobrança`
+                );
+              },
+            });
+          },
+          error: (response: any) => {
+            console.log(response);
+          },
+        });
+    } else {
+      await Browser.open({
+        url: this.currentPagamento.transaction_receipt_url,
+      });
     }
-
   }
 }

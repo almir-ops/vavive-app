@@ -76,6 +76,7 @@ export class RegisterComponent implements OnInit {
   frontUrl: any;
   endereco: any;
   schemaFranquia: any;
+  api_url: any;
 
   public readonly predicate: MaskitoElementPredicate = (element) =>
     (element as HTMLIonInputElement).getInputElement();
@@ -180,8 +181,7 @@ export class RegisterComponent implements OnInit {
     this.frontUrl = await this.storage.get('front_url');
     this.endereco = await this.storage.get('endereco');
     this.schemaFranquia = await this.storage.get('schema');
-    console.log(this.schemaFranquia);
-
+    this.api_url = await this.storage.get('api_url');
     if (this.frontUrl && this.endereco) {
       this.enderecos.at(0).get('estado')?.patchValue(this.endereco.uf);
       this.formRegister.patchValue({
@@ -239,16 +239,19 @@ export class RegisterComponent implements OnInit {
       celular: celular,
       telefone: celular,
       cpf_cnpj: this.formRegister.controls['cpf'].value
-        ? this.formRegister.controls['cpf'].value
-        : this.formRegister.controls['cnpj'].value,
-      cnpj: this.formRegister.controls['cnpj'].value,
+        ? this.formRegister.controls['cpf'].value.replace(/\D/g, '')
+        : this.formRegister.controls['cpf'].value.replace(/\D/g, ''),
+      cnpj: this.formRegister.controls['cnpj'].value
+        ? this.formRegister.controls['cnpj'].value.replace(/\D/g, '')
+        : '',
       email: this.formRegister.controls['email'].value,
-      enderecos: this.enderecos.value,
+      enderecos: null,
       cep: this.formRegister.controls['cep'].value,
       source: source,
       origem_cliente: 'APP',
       franquia: this.schemaFranquia,
       role: 3,
+      source_api: this.api_url,
     };
 
     console.log('Request object:', request); // Exibe o objeto para verificação

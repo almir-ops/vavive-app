@@ -150,9 +150,9 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
     private router: Router,
     private cupomService: CuponsService,
     private route: ActivatedRoute,
-    private enderecoService: EnderecosService,
     private atendimentoService: AtendimentosService,
     private servicosServices: ServicosService,
+    private clienteService: ClientesService,
     private alertService: AlertService,
     private profissionalService: ProfissionalService,
     private financasService: FinancasService,
@@ -373,11 +373,8 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
       if (user) {
         this.currentClient = user;
         const cep = await this.storage.get('current_cep');
-        console.log(user);
-        console.log(cep);
-        console.log(this.currentClient);
 
-        //this.addressesFound = this.currentClient.enderecos.filter((endereco:any) => endereco.cep.replace("-", "") === cep);
+        //this.addressesFound = this.currentClient.cliente.enderecos.filter((endereco:any) => endereco.cep.replace("-", "") === cep);
         this.addressesFound = this.currentClient.cliente.enderecos;
         this.addressList = this.currentClient.cliente.enderecos;
         console.log(this.addressesFound);
@@ -389,6 +386,15 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
         } else if (this.addressesFound.length > 1) {
           this.multipleAddresses = true;
         } else if (this.addressList.length === 0) {
+          this.currentEndereco = {
+            cep: '',
+            rua: '',
+            bairro: '',
+            cidade: '',
+            estado: '',
+            zona: '',
+            pais: 'Brasil',
+          };
           this.getCurrentCep();
         } else {
           this.currentEndereco = this.addressesFound[0];
@@ -430,11 +436,11 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
 
   updateClientData() {
     this.formAtendimento.patchValue({
-      nome: this.currentClient.nome,
-      CPF: this.currentClient.cpf,
-      telefone: this.currentClient.telefone,
+      nome: this.currentClient.cliente.nome,
+      CPF: this.currentClient.cliente.cpf,
+      telefone: this.currentClient.cliente.telefone,
       endereco: this.currentEndereco,
-      cliente: this.currentClient,
+      cliente: this.currentClient.cliente,
     });
   }
 
@@ -805,7 +811,6 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
   }
 
   submitNext() {
-    console.log(this.formAtendimento.value);
     const dataInicio = moment(this.selectedDate, 'YYYY-MM-DD'); // A data de início do primeiro atendimento
     const dataFim = moment(this.selectedDateFim, 'YYYY-MM-DD'); // A data de fim do atendimento
 
@@ -815,18 +820,25 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
 
     // Atualiza o cliente no formulário antes de gerar os atendimentos
     const formValues = this.formAtendimento.getRawValue();
-    this.currentEndereco.numero =
-      this.formAtendimento.get('endereco.numero')?.value;
-    this.currentEndereco.complemento = this.formAtendimento.get(
-      'endereco.complemento'
-    )?.value;
+    const numero = this.formAtendimento.get('endereco.numero')?.value;
+    const complemento = this.formAtendimento.get('endereco.complemento')?.value;
 
-    this.currentClient.enderecos[0].numero =
-      this.formAtendimento.get('endereco.numero')?.value;
-    this.currentClient.enderecos[0].complemento = this.formAtendimento.get(
-      'endereco.complemento'
-    )?.value;
+    this.currentEndereco.numero = numero;
+    this.currentEndereco.complemento = complemento;
 
+    // Atualiza o endereço do cliente apenas se ele existir
+    if (
+      this.currentClient?.cliente &&
+      Array.isArray(this.currentClient.cliente.enderecos) &&
+      this.currentClient.cliente.enderecos.length > 0 &&
+      this.currentClient.cliente.enderecos[0]
+    ) {
+      this.currentClient.cliente.enderecos[0].numero = numero;
+      this.currentClient.cliente.enderecos[0].complemento = complemento;
+    } else {
+      // Se não houver endereço no cliente, garantir que o atendimento use currentEndereco
+      console.warn('Cliente sem endereço cadastrado. Usando currentEndereco.');
+    }
     const plano = this.selectedPlano; // O plano escolhido (semanal, quinzenal, etc.)
 
     if (this.selectedServiceId) {
@@ -854,14 +866,13 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
         'YYYY-MM-DD'
       )} (${dataInicio.isoWeekday()})`;
       datasSelecionadas.push(dataSelecionada);
-
+      this.atualizaEndereco();
       const atendimentoAvulso = {
         ...formValues, // Clona todos os campos do formulário
         data_inicio: dataInicio.format('YYYY-MM-DD') || '', // A data de início do atendimento avulso
         data_fim: dataInicio.clone().add(2, 'hours').format('YYYY-MM-DD') || '', // Exemplo: duração de 2 horas
         plano: plano.plano, // Atualiza o plano para 'avulso'
-        cliente: this.currentClient, // Adiciona o cliente
-        endereco: this.currentEndereco, // Adiciona o endereço
+        cliente: this.currentClient.cliente, // Adiciona o cliente
         servicos: [
           { ID: this.selectedServiceId, nome: this.serviceNameSelected },
         ],
@@ -873,7 +884,6 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
         datas_selecionadas: JSON.stringify(datasSelecionadas), // Adiciona datas no formato desejado
       };
 
-      console.log('Atendimento Avulso Gerado:', atendimentoAvulso);
       this.saveAtendimentos([atendimentoAvulso]);
 
       // Atualizar o campo 'datas_selecionadas' no formulário para o atendimento avulso
@@ -897,8 +907,7 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
         data_inicio: dateStr, // Data de início do atendimento (no formato original)
         data_fim: dataFim.format('YYYY-MM-DD'), // Exemplo: atendimento de 2 horas (formato 'YYYY-MM-DD')
         plano: plano.plano, // Atualiza o plano de cada atendimento
-        cliente: this.currentClient, // Adiciona o cliente
-        endereco: this.currentEndereco, // Adiciona o endereço
+        cliente: this.currentClient.cliente, // Adiciona o cliente
         servicos: [
           { ID: this.selectedServiceId, nome: this.serviceNameSelected },
         ],
@@ -927,8 +936,6 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
   }
 
   calculatePreco() {
-    console.log('calculatePreco');
-
     const plano = this.selectedPlano;
 
     if (plano && this.selectedServiceId) {
@@ -954,7 +961,7 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
         next: (res: any) => {
           console.log(res);
           this.primeiroAgendamento = res.item[0];
-          this.handlePaymentNow();
+          //this.handlePaymentNow();
           //this.modalConfirm.present();
           this.animation = true;
           const modal = this.modalConfirm;
@@ -969,15 +976,12 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
         },
         complete: () => {},
       });
-      console.log(this.currentClient);
-      this.atualizaEndereco();
       await this.storage.set('atendimentos', atendimentos);
       await Preferences.set({
         key: 'user_data',
         value: JSON.stringify(this.currentClient),
       });
       const user = await this.getUserSecurely();
-      console.log(user);
       //this.router.navigate(['services/confirm']);
     } catch (error) {
       console.error('Erro ao salvar os atendimentos:', error);
@@ -1052,7 +1056,6 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
     if (this.selectedPlano.plano !== 'avulso' && !this.selectedDateFim) {
       this.missingFields.push('Selecione a data de encerramento');
     }
-    console.log(this.preco);
 
     if (formValues.valor_servicos <= 0 && this.preco && this.preco.valor <= 0) {
       this.missingFields.push('O valor dos serviços deve ser maior que 0');
@@ -1081,14 +1084,21 @@ export class NewServicesComponent implements OnInit, AfterViewInit {
   }
 
   atualizaEndereco() {
-    this.enderecoService.putEndereco(this.currentEndereco).subscribe({
-      next: (data) => {
-        console.log('Cliente atualizado:', data);
-      },
-      error: (err) => {
-        console.error('Erro ao atualizar o cliente:', err);
-      },
-    });
+    if (
+      this.currentClient &&
+      this.currentClient.cliente &&
+      Array.isArray(this.currentClient.cliente.enderecos) &&
+      this.currentClient.cliente.enderecos.length > 0
+    ) {
+      // Preserva o ID original
+      const originalId = this.currentClient.cliente.enderecos[0].id;
+      this.currentClient.cliente.enderecos[0] = {
+        ...this.currentEndereco,
+        id: originalId, // Garante que o ID não se perca
+      };
+    } else {
+      this.currentClient.cliente.enderecos = [this.currentEndereco];
+    }
   }
 
   navegate(rota: any) {
