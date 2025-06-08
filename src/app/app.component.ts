@@ -3,20 +3,12 @@ import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { register } from 'swiper/element/bundle';
 import { Storage } from '@ionic/storage-angular';
-import { StatusBar, Style } from '@capacitor/status-bar';
-import {
-  PushNotifications,
-  Token,
-  PermissionStatus,
-} from '@capacitor/push-notifications';
-import { ClientesService } from './shared/services/clientes/clientes.service';
-import { Preferences } from '@capacitor/preferences';
-import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { App } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { version } from 'moment';
+import { SafeArea } from 'capacitor-plugin-safe-area';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 register();
 
@@ -30,31 +22,24 @@ export class AppComponent {
     private platform: Platform,
     private storage: Storage,
     private router: Router,
-    private clienteService: ClientesService,
     private http: HttpClient
   ) {
     this.initializeApp();
-    this.disableDarkMode();
-    this.configureStatusBar();
-    //this.checkForUpdate();
     this.checkAppVersion();
-  }
-
-  disableDarkMode() {
-    document.body.classList.add('light');
-    document.body.classList.remove('dark');
+    if (this.platform.is('ios')) {
+      document.body.classList.add('ios-padding');
+    }
   }
 
   async initializeApp() {
-    //await ScreenOrientation.lock({ orientation: 'portrait' });
 
-    await this.platform.ready();
+    this.platform.ready().then(() => {
+      SplashScreen.hide();
+    });
+    
     await this.storage.create();
     const apiUrl = await this.storage.get('api_url');
-    const frontUrl = await this.storage.get('front_url');
     const endereco = await this.storage.get('endereco');
-    console.log(apiUrl);
-    console.log(endereco);
 
     if (!apiUrl || !endereco) {
       this.router.navigate(['/select-region']);
@@ -62,49 +47,11 @@ export class AppComponent {
       this.router.navigate(['/']);
     }
 
-    //this.checkPushNotificationPermission();
   }
 
   configureStatusBar() {
     //StatusBar.setBackgroundColor({ color: '#ffffff' });
     //StatusBar.setStyle({ style: Style.Dark });
-  }
-
-  async checkPushNotificationPermission() {
-    // Verificar status da permissão
-    const permissionStatus: PermissionStatus =
-      await PushNotifications.checkPermissions();
-
-    if (permissionStatus.receive === 'granted') {
-      // Já tem permissão, registra o dispositivo
-      this.registerForPushNotifications();
-    } else {
-      // Solicitar permissão ao usuário
-      const result = await PushNotifications.requestPermissions();
-      if (result.receive === 'granted') {
-        this.registerForPushNotifications();
-      } else {
-        console.log('Permissão para notificações push negada.');
-      }
-    }
-  }
-
-  registerForPushNotifications() {
-    PushNotifications.register();
-
-    // Evento disparado quando o token é gerado
-    PushNotifications.addListener('registration', (token: Token) => {
-      console.log('Token de notificação gerado:', token.value);
-      Preferences.set({
-        key: 'token_notification',
-        value: JSON.stringify(token.value),
-      });
-    });
-
-    // Evento disparado se o registro falhar
-    PushNotifications.addListener('registrationError', (error) => {
-      console.error('Erro no registro de notificações push:', error);
-    });
   }
 
   checkAppVersion() {
@@ -115,10 +62,6 @@ export class AppComponent {
       .get<{ version: string }>(`${environment.baseUrl}franquias/version`)
       .subscribe((res: any) => {
         const latestVersion = res[0];
-        console.log(latestVersion);
-        console.log(currentVersion);
-        console.log(currentVersion === latestVersion);
-
         if (currentVersion === latestVersion) {
           return;
         } else {
@@ -139,18 +82,12 @@ export class AppComponent {
   }
 
   async checkForUpdate() {
-    console.log('checkForUpdate');
 
-    const info = await App.getInfo(); // Pega nome, id, versão etc.
-    console.log('checkForUpdate');
+    const info = await App.getInfo(); 
 
     const platform = Capacitor.getPlatform(); // 'android', 'ios', 'web'
-    console.log('checkForUpdate');
 
     const currentVersion = info.version;
-
-    console.log('Plataforma:', platform);
-    console.log('Versão atual do app:', currentVersion);
 
     try {
       const response = await fetch('https://matriz.vavive.com.br/versao.json');

@@ -19,6 +19,7 @@ import { LoadingComponent } from 'src/app/shared/components/loading/loading.comp
 import { ClientesService } from 'src/app/shared/services/clientes/clientes.service';
 import { StorageService } from 'src/app/shared/services/storage/storage.service';
 import { FcmService } from 'src/app/shared/services/fcm/fcm.service';
+import { Capacitor } from '@capacitor/core';
 register();
 
 @Component({
@@ -54,6 +55,8 @@ export class StartComponent implements OnInit {
   ];
   currentImageIndex = 0;
   frontUrl = '';
+  isIos = false;
+
   constructor(
     private authService: AuthService,
     private storage: Storage,
@@ -62,7 +65,11 @@ export class StartComponent implements OnInit {
     private servicosServices: ServicosService,
     private clienteService: ClientesService,
     private fcmService: FcmService
-  ) {}
+  ) {    
+    this.isIos = Capacitor.getPlatform() === 'ios';
+
+
+  }
 
   ngOnInit() {
     this.getFrontUrl().then((url) => {

@@ -1,4 +1,5 @@
-<div class="z-50">
+<div class="z-50" [ngClass]="{ 'pt-8': isIos }">
   <app-toolbar></app-toolbar>
 </div>
+
 <router-outlet></router-outlet>

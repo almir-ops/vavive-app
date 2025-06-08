@@ -1,0 +1,23 @@
+{
+  "name": "CapacitorCommunityFcm",
+  "version": "6.0.0",
+  "summary": "Enable Firebase Cloud Messaging features for Capacitor apps",
+  "license": "MIT",
+  "homepage": "git+https://github.com/capacitor-community/fcm.git",
+  "authors": "Stewan Silva",
+  "source": {
+    "git": "git+https://github.com/capacitor-community/fcm.git",
+    "tag": "6.0.0"
+  },
+  "source_files": "ios/Plugin/**/*.{swift,h,m,c,cc,mm,cpp}",
+  "platforms": {
+    "ios": "13.0"
+  },
+  "dependencies": {
+    "Capacitor": [],
+    "Firebase/Messaging": []
+  },
+  "swift_versions": "5.1",
+  "static_framework": true,
+  "swift_version": "5.1"
+}

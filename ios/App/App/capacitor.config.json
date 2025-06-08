@@ -1,0 +1,15 @@
+{
+	"appId": "io.ionic.vavive",
+	"appName": "Vavivê",
+	"webDir": "www",
+	"packageClassList": [
+		"FCMPlugin",
+		"AppPlugin",
+		"CAPBrowserPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"PreferencesPlugin",
+		"PushNotificationsPlugin",
+		"SplashScreenPlugin"
+	]
+}

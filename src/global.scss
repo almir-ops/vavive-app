@@ -130,6 +130,9 @@
   font-style: normal;
 }
 
+.ios-padding ion-content {
+  padding-top: 20px; /* ou quanto você precisar */
+}
 
 ion-input.custom {
   --color: #909090;
@@ -215,15 +218,6 @@ ion-modal#example-modal ion-icon {
 ion-modal#example-modal .wrapper {
   margin-bottom: 10px;
 }
-
-
-/* Global SCSS */
-:root {
-  --ion-color-scheme: light;
-  --ion-safe-area-top: env(safe-area-inset-top);
-
-}
-
 /* Forçar estilo claro para os inputs */
 ion-input, ion-textarea, input, textarea {
   --background: #ffffff;  /* Fundo branco */
@@ -245,25 +239,4 @@ ion-button {
   --border-color: #dddddd; /* Cor da borda */
 }
 
-/* Adicionar classes específicas para garantir que os componentes estejam claros */
-body {
-  padding-top: env(safe-area-inset-top, 0);
-  color-scheme: light;
-  --ion-background-color: #ffffff;
-  --ion-text-color: #000000;
-}
 
-ion-header {
-  padding-top: var(--ion-safe-area-top);
-}
-
-
-.main-content{
-  --background: #ffffff; /* Cor de fundo do conteúdo */
-
-}
-ion-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}

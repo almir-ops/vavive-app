@@ -117,3 +117,7 @@ ion-note {
 ion-item.selected {
   --color: var(--ion-color-primary);
 }
+
+.ios-padding ion-content {
+  padding-top: 20px; /* ou quanto você precisar */
+}

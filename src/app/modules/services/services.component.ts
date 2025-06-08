@@ -7,6 +7,7 @@ import { Storage } from '@ionic/storage-angular';
 import { ServicosService } from 'src/app/shared/services/servicos/servicos.service';
 import { uPlano } from 'src/app/shared/interfaces/uPlano';
 import { ViacepService } from 'src/app/shared/services/viacep/viacep.service';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-services',
@@ -14,6 +15,13 @@ import { ViacepService } from 'src/app/shared/services/viacep/viacep.service';
   styleUrls: ['./services.component.scss'],
 })
 export class ServicesComponent{
+  isIos = false;
 
+    constructor(
+    ) {    
+      this.isIos = Capacitor.getPlatform() === 'ios';
+  
+  
+    }
 
 }
