@@ -134,6 +134,14 @@
   padding-top: 20px; /* ou quanto você precisar */
 }
 
+:root {
+  color-scheme: light;
+}
+
+body{
+  background: white;
+}
+
 ion-input.custom {
   --color: #909090;
   --placeholder-color: #ddd;
